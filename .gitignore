@@ -1,0 +1,10 @@
+# OS
+.DS_Store
+
+# IDE
+.idea/
+*.iml
+
+# Claude Code — "have but don't commit" pattern
+CLAUDE.md
+.claude/
