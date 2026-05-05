@@ -52,16 +52,15 @@ java -jar kibo-X.Y.Z.jar \
     -o ./generated
 ```
 
-In practice, `dsm_util.py`, `generate.py` scripts, and
-`devkit-website/deploy.py` resolve this path automatically via the
-sibling-checkout convention or via the `KIBO_TEMPLATES` environment
-variable.
+In practice, `dsm_util.py` and the various `generate.py` scripts
+resolve this path automatically via the sibling-checkout convention
+or via the `KIBO_TEMPLATES` environment variable.
 
 ## Third-party templates
 
 This repo is for **first-party templates only** (DS-maintained). Third
-parties writing their own templated features (e.g. `red/templates/RaptorLogic/`)
-follow the same `.stg` conventions but live in their own repos.
+parties writing their own templated features follow the same `.stg`
+conventions but live in their own repos.
 
 ## License
 
