@@ -6,6 +6,12 @@ binding). Consumed by [Kibo](https://devkit.digitalsubstrate.io) to
 generate the static API surface that lets C++ and Python developers
 work against typed wrappers instead of stringly-typed metadata.
 
+## Documentation
+
+Full documentation: https://docs.digitalsubstrate.io/kibo-template-viper/
+
+Part of the [DevKit ecosystem](https://docs.digitalsubstrate.io/).
+
 ## Layout
 
 ```
