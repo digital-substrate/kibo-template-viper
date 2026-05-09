@@ -1,8 +1,8 @@
 # kibo-template-viper
 
 First-party templated features targeting the Viper ecosystem
-([viper](https://devkit.digitalsubstrate.io) C++ runtime + dsviper Python
-binding). Consumed by [Kibo](https://devkit.digitalsubstrate.io) to
+(Viper C++ runtime + [dsviper](https://docs.digitalsubstrate.io/dsviper/)
+Python binding). Consumed by [Kibo](https://docs.digitalsubstrate.io/kibo/) to
 generate the static API surface that lets C++ and Python developers
 work against typed wrappers instead of stringly-typed metadata.
 
@@ -30,9 +30,9 @@ python/                  # Python surface templates targeting dsviper API
 For the conceptual ground (templated feature, Template Model, the role
 of Kibo), see the user-facing docs:
 
-- `devkit-doc/source/tools/kibo.md`
-- `devkit-doc/source/tools/templates.md`
-- `devkit-doc/source/tools/template_model.md`
+- `devkit-doc/source/kibo/usage.md`
+- `devkit-doc/source/kibo/templates.md`
+- `devkit-doc/source/kibo/template_model.md`
 
 ## Public contract
 
@@ -42,8 +42,9 @@ They are part of the Viper public API by another name — modifying
 `cpp/Database` is no more anodyne than modifying
 `viper/src/Viper/Viper_Database.hpp`.
 
-Versioning rules: see `Ecosystem_Semver_Hygiene.md` § public contracts
-2 (Viper C++ API) and 3 (dsviper Python API).
+Versioning follows the Viper C++ API and dsviper Python API public-
+contract lines: any breaking change to a `cpp/` template tracks the
+corresponding C++ API bump; same for `python/` against dsviper.
 
 ## Usage
 
@@ -53,7 +54,7 @@ Templates here are consumed by Kibo, which produces the generated code:
 java -jar kibo-X.Y.Z.jar \
     -c cpp \
     -n MyApp \
-    -d MyApp.dsmb \
+    -d MyApp.dsm.json \
     -t /path/to/this/repo/cpp/Database \
     -o ./generated
 ```
