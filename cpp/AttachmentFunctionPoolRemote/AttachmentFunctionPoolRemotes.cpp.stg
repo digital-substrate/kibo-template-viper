@@ -27,16 +27,16 @@ function_return(f) ::= <%<if(f.isVoid)>void<else><f.type><endif>%>
 
 fp_parameter_push_back(p) ::= <%parameters.push_back(ValueEncoder::encode(<p.name>));%>
 fp_function(f, po) ::= <<
-<f:function_return()> <po.name;format="uf">::<f.name>(std::shared_ptr\<Viper::AttachmentMutating> const & AttachmentMutating<f:function_parameters()>) const {
+<f:function_return()> <po.name;format="uf">::<f.name>(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating<f:function_parameters()>) const {
     static std::string funcName("<f.name;format="lsc">");
 
     std::vector\<std::shared_ptr\<Viper::Value\>> parameters;
     <f.parameters:fp_parameter_push_back();separator="\n">
 
     <if(f.isVoid)>
-    serviceRemote->call(AttachmentMutating, poolId, funcName, parameters);
+    serviceRemote->call(attachmentMutating, poolId, funcName, parameters);
     <else>
-    auto const value{serviceRemote->call(AttachmentMutating, poolId, funcName, parameters)};
+    auto const value{serviceRemote->call(attachmentMutating, poolId, funcName, parameters)};
     auto const result{Viper::<f.returnViperValue>::cast(value)};
     return ValueDecoder::decode<f.typeSuffix>(result);
     <endif>

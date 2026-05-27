@@ -134,10 +134,10 @@ public:
             "return the set of keys.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentGetting> const & AttachmentGetting,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentGetting> const & attachmentGetting,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
-        auto const attachment{AttachmentGetting->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
-        return AttachmentGetting->keys(attachment);
+        auto const attachment{attachmentGetting->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
+        return attachmentGetting->keys(attachment);
     }
 
     F_<a:func_n("keys")>(std::shared_ptr\<Viper::FunctionPrototype> prototype, std::string documentation)
@@ -155,11 +155,11 @@ public:
             "return true if a document is present.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentGetting> const & AttachmentGetting,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentGetting> const & attachmentGetting,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
-        auto const attachment{AttachmentGetting->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
+        auto const attachment{attachmentGetting->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
-        return Viper::ValueBool::from(AttachmentGetting->has(attachment, key));
+        return Viper::ValueBool::from(attachmentGetting->has(attachment, key));
     }
 
     F_<a:func_n("has")>(std::shared_ptr\<Viper::FunctionPrototype> prototype, std::string documentation)
@@ -179,11 +179,11 @@ public:
             "return an optional document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentGetting> const & AttachmentGetting,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentGetting> const & attachmentGetting,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
-        auto const attachment{AttachmentGetting->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
+        auto const attachment{attachmentGetting->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
-        return AttachmentGetting->get(attachment, key);
+        return attachmentGetting->get(attachment, key);
     }
 
     F_<a:func_n("get")>(std::shared_ptr\<Viper::FunctionPrototype> prototype, std::string documentation)
@@ -202,13 +202,13 @@ public:
             "set the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & AttachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
-        auto const attachment{AttachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
+        auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
         auto const value{Viper::<a.documentType.viperValue>::cast(args.at(1))};
 
-        AttachmentMutating->set(attachment, key, value);
+        attachmentMutating->set(attachment, key, value);
         return Viper::ValueVoid::Instance();
     }
 
@@ -229,14 +229,14 @@ public:
             "diff the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & AttachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
-        auto const attachment{AttachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
+        auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
         auto const value{Viper::<a.documentType.viperValue>::cast(args.at(1))};
         auto const recursive{Viper::ValueBool::cast(args.at(1))};
 
-        AttachmentMutating->diff(attachment, key, value, recursive->value);
+        attachmentMutating->diff(attachment, key, value, recursive->value);
         return Viper::ValueVoid::Instance();
     }
 
@@ -262,14 +262,14 @@ public:
             "set the property .<sf.name> of the document." );
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & AttachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
-        auto const attachment{AttachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
+        auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
         auto const & path{<a.documentType.structure.namespace>::Path::<a.documentType.structure.name>::<sf.name>()};
         auto const value{Viper::<sf.viperValue>::cast(args.at(1))};
 
-        AttachmentMutating->update(attachment, key, path, value);
+        attachmentMutating->update(attachment, key, path, value);
         return Viper::ValueVoid::Instance();
     }
 
@@ -296,14 +296,14 @@ public:
             "union in set for property .<sf.name> of the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & AttachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
-        auto const attachment{AttachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
+        auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
         auto const value{Viper::<sf.viperValue>::cast(args.at(1))};
         auto const & path{<a.documentType.structure.namespace>::Path::<a.documentType.structure.name>::<sf.name>()};
 
-        AttachmentMutating->unionInSet(attachment, key, path, value);
+        attachmentMutating->unionInSet(attachment, key, path, value);
 
         return Viper::ValueVoid::Instance();
     }
@@ -324,14 +324,14 @@ public:
             "subtract in set for the property .<sf.name> of the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & AttachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
-        auto const attachment{AttachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
+        auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
         auto const value{Viper::<sf.viperValue>::cast(args.at(1))};
         auto const & path{<a.documentType.structure.namespace>::Path::<a.documentType.structure.name>::<sf.name>()};
 
-        AttachmentMutating->subtractInSet(attachment, key, path, value);
+        attachmentMutating->subtractInSet(attachment, key, path, value);
         return Viper::ValueVoid::Instance();
     }
 
@@ -353,14 +353,14 @@ public:
             "union in map for property .<sf.name> of the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & AttachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
-        auto const attachment{AttachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
+        auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
         auto const value{Viper::<sf.viperValue>::cast(args.at(1))};
         auto const & path{<a.documentType.structure.namespace>::Path::<a.documentType.structure.name>::<sf.name>()};
 
-        AttachmentMutating->unionInMap(attachment, key, path, value);
+        attachmentMutating->unionInMap(attachment, key, path, value);
 
         return Viper::ValueVoid::Instance();
     }
@@ -381,14 +381,14 @@ public:
             "subtract in map for the property .<sf.name> of the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & AttachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
-        auto const attachment{AttachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
+        auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
         auto const value{Viper::ValueSet::cast(args.at(1))};
         auto const & path{<a.documentType.structure.namespace>::Path::<a.documentType.structure.name>::<sf.name>()};
 
-        AttachmentMutating->subtractInMap(attachment, key, path, value);
+        attachmentMutating->subtractInMap(attachment, key, path, value);
         return Viper::ValueVoid::Instance();
     }
 
@@ -408,14 +408,14 @@ public:
             "update in map for property .<sf.name> of the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & AttachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
-        auto const attachment{AttachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
+        auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
         auto const value{Viper::<sf.viperValue>::cast(args.at(1))};
         auto const & path{<a.documentType.structure.namespace>::Path::<a.documentType.structure.name>::<sf.name>()};
 
-        AttachmentMutating->updateInMap(attachment, key, path, value);
+        attachmentMutating->updateInMap(attachment, key, path, value);
 
         return Viper::ValueVoid::Instance();
     }
@@ -441,16 +441,16 @@ public:
             "insert in xarray for property .<sf.name> of the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & AttachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
-        auto const attachment{AttachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
+        auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
         auto const beforePosition{Viper::ValueUUId::cast(args.at(1))};
         auto const newPosition{Viper::ValueUUId::cast(args.at(2))};
         auto const value{Viper::<sf.field.elementTypeViperValue>::cast(args.at(3))};
         auto const & path{<a.documentType.structure.namespace>::Path::<a.documentType.structure.name>::<sf.name>()};
 
-        AttachmentMutating->insertInXArray(attachment, key, path, beforePosition->value, newPosition->value, value);
+        attachmentMutating->insertInXArray(attachment, key, path, beforePosition->value, newPosition->value, value);
 
         return Viper::ValueVoid::Instance();
     }
@@ -472,15 +472,15 @@ public:
             "update in xarray for property .<sf.name> of the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & AttachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
-        auto const attachment{AttachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
+        auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
         auto const position{Viper::ValueUUId::cast(args.at(1))};
         auto const value{Viper::<sf.field.elementTypeViperValue>::cast(args.at(2))};
         auto const & path{<a.documentType.structure.namespace>::Path::<a.documentType.structure.name>::<sf.name>()};
 
-        AttachmentMutating->updateInXArray(attachment, key, path, position->value, value);
+        attachmentMutating->updateInXArray(attachment, key, path, position->value, value);
 
         return Viper::ValueVoid::Instance();
     }
@@ -501,14 +501,14 @@ public:
             "remove in xarray for property .<sf.name> of the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & AttachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
-        auto const attachment{AttachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
+        auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
         auto const position{Viper::ValueUUId::cast(args.at(1))};
         auto const & path{<a.documentType.structure.namespace>::Path::<a.documentType.structure.name>::<sf.name>()};
 
-        AttachmentMutating->removeInXArray(attachment, key, path, position->value);
+        attachmentMutating->removeInXArray(attachment, key, path, position->value);
 
         return Viper::ValueVoid::Instance();
     }
@@ -538,14 +538,14 @@ public:
             "union in set for the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & AttachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
-        auto const attachment{AttachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
+        auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
         auto const value{Viper::ValueSet::cast(args.at(1))};
         auto const path{Viper::Path::make()};
 
-        AttachmentMutating->unionInSet(attachment, key, path, value);
+        attachmentMutating->unionInSet(attachment, key, path, value);
 
         return Viper::ValueVoid::Instance();
     }
@@ -566,14 +566,14 @@ public:
             "subtract in set for the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & AttachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
-        auto const attachment{AttachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
+        auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
         auto const value{Viper::ValueSet::cast(args.at(1))};
         auto const path{Viper::Path::make()};
 
-        AttachmentMutating->subtractInSet(attachment, key, path, value);
+        attachmentMutating->subtractInSet(attachment, key, path, value);
         return Viper::ValueVoid::Instance();
     }
 
@@ -596,14 +596,14 @@ public:
             "union in map for the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & AttachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
-        auto const attachment{AttachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
+        auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
         auto const value{Viper::ValueMap::cast(args.at(1))};
         auto const path{Viper::Path::make()};
 
-        AttachmentMutating->unionInMap(attachment, key, path, value);
+        attachmentMutating->unionInMap(attachment, key, path, value);
 
         return Viper::ValueVoid::Instance();
     }
@@ -624,14 +624,14 @@ public:
             "subtract in map for the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & AttachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
-        auto const attachment{AttachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
+        auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
         auto const value{Viper::ValueSet::cast(args.at(1))};
         auto const path{Viper::Path::make()};
 
-        AttachmentMutating->subtractInMap(attachment, key, path, value);
+        attachmentMutating->subtractInMap(attachment, key, path, value);
         return Viper::ValueVoid::Instance();
     }
 
@@ -651,14 +651,14 @@ public:
             "update in map for the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & AttachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
-        auto const attachment{AttachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
+        auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
         auto const value{Viper::ValueMap::cast(args.at(1))};
         auto const path{Viper::Path::make()};
 
-        AttachmentMutating->updateInMap(attachment, key, path, value);
+        attachmentMutating->updateInMap(attachment, key, path, value);
 
         return Viper::ValueVoid::Instance();
     }
@@ -683,16 +683,16 @@ public:
             "insert in xarray for the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & AttachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
-        auto const attachment{AttachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
+        auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
         auto const beforePosition{Viper::ValueUUId::cast(args.at(1))};
         auto const newPosition{Viper::ValueUUId::cast(args.at(2))};
         auto const value{Viper::<a.documentType.field.elementTypeViperValue>::cast(args.at(3))};
         auto const path{Viper::Path::make()};
 
-        AttachmentMutating->insertInXArray(attachment, key, path, beforePosition->value, newPosition->value, value);
+        attachmentMutating->insertInXArray(attachment, key, path, beforePosition->value, newPosition->value, value);
 
         return Viper::ValueVoid::Instance();
     }
@@ -714,15 +714,15 @@ public:
             "update in xarray for the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & AttachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
-        auto const attachment{AttachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
+        auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
         auto const position{Viper::ValueUUId::cast(args.at(1))};
         auto const value{Viper::<a.documentType.field.elementTypeViperValue>::cast(args.at(2))};
         auto const path{Viper::Path::make()};
 
-        AttachmentMutating->updateInXArray(attachment, key, path, position->value, value);
+        attachmentMutating->updateInXArray(attachment, key, path, position->value, value);
 
         return Viper::ValueVoid::Instance();
     }
@@ -743,14 +743,14 @@ public:
             "remove in xarray for the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & AttachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
-        auto const attachment{AttachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
+        auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
         auto const position{Viper::ValueUUId::cast(args.at(1))};
         auto const path{Viper::Path::make()};
 
-        AttachmentMutating->removeInXArray(attachment, key, path, position->value);
+        attachmentMutating->removeInXArray(attachment, key, path, position->value);
 
         return Viper::ValueVoid::Instance();
     }
