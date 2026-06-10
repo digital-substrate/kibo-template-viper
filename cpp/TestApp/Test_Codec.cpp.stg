@@ -9,6 +9,7 @@ main(m) ::= <<
 #include "<m.namespace>_TestCodecStream.hpp"
 #include "<m.namespace>_TestCodecJson.hpp"
 #include "<m.namespace>_TestCodecValue.hpp"
+#include "<m.namespace>_TestValueFuzz.hpp"
 
 #include "Viper_Error.hpp"
 #include "Viper_StreamTokenBinaryCodec.hpp"
@@ -31,15 +32,23 @@ int main(int argc, char *argv[]) {
     bool codec_value{};
     CLI::Option * flg_codec_value{app.add_flag("-c", codec_value, "Test the codec c++ data / Viper value.")};
 
+    std::uint64_t seedValue{};
+    CLI::Option * flg_seed{app.add_option("--seed", seedValue, "fuzz seed for reproducible runs.")};
+
     bool all{true};
 
     CLI11_PARSE(app, argc, argv)
     Viper::Error::setProcessName(app.get_name());
 
+    if (flg_seed->count())
+        TestValueFuzz::set_seed(seedValue);
+
     if (!flg_codec_stream->empty() || !flg_codec_json->empty() || !flg_codec_value->empty())
         all = false;
 
     try {
+        std::cout \<\< "Seed: " \<\< TestValueFuzz::seed() \<\< std::endl;
+
         if (codec_stream || all) {
             std::cout \<\< "Testing codec: Stream " \<\< std::endl;
             auto const codec{Viper::StreamTokenBinaryCodec::Instance()};

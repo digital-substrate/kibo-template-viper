@@ -7,7 +7,7 @@ main(m) ::= <<
 // <m.generated>
 
 #include "<m.namespace>_TestDatabase.hpp"
-#include "<m.namespace>_Fuzz.hpp"
+#include "<m.namespace>_TestFuzz.hpp"
 #include "<m.namespace>_DatabaseAttachments.hpp"
 
 #include "Viper_BlobInfo.hpp"
@@ -127,8 +127,8 @@ attachment(a,m) ::= <<
 // MARK: - <a.representation>
 namespace <m.namespace>::<a.namespace>::TestDatabase::<a.identifier> {
 void test(std::shared_ptr\<Database> const & db) {
-    <a.documentType.typeInNamespace> v{Fuzz::fuzz<a.documentType.typeSuffix>()};
-    <a.keyType.typeInNamespace> const key{Fuzz::fuzz<a.keyType.typeSuffix>()};
+    <a.documentType.typeInNamespace> v{TestFuzz::fuzz<a.documentType.typeSuffix>()};
+    <a.keyType.typeInNamespace> const key{TestFuzz::fuzz<a.keyType.typeSuffix>()};
 
     // Keys
     auto keys{DatabaseAttachments::<a.identifier>::keys(db)};
@@ -142,7 +142,7 @@ void test(std::shared_ptr\<Database> const & db) {
     VIPER_ASSERT(component_td, d.has_value());
 
     // Replace
-    v = Fuzz::fuzz<a.documentType.typeSuffix>();
+    v = TestFuzz::fuzz<a.documentType.typeSuffix>();
     status = DatabaseAttachments::<a.identifier>::set(db, key, v);
     VIPER_ASSERT(component_td, status);
 

@@ -21,7 +21,7 @@ cpp/                     # C++ surface templates targeting Viper C++ API
    Stream/, Json/        # codecs
    ValueCodec, ValueType, ValueHasher
    Attachments/, AttachmentFunctionPool/, FunctionPool/
-   Test/, TestApp/, Fuzz/
+   Test/, TestApp/
 
 python/                  # Python surface templates targeting dsviper API
    package/              # the importable Python package generated for a model

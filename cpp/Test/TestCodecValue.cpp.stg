@@ -11,7 +11,7 @@ main(m) ::= <<
 #include "<m.namespace>_Reader.hpp"
 #include "<m.namespace>_ValueDecoder.hpp"
 #include "<m.namespace>_ValueEncoder.hpp"
-#include "<m.namespace>_ValueFuzz.hpp"
+#include "<m.namespace>_TestValueFuzz.hpp"
 #include "<m.namespace>_Writer.hpp"
 
 #include "Viper_GeneralErrors.hpp"
@@ -102,7 +102,7 @@ namespace_test(ns) ::= <<
 
 test(v) ::= <<
 void test<v.typeSuffix>() {
-    auto const value{ValueFuzz::fuzz<v.typeSuffix>()};
+    auto const value{TestValueFuzz::fuzz<v.typeSuffix>()};
     auto const v{ValueDecoder::decode<v.typeSuffix>(value)};
     auto const value_d{ValueEncoder::encode(v)};
     VIPER_ASSERT(component_tcv, value->equal(value_d));

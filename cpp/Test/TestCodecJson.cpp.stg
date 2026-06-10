@@ -7,7 +7,7 @@ main(m) ::= <<
 // <m.generated>
 
 #include "<m.namespace>_TestCodecJson.hpp"
-#include "<m.namespace>_Fuzz.hpp"
+#include "<m.namespace>_TestFuzz.hpp"
 #include "<m.namespace>_JsonDecoder.hpp"
 #include "<m.namespace>_JsonEncoder.hpp"
 
@@ -108,7 +108,7 @@ namespace_test(ns) ::= <<
 
 test(v) ::= <<
 void test<v.typeSuffix>() {
-    auto const value{Fuzz::fuzz<v.typeSuffix>()};
+    auto const value{TestFuzz::fuzz<v.typeSuffix>()};
     auto const jsonString{JsonEncoder::encode(value)};
     auto const value_decoded{JsonDecoder::decode<v.typeSuffix>(jsonString)};
     VIPER_ASSERT(component_tcj, value_decoded == value);

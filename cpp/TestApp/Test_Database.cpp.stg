@@ -8,6 +8,7 @@ main(m) ::= <<
 
 #include "<m.namespace>_Database.hpp"
 #include "<m.namespace>_TestDatabase.hpp"
+#include "<m.namespace>_TestValueFuzz.hpp"
 
 #include "Viper_Error.hpp"
 #include "Viper_StringHelper.hpp"
@@ -26,10 +27,18 @@ int main(int argc, char *argv[]) {
     std::string databasesPath{};
     app.add_option("databases", databasesPath, "a folder of databases.")->required();
 
+    std::uint64_t seedValue{};
+    CLI::Option * flg_seed{app.add_option("--seed", seedValue, "fuzz seed for reproducible runs.")};
+
     CLI11_PARSE(app, argc, argv)
     Viper::Error::setProcessName(app.get_name());
 
+    if (flg_seed->count())
+        TestValueFuzz::set_seed(seedValue);
+
     try {
+        std::cout \<\< "Seed: " \<\< TestValueFuzz::seed() \<\< std::endl;
+
         auto const u8DatabasesPath{Viper::StringHelper::u8Path(databasesPath)};
         auto const databasePath{u8DatabasesPath / "database.<m.namespace;format="l">"};
         std::filesystem::create_directories(u8DatabasesPath);

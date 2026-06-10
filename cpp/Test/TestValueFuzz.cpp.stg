@@ -6,7 +6,7 @@ main(m) ::= <<
 // Commercial use requires a Commercial Licence from Digital Substrate.
 // <m.generated>
 
-#include "<m.namespace>_ValueFuzz.hpp"
+#include "<m.namespace>_TestValueFuzz.hpp"
 #include "<m.namespace>_Definitions.hpp"
 #include "<m.namespace>_ValueDecoder.hpp"
 #include "<m.namespace>_ValueType.hpp"
@@ -14,19 +14,38 @@ main(m) ::= <<
 #include "Viper_Fuzzer.hpp"
 #include "Viper_TypeAny.hpp"
 
-namespace <m.namespace>::ValueFuzz {
+#include \<optional>
+
+namespace <m.namespace>::TestValueFuzz {
 
 namespace {
 
-std::shared_ptr\<Viper::Value> fuzz(std::shared_ptr\<Viper::Type> const & type) {
-    static std::shared_ptr\<Viper::Fuzzer> instance;
-    if (!instance) {
-        instance = Viper::Fuzzer::make(definitions());
-        instance->blobId = Viper::BlobId(Viper::BlobLayout(), Viper::Blob());
+std::optional\<std::uint64_t> g_seed;
+std::shared_ptr\<Viper::Fuzzer> g_fuzzer;
+
+std::shared_ptr\<Viper::Fuzzer> const & fuzzer() {
+    if (!g_fuzzer) {
+        g_fuzzer = g_seed ? Viper::Fuzzer::make(definitions(), *g_seed)
+                          : Viper::Fuzzer::make(definitions());
+        g_fuzzer->blobId = Viper::BlobId(Viper::BlobLayout(), Viper::Blob());
     }
-    return instance->fuzzType(type);
+    return g_fuzzer;
 }
 
+std::shared_ptr\<Viper::Value> fuzz(std::shared_ptr\<Viper::Type> const & type) {
+    return fuzzer()->fuzzType(type);
+}
+
+}
+
+// MARK: - Seed
+void set_seed(std::uint64_t seed) {
+    g_seed = seed;
+    g_fuzzer.reset();
+}
+
+std::uint64_t seed() {
+    return fuzzer()->seed();
 }
 
 // MARK: - Numbers

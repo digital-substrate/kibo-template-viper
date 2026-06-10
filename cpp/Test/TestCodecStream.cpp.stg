@@ -8,7 +8,7 @@ main(m) ::= <<
 
 #include "<m.namespace>_TestCodecStream.hpp"
 #include "<m.namespace>_Definitions.hpp"
-#include "<m.namespace>_Fuzz.hpp"
+#include "<m.namespace>_TestFuzz.hpp"
 #include "<m.namespace>_Reader.hpp"
 #include "<m.namespace>_Writer.hpp"
 
@@ -112,7 +112,7 @@ namespace_test(ns) ::= <<
 test(v) ::= <<
 void test<v.typeSuffix>(std::shared_ptr\<Viper::StreamCodecInstancing> const & streamCodecInstancing) {
     auto const encoder{streamCodecInstancing->createEncoder()};
-    auto const value{Fuzz::fuzz<v.typeSuffix>()};
+    auto const value{TestFuzz::fuzz<v.typeSuffix>()};
     Writer writer{encoder};
     writer.write(value);
     auto const data{encoder->endEncoding()};

@@ -7,7 +7,7 @@ main(m) ::= <<
 // <m.generated>
 
 #include "<m.namespace>_TestDatabaseFuzz.hpp"
-#include "<m.namespace>_Fuzz.hpp"
+#include "<m.namespace>_TestFuzz.hpp"
 #include "<m.namespace>_DatabaseAttachments.hpp"
 
 <m.nameSpaces:namespace(m);separator="\n">
@@ -55,8 +55,8 @@ namespace <m.namespace>::<a.namespace>::TestDatabaseFuzz::<a.identifier> {
 
 void test_set(std::shared_ptr\<Database> const & db, std::size_t count) {
     for (std::size_t n{}; n \< count; ++n) {
-        <a.documentType.typeInNamespace> w_value{Fuzz::fuzz<a.documentType.typeSuffix>()};
-        <a.keyType.typeInNamespace> key{Fuzz::fuzz<a.keyType.typeSuffix>()};
+        <a.documentType.typeInNamespace> w_value{TestFuzz::fuzz<a.documentType.typeSuffix>()};
+        <a.keyType.typeInNamespace> key{TestFuzz::fuzz<a.keyType.typeSuffix>()};
         DatabaseAttachments::<a.identifier>::set(db, key, w_value);
     }
 }
