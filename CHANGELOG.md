@@ -9,6 +9,10 @@ These are first-party Kibo templates. Changes to the generated C++ or
 Python surface — new projections, renamed outputs, or behavioural shifts
 in what is generated — are tracked here.
 
+## [Unreleased]
+
+_No changes yet. Bug fixes for the next 1.2.x patch release will be listed here._
+
 ## [1.2.0] - 2026-06-17
 
 First standalone release of the first-party Kibo templates for the Viper
