@@ -18,7 +18,7 @@ let _definitions: dsviper.DefinitionsConst | null = null;
 export function definitions(): dsviper.DefinitionsConst {
     if (_definitions === null) {
         const blob = dsviper.ValueBlob.base64Decode(B64_DEFINITIONS);
-        const defs = dsviper.Definitions.decode(blob, dsviper.Codec.STREAM_BINARY);
+        const defs = dsviper.Definitions.decode(blob);
         _definitions = defs.const();
     }
     return _definitions;
