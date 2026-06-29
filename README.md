@@ -90,6 +90,28 @@ runtime it depends on:
   Python wheel published on PyPI under
   `LicenseRef-DigitalSubstrate-Commercial-1.2`. See
   [https://pypi.org/project/dsviper/](https://pypi.org/project/dsviper/).
+- **`@digitalsubstrate/dsviper`** (Node binding, for `typescript/`
+  templates) — proprietary npm package over the same Viper runtime,
+  under `LicenseRef-DigitalSubstrate-Commercial-1.2`. See
+  [https://www.npmjs.com/package/@digitalsubstrate/dsviper](https://www.npmjs.com/package/@digitalsubstrate/dsviper).
+
+### Compatible runtime versions
+
+The runtime's `MAJOR.MINOR` is the compatibility contract — the on-disk
+format and public API are locked across a minor. The `PATCH` is versioned
+**independently per binding**, so the numbers differ between targets:
+
+| Templates    | Runtime                              | Compatible versions          |
+|--------------|--------------------------------------|------------------------------|
+| `typescript` | `@digitalsubstrate/dsviper` (npm)    | `>=1.2.1 <1.3.0`             |
+| `python`     | `dsviper` (PyPI wheel)               | `1.2.x` (built against 1.2.17) |
+| `cpp`        | `viper` (C++ runtime)                | `1.2.x` (built against 1.2.17) |
+
+Only the `typescript` output **enforces** this — a `>=1.2.1 <1.3.0` floor
+in the generated `package.json`. The floor is `>=1.2.1` (not `1.2.0`)
+because the Node binding decodes the embedded definitions correctly from
+`1.2.1` onward. The `python` and `cpp` outputs carry no version pin; any
+`1.2.x` runtime is compatible.
 
 The MIT license above governs the **templates as source**. The output
 of `kibo` produced from these templates is a derivative work of MIT
