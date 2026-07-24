@@ -133,7 +133,7 @@ def <a:f()>_update_<sf.name;format="lsc">(attachment_mutating: dsviper.Attachmen
     a = <a:attachment_type()>
     attachment_mutating.update_in_xarray(a, key.vpr_value, mp.<a:path(sf)>, position, <sf.field.pythonElementType:unwrap("value")>)
 
-def <a:f()>_remove_<sf.name;format="uf">(attachment_mutating: dsviper.AttachmentMutating, key: <a.keyType.pythonType.proxy>, position: dsviper.ValueUUId):
+def <a:f()>_remove_<sf.name;format="lsc">(attachment_mutating: dsviper.AttachmentMutating, key: <a.keyType.pythonType.proxy>, position: dsviper.ValueUUId):
     a = <a:attachment_type()>
     attachment_mutating.remove_in_xarray(a, key.vpr_value, mp.<a:path(sf)>, position)
 

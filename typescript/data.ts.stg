@@ -51,6 +51,9 @@ export class Proxy\<V extends dsviper.Value = dsviper.Value> {
 export class AnyConceptKey extends Proxy\<dsviper.ValueKey> {
 
     constructor(value: dsviper.ValueKey) {
+        if (!value.typeKey().isAnyConcept()) {
+            throw new TypeError("value is not a Key for any_concept");
+        }
         super(value);
     }
 
@@ -141,6 +144,9 @@ enumeration(e) ::= <<
 export class <e.pythonType.proxy> extends Proxy\<dsviper.ValueEnumeration> {
 
     constructor(value: dsviper.ValueEnumeration) {
+        if (!value.type().equals(mt.type<e.typeSuffix>())) {
+            throw new TypeError("value is not a <e.type>");
+        }
         super(value);
     }
 
@@ -191,6 +197,9 @@ export class <s.pythonType.proxy> extends Proxy\<dsviper.ValueStructure> {
 
     constructor(value?: dsviper.ValueStructure | Record\<string, dsviper.InputValue>) {
         if (value instanceof dsviper.ValueStructure) {
+            if (!value.type().equals(mt.type<s.typeSuffix>())) {
+                throw new TypeError("value is not a <s.type>");
+            }
             super(value);
         } else {
             super(new dsviper.ValueStructure(mt.type<s.typeSuffix>(), value));
@@ -231,6 +240,9 @@ export class <c.pythonType.proxy>Key extends Proxy\<dsviper.ValueKey> {
 
     constructor(identifier: dsviper.ValueKey | dsviper.ValueUUId | string) {
         if (identifier instanceof dsviper.ValueKey) {
+            if (!identifier.type().equals(mt.type<c.typeSuffix>())) {
+                throw new TypeError("identifier is not a <c.type>");
+            }
             super(identifier);
         } else if (identifier instanceof dsviper.ValueUUId || typeof identifier === "string") {
             super(dsviper.ValueKey.create(mt.type_check<c.typeSuffix>(), identifier));
@@ -328,6 +340,9 @@ club(c) ::= <<
 export class <c.pythonType.proxy>Key extends Proxy\<dsviper.ValueKey> {
 
     constructor(value: dsviper.ValueKey) {
+        if (!value.type().equals(mt.type<c.typeSuffix>())) {
+            throw new TypeError("value is not a <c.type>");
+        }
         super(value);
     }
 
@@ -403,6 +418,9 @@ export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueVec> {
 
     constructor(value?: dsviper.ValueVec | number[]) {
         if (value instanceof dsviper.ValueVec) {
+            if (!value.type().equals(mt.type<v.typeSuffix>())) {
+                throw new TypeError("value is not a <v.dsmType>");
+            }
             super(value);
         } else {
             super(new dsviper.ValueVec(mt.type<v.typeSuffix>(), value));
@@ -431,8 +449,8 @@ export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueVec> {
         }
     }
 
-    toTuple(): number[] {
-        return this.vprValue.toTuple();
+    toArray(): number[] {
+        return this.vprValue.toArray() as number[];
     }
 
     copy(): <v.pythonType.proxy> {
@@ -453,6 +471,9 @@ export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueMat> {
 
     constructor(value?: dsviper.ValueMat | number[][]) {
         if (value instanceof dsviper.ValueMat) {
+            if (!value.type().equals(mt.type<v.typeSuffix>())) {
+                throw new TypeError("value is not a <v.dsmType>");
+            }
             super(value);
         } else {
             super(new dsviper.ValueMat(mt.type<v.typeSuffix>(), value));
@@ -484,15 +505,15 @@ export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueMat> {
     }
 
     row(row: number): number[] {
-        return this.vprValue.toTuple()[row];
+        return (this.vprValue.toArray() as number[][])[row];
     }
 
     setRow(row: number, values: number[]): void {
         values.forEach((value, column) => this.vprValue.set(row, column, value));
     }
 
-    toTuple(): number[][] {
-        return this.vprValue.toTuple();
+    toArray(): number[][] {
+        return this.vprValue.toArray() as number[][];
     }
 
     copy(): <v.pythonType.proxy> {
@@ -513,6 +534,9 @@ export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueTuple> {
 
     constructor(value?: dsviper.ValueTuple | dsviper.InputValue[]) {
         if (value instanceof dsviper.ValueTuple) {
+            if (!value.type().equals(mt.type<v.typeSuffix>())) {
+                throw new TypeError("value is not a <v.dsmType>");
+            }
             super(value);
         } else {
             super(new dsviper.ValueTuple(mt.type<v.typeSuffix>(), value));
@@ -555,6 +579,9 @@ export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueOptional> {
 
     constructor(value?: dsviper.ValueOptional | <v.pythonElementType:tsType()> | null) {
         if (value instanceof dsviper.ValueOptional) {
+            if (!value.type().equals(mt.type<v.typeSuffix>())) {
+                throw new TypeError("value is not a <v.dsmType>");
+            }
             super(value);
         } else if (value === null || value === undefined) {
             super(new dsviper.ValueOptional(mt.type<v.typeSuffix>()));
@@ -601,6 +628,9 @@ export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueVector> {
 
     constructor(value?: dsviper.ValueVector | dsviper.InputValue) {
         if (value instanceof dsviper.ValueVector) {
+            if (!value.type().equals(mt.type<v.typeSuffix>())) {
+                throw new TypeError("value is not a <v.dsmType>");
+            }
             super(value);
         } else {
             super(new dsviper.ValueVector(mt.type<v.typeSuffix>(), value));
@@ -689,6 +719,9 @@ export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueSet> {
 
     constructor(value?: dsviper.ValueSet | dsviper.InputValue) {
         if (value instanceof dsviper.ValueSet) {
+            if (!value.type().equals(mt.type<v.typeSuffix>())) {
+                throw new TypeError("value is not a <v.dsmType>");
+            }
             super(value);
         } else {
             super(new dsviper.ValueSet(mt.type<v.typeSuffix>(), value));
@@ -807,6 +840,9 @@ export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueMap> {
 
     constructor(value?: dsviper.ValueMap | dsviper.InputValue) {
         if (value instanceof dsviper.ValueMap) {
+            if (!value.type().equals(mt.type<v.typeSuffix>())) {
+                throw new TypeError("value is not a <v.dsmType>");
+            }
             super(value);
         } else {
             super(new dsviper.ValueMap(mt.type<v.typeSuffix>(), value));
@@ -908,6 +944,9 @@ export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueXArray> {
 
     constructor(value?: dsviper.ValueXArray | dsviper.InputValue) {
         if (value instanceof dsviper.ValueXArray) {
+            if (!value.type().equals(mt.type<v.typeSuffix>())) {
+                throw new TypeError("value is not a <v.dsmType>");
+            }
             super(value);
         } else {
             super(new dsviper.ValueXArray(mt.type<v.typeSuffix>(), value));
@@ -1022,6 +1061,9 @@ export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueVariant> {
         if (value === undefined || value === null) {
             super(new dsviper.ValueVariant(mt.type<v.typeSuffix>()));
         } else if (value instanceof dsviper.ValueVariant) {
+            if (!value.type().equals(mt.type<v.typeSuffix>())) {
+                throw new TypeError("value is not a <v.dsmType>");
+            }
             super(value);
         } else if (value instanceof Proxy) {
             super(new dsviper.ValueVariant(mt.type<v.typeSuffix>(), value.vprValue));
@@ -1054,6 +1096,9 @@ is<vm.proxy;format="uf">(): boolean {
 }
 
 get<vm.proxy;format="uf">(): <vm:tsType()> {
+    if (!this.is<vm.proxy;format="uf">()) {
+        throw new Error("variant does not hold a <vm:tsType()>");
+    }
     return <vm:wrap({this.vprValue.unwrap()})>;
 }
 

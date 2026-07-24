@@ -46,10 +46,14 @@ class Proxy:
     def __le__(self, other: Proxy) -> bool:
         return self.vpr_value \<= other.vpr_value
 
-    def __eq__(self, other: Proxy) -> bool:
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Proxy):
+            return NotImplemented
         return self.vpr_value == other.vpr_value
 
-    def __ne__(self, other: Proxy) -> bool:
+    def __ne__(self, other: object) -> bool:
+        if not isinstance(other, Proxy):
+            return NotImplemented
         return self.vpr_value != other.vpr_value
 
     def __gt__(self, other: Proxy) -> bool:
@@ -139,7 +143,7 @@ namespace(ns) ::= <<
 <ns.structures:structure();separator="\n">
 >>
 
-docstring_proxy(v) ::= <<"""[A proxy class for <v.type>]""">>
+docstring_proxy(v) ::= <<"""[A proxy class for <v.dsmType>]""">>
 
 docstring(v, d) ::= <<
 """
@@ -194,7 +198,8 @@ class <c.pythonType.proxy>Key(Proxy):
 
     def __init__(self, identifier: dsviper.ValueKey | dsviper.ValueUUId | str):
         if isinstance(identifier, dsviper.ValueKey):
-            assert identifier.type() == mt.type<c.typeSuffix>()
+            if identifier.type() != mt.type<c.typeSuffix>():
+                raise TypeError("identifier is not a <c.type>")
             super().__init__(identifier)
         elif isinstance(identifier, str) or isinstance(identifier, dsviper.ValueUUId):
             super().__init__(dsviper.ValueKey.create(mt.type_check<c.typeSuffix>(), identifier))
@@ -310,7 +315,8 @@ class <c.pythonType.proxy>Key(Proxy):
     def __init__(self, value: dsviper.ValueKey):
         if not isinstance(value, dsviper.ValueKey):
             raise TypeError("value is not a Key")
-        assert value.type() == mt.type<c.typeSuffix>()
+        if value.type() != mt.type<c.typeSuffix>():
+            raise TypeError("value is not a <c.type>")
         super().__init__(value)
 
     def __repr__(self) -> str:
@@ -394,7 +400,8 @@ class <e.pythonType.proxy>(Proxy):
     __slots__ = []
 
     def __init__(self, value):
-        assert value.type() == mt.type<e.typeSuffix>()
+        if value.type() != mt.type<e.typeSuffix>():
+            raise TypeError("value is not a <e.type>")
         super().__init__(value)
 
     <e.members:enumeration_case(e);separator="\n">
@@ -449,7 +456,8 @@ class <s.pythonType.proxy>(Proxy):
 
     def __init__(self, value=None):
         if isinstance(value, dsviper.ValueStructure):
-            assert value.type() == mt.type<s.typeSuffix>()
+            if value.type() != mt.type<s.typeSuffix>():
+                raise TypeError("value is not a <s.type>")
             super().__init__(value)
         else:
             super().__init__(dsviper.ValueStructure(mt.type<s.typeSuffix>(), value))
@@ -494,7 +502,8 @@ class <v.pythonType.proxy>(Proxy):
 
     def __init__(self, value=None):
         if isinstance(value, dsviper.ValueVec):
-            assert value.type() == mt.type<v.typeSuffix>()
+            if value.type() != mt.type<v.typeSuffix>():
+                raise TypeError("value is not a <v.dsmType>")
             super().__init__(value)
         else:
             super().__init__(dsviper.ValueVec(mt.type<v.typeSuffix>(), value))
@@ -537,7 +546,8 @@ class <v.pythonType.proxy>(Proxy):
 
     def __init__(self, value=None):
         if isinstance(value, dsviper.ValueMat):
-            assert value.type() == mt.type<v.typeSuffix>()
+            if value.type() != mt.type<v.typeSuffix>():
+                raise TypeError("value is not a <v.dsmType>")
             super().__init__(value)
         else:
             super().__init__(dsviper.ValueMat(mt.type<v.typeSuffix>(), value))
@@ -581,7 +591,8 @@ class <v.pythonType.proxy>(Proxy):
 
     def __init__(self, value=None):
         if isinstance(value, dsviper.ValueTuple):
-            assert value.type() == mt.type<v.typeSuffix>()
+            if value.type() != mt.type<v.typeSuffix>():
+                raise TypeError("value is not a <v.dsmType>")
             super().__init__(value)
         else:
             super().__init__(dsviper.ValueTuple(mt.type<v.typeSuffix>(), value))
@@ -655,7 +666,8 @@ class <v.pythonType.proxy>(Proxy):
 
     def __init__(self, value=None):
         if isinstance(value, dsviper.ValueOptional):
-            assert value.type() == mt.type<v.typeSuffix>()
+            if value.type() != mt.type<v.typeSuffix>():
+                raise TypeError("value is not a <v.dsmType>")
             super().__init__(value)
         elif isinstance(value, <v.pythonElementType.type>):
             v = <v.pythonElementType:unwrap("value")>
@@ -709,7 +721,8 @@ class <v.pythonType.proxy>(Proxy):
 
     def __init__(self, value=None):
         if isinstance(value, dsviper.ValueVector):
-            assert value.type() == mt.type<v.typeSuffix>()
+            if value.type() != mt.type<v.typeSuffix>():
+                raise TypeError("value is not a <v.dsmType>")
             super().__init__(value)
         else:
             super().__init__(dsviper.ValueVector(mt.type<v.typeSuffix>(), value))
@@ -801,7 +814,8 @@ class <v.pythonType.proxy>(Proxy):
 
     def __init__(self, value=None):
         if isinstance(value, dsviper.ValueSet):
-            assert value.type() == mt.type<v.typeSuffix>()
+            if value.type() != mt.type<v.typeSuffix>():
+                raise TypeError("value is not a <v.dsmType>")
             super().__init__(value)
         else:
             super().__init__(dsviper.ValueSet(mt.type<v.typeSuffix>(), value))
@@ -870,7 +884,7 @@ class <v.pythonType.proxy>(Proxy):
         return <v.pythonType.proxy>(self.vpr_value.intersection(other.vpr_value))
 
     def intersection_update(self, other: <v.pythonType.proxy>) -> None:
-        self.vpr_value.update(other.vpr_value)
+        self.vpr_value.intersection_update(other.vpr_value)
 
     def isdisjoint(self, other: <v.pythonType.proxy>) -> bool:
         return self.vpr_value.isdisjoint(other.vpr_value)
@@ -943,7 +957,8 @@ class <v.pythonType.proxy>(Proxy):
 
     def __init__(self, value=None):
         if isinstance(value, dsviper.ValueMap):
-            assert value.type() == mt.type<v.typeSuffix>()
+            if value.type() != mt.type<v.typeSuffix>():
+                raise TypeError("value is not a <v.dsmType>")
             super().__init__(value)
         else:
             super().__init__(dsviper.ValueMap(mt.type<v.typeSuffix>(), value))
@@ -1066,7 +1081,8 @@ class <v.pythonType.proxy>(Proxy):
 
     def __init__(self, value=None):
         if isinstance(value, dsviper.ValueXArray):
-            assert value.type() == mt.type<v.typeSuffix>()
+            if value.type() != mt.type<v.typeSuffix>():
+                raise TypeError("value is not a <v.dsmType>")
             super().__init__(value)
         else:
             super().__init__(dsviper.ValueXArray(mt.type<v.typeSuffix>(), value))
@@ -1092,7 +1108,7 @@ class <v.pythonType.proxy>(Proxy):
         return self.vpr_value.positions()
 
     def items(self) -> list[tuple[dsviper.ValueUUId, <v.pythonElementType.type>]]:
-        return self.vpr_value.items()
+        return [(p, <v.pythonElementType:wrap("v")>) for p, v in self.vpr_value.items()]
 
     def to_vector(self) -> Vector<v.elementTypeSuffix>:
        return Vector<v.elementTypeSuffix>(self.vpr_value.to_vector())
@@ -1164,7 +1180,8 @@ class <v.pythonType.proxy>(Proxy):
 
     def __init__(self, value=None):
         if isinstance(value, dsviper.ValueVariant):
-            assert value.type() == mt.type<v.typeSuffix>()
+            if value.type() != mt.type<v.typeSuffix>():
+                raise TypeError("value is not a <v.dsmType>")
             super().__init__(value)
 
         <v.pythonMembers:variant_constructor(v);separator="\n">
@@ -1201,7 +1218,8 @@ def is<vm.typeSuffix>(self) -> bool:
     return self.vpr_value.unwrap(encoded=False).type() == mt.type<vm.typeSuffix>()
 
 def get<vm.typeSuffix>(self) -> <vm.type>:
-    assert self.is<vm.typeSuffix>()
+    if not self.is<vm.typeSuffix>():
+        raise ValueError("variant does not hold a <vm.type>")
     value = self.vpr_value.unwrap()
     return <vm:wrap("value")>
 
