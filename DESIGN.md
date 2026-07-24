@@ -1,38 +1,108 @@
-# Template design — Python & TypeScript proxy surfaces
+# kibo-template-viper — design & rationale
 
-This note records the design of the **Python** (`python/package/`) and
-**TypeScript** (`typescript/`) proxy templates: the invariants a maintainer must
-preserve when editing a `.stg`, and the reasoning behind the choices that are
-otherwise easy to break by accident. It is a design memo, not a tutorial — the
+This note records the **why** behind the `kibo-template-viper` templates: the one
+principle that shapes every generated SDK — the **Dual Reality** (§1) — and the invariants
+a maintainer must preserve when editing a `.stg`. It is a design memo, not a tutorial — the
 detail lives in the `.stg` files; this explains *why they are shaped that way*.
 
-For the conceptual ground (why generate an adapter at all — the Dual Reality
-pattern) and the consumer-facing view (how to *use* the generated SDK), see the
-user docs: `devkit-doc/source/kibo-template-viper/index.md` and the "Using your
-generated SDK" chapter. For the templates' public-contract and versioning
-status, see [`README.md`](README.md#public-contract). The C++ surface
-(`cpp/`) is a different projection with different idioms and is **out of scope**
-here (see *Open directions*).
+The **principle** (§1) is target-neutral and covers all three surfaces: C++ (`cpp/`),
+Python (`python/package/`) and Node/TypeScript (`typescript/`). It also states, once and
+concretely, **why the three surfaces look different** — the form each takes per language
+(§1.2). The **detailed realization** from §2 on is the **Python / TypeScript** proxy
+templates; the C++ surface appears here at the principle and form level, and its
+per-template detail is a separate note (see *Open directions*).
 
-## 1. The one invariant
+For the consumer-facing view (how to *use* the generated SDK) see the user docs
+`devkit-doc/source/kibo-template-viper/index.md`; for the templates' public-contract and
+versioning status see [`README.md`](README.md#public-contract).
 
-The generated code is an **adapter over the runtime**, never a second
-implementation of it. Every proxy wraps **exactly one** runtime value and
-delegates every operation to it:
+## 1. The Dual Reality — a static surface over a dynamic runtime
+
+The whole point of the generated code is one principle: **expose static, typed,
+native-language objects — for developer ergonomics and IDE completion — over a
+dynamic, `Value`-based runtime.** The runtime (Viper for C++, dsviper for Python
+and Node) is *dynamic*: it deals in runtime `Value`s whose type identity is checked
+at run time, against `Definitions`. The generated SDK is the *static* veneer above
+it — the same value, seen twice: once as an opaque runtime `Value` (the dynamic
+reality), once as a typed native object (the static reality the developer edits
+against). This holds for **all three targets**; only the **bridge** between the two
+layers differs:
+
+- **Python / Node** (dynamic bindings) — the native object is a **thin handle that
+  holds one runtime `Value` and delegates** every operation to it (`vpr_value` /
+  `vprValue`). No parallel native state: the object *is* a typed view onto the
+  `Value`.
+- **C++** (the runtime is a native library) — the native object is a **real struct
+  with native fields**, and an explicit **static codec** (`cpp/ValueCodec`:
+  `ValueEncoder` / `ValueDecoder`) crosses `struct ⇄ Value` at the boundaries. A
+  second *representation* (native fields), but never a second *implementation* —
+  the codec delegates type identity and serialization to the runtime.
+
+### 1.1 The runtime is the source of truth
+
+The generated code is an **adapter, never a second implementation.** The strong typing and
+the safety live in the **runtime**; the static surface only makes them *visible and
+ergonomic at edit time* (typed classes, IDE autocompletion, per-type methods). It must never
+re-implement runtime logic — type identity, serialization, storage and validation all belong
+to the runtime, and the generated code delegates to them: by holding the `Value` and
+delegating (Python/Node), or by encoding/decoding through the codec (C++). Everything a proxy
+or a struct *does* is the runtime doing it, made typed. This is why the strong safety is not
+something the templates add — they only surface it; get an edit wrong and you do not weaken a
+guarantee the template owns, you *hide* a guarantee the runtime already enforces.
+
+### 1.2 The form per target language
+
+Because the static surface exists for the developer, its **shape is idiomatic to the host
+language** — and that is *why the three surfaces look different even though they mean the same
+thing*. The single variable is **how thick the static layer is**, which the binding decides:
+
+| Concern | **C++** (native + codec) | **Python** (handle + delegate) | **Node/TS** (handle + delegate) |
+|---|---|---|---|
+| native object | `class S final` with native fields | `class S(Proxy)` holding `vpr_value` | `class S extends Proxy` holding `vprValue` |
+| what it stores | native member fields | one wrapped runtime `Value` | one wrapped runtime `Value` |
+| bridge to runtime | explicit codec `ValueEncoder`/`ValueDecoder` | hold the `Value`, delegate every op | hold the `Value`, delegate every op |
+| field access | public member `s.field` | `@property` + setter | get/set accessors |
+| construct from runtime | `ValueDecoder::decode(value)` | overloaded `__init__` | `static wrap()` / `cast` |
+| enum | native `enum class` | proxy + `classproperty` cases | proxy + `static` members |
+| collections | native STL (`std::vector`/`set`/`map`/`optional`) | proxy + dunder protocol | proxy + `Symbol.iterator` / methods |
+| equality / order | `operator==` / `operator<` / `hash()` | `__eq__` / `__lt__` / `__hash__` | `equals()` / `compareTo()` |
+| attachments | nested `namespace` group | flat module functions | one grouped object |
+| namespace | literal `namespace` (real scope) | `<Ns>_<Name>` symbol prefix | `<Ns>_<Name>` symbol prefix |
+
+The pattern is one axis: **C++ is a thick native static layer + an explicit codec**;
+**Python and Node are a thin static view + continuous delegation.** C++ can hold native
+typed data cheaply, so it does (structs, `enum class`, STL, public fields, operators) and
+crosses to the dynamic `Value` only at the codec boundary. Python and Node cannot — the
+dynamic `Value` is the only currency — so the native object is a thin proxy over it,
+delegating on every call. C++ is not an outlier by accident: it diverges *because its binding
+allows a native representation*, and Python/Node converge *because their bindings share the
+same dynamic constraint*.
+
+This gives the rule that separates **idiom from drift**. A cross-target difference that lives
+in the static surface and follows the host language's idiom — a native `enum class` vs a
+proxy, STL vs the dunder protocol, a `namespace` vs flat module functions — is
+**legitimate**: the same meaning written in each language's grammar. A difference that changes
+the **dynamic** semantics — a different operation, a different argument order, a value that is
+not the runtime's — is a **bug**. Everything below serves this test.
+
+### 1.3 The one invariant, in Python & TypeScript
+
+This memo details the Python / TypeScript realization, where the bridge is "hold one value
+and delegate". The invariant that enforces it: **every proxy wraps exactly one runtime value
+and delegates every operation to it.**
 
 - Python: `Proxy.__slots__ = ["vpr_value"]`
 - TypeScript: `readonly vprValue: V`
 
-The strong typing and the safety live in the **runtime value**. The proxy does
-not add type safety — it makes the runtime's safety visible and ergonomic at
-edit time (typed classes, IDE autocompletion, per-type methods). If an edit ever
-makes a proxy hold something other than a single runtime value, or bypass it,
-the Dual Reality is broken. This invariant is the whole design; everything below
-serves it.
+If an edit ever makes a proxy hold something other than a single runtime value, or bypass it,
+the Dual Reality is broken on these surfaces. This invariant is the whole design of the
+Python/TS templates; everything below serves it.
 
-A corollary the templates enforce: constructors are **fail-fast**. A struct
-proxy asserts `value.type() == mt.type<Suffix>()`; a key proxy validates the
-concept before wrapping. A wrong value is rejected at construction, not deferred.
+A corollary the templates enforce: constructors are **fail-fast**. A struct proxy `raise`s
+`TypeError` when `value.type() != mt.type<Suffix>()`; a key proxy validates the concept
+before wrapping. Use a `raise`, never an `assert` — an `assert` is stripped under
+`python -O`, which would silently drop the check in optimized runs. A wrong value is rejected
+at construction, not deferred.
 
 ## 2. What the generator consumes and emits
 
@@ -156,8 +226,26 @@ idiom demands:
 | enum case | `classproperty` | `static` member |
 | collections | dunder protocol (`__iter__`, `__getitem__`, operators) | `Symbol.iterator`, methods |
 | null container | `Optional_…` proxy | `Optional_…` proxy |
+| attachment surface | flat module functions (`test_concept_a_properties_get(state, …)`) | one object per attachment (`conceptA_Properties.get(state, …)`) |
 
 Divergences beyond these are drift, not idiom — treat them as bugs.
+
+**The attachment row is a deliberate idiom split, not drift — and it is the one place
+the two surfaces diverge structurally by design.** Python exposes each attachment's verbs
+as **flat module-level functions** with a uniquely-prefixed name
+(`<ns>_<key>_<attachment>_<verb>(state, …)`); TypeScript groups them under **one exported
+object per attachment** with short verbs (`<keyAttachment>.<verb>(state, …)`), the same
+grouping the C++ surface expresses as a nested namespace. Both are idiomatic to their
+target — flat module functions are the Python way ("flat is better than nested"; the module
+*is* the namespace), an object-as-namespace is the C++/TS way. Crucially the **operation
+set is identical** — same verbs (`keys`/`diffKeys`/`has`/`get`/`set`/`diff`/`enumerate`
+plus the field-level `set…`/`union…`/`subtract…`/`update…`/`insert…`/`remove…`), same
+argument order (state first, then key, then value). Only the **packaging** differs. It is
+recorded here so it is not mistaken for drift, and so SDK documentation presents **one verb
+model with two call-form examples**, not two different attachment APIs. Reconciling the two
+(grouping Python, or flattening TS) would be a generated-surface change and belongs to a
+future major line, not the maintenance line — and neither form is a bug, so there is no
+correctness reason to force it.
 
 ### Why a `.ts` template reads `pythonType.proxy`
 
@@ -223,5 +311,8 @@ that the two are the same handle under two names.
   namespaces, so the resulting inter-module imports are topologically orderable.
   This changes the generated import surface, so it is future work on the trunk,
   not a maintenance-branch change.
-- **C++ surface design.** `cpp/` deserves its own design note; it is not covered
-  here.
+- **C++ surface design.** The C++ target is covered here at the **principle and form**
+  level (§1, §1.2): it realizes the same Dual Reality by a thick native representation plus
+  an explicit codec. Its **per-template detail** — the header/source split, pass-by
+  qualifiers, movability, the `ValueCodec`/`ValueType` machinery — is a different projection
+  and deserves its own design note; it is not covered below.
