@@ -10,6 +10,9 @@ work against typed wrappers instead of stringly-typed metadata.
 
 Full documentation: https://docs.digitalsubstrate.io/kibo-template-viper/
 
+Maintainer design note for the Python & TypeScript proxy templates:
+[`DESIGN.md`](DESIGN.md).
+
 Part of the [DevKit ecosystem](https://docs.digitalsubstrate.io/).
 
 ## Layout
