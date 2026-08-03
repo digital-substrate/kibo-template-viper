@@ -26,7 +26,7 @@ namespace <m.namespace>::FunctionPoolRemotes {
 function_parameter(p) ::= <%<p.type><p.passBy> <p.name>%>
 function_parameters(f) ::= <%<if(f.parameters)><f.parameters:function_parameter();separator=", "><endif>%>
 function_return(f) ::= <%<if(f.isVoid)>void<else><f.type><endif>%>
-fp_prototype(f) ::= <%<f:function_return()> <f.name>(<f:function_parameters()>) const;%>
+fp_prototype(f) ::= <%<f:function_return()> <f.name;format="lsc">(<f:function_parameters()>) const;%>
 
 fp(po) ::= <<
 // MARK: - <po.name>

@@ -65,7 +65,7 @@ export class <po.name;format="uf"> {
 >>
 
 fp_function(f, po) ::= <<
-<f.name>(attachmentMutating: dsviper.AttachmentMutating<if(f.parameters)>, <f.parameters:parameter();separator=", "><endif>): <f.returnPythonType:dtype()> {
+<f.name;format="lsc">(attachmentMutating: dsviper.AttachmentMutating<if(f.parameters)>, <f.parameters:parameter();separator=", "><endif>): <f.returnPythonType:dtype()> {
     <if(f.isVoid)>
     this.serviceRemote.attachmentFunctionPoolFunc("<po.name>", "<f.name;format="lsc">").call(attachmentMutating<if(f.parameters)>, <f.parameters:encodeArg();separator=", "><endif>);
     <else>

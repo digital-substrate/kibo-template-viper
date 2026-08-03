@@ -66,7 +66,7 @@ export class <po.name;format="uf"> {
 >>
 
 fp_function(f, po) ::= <<
-<f.name>(<f.parameters:parameter();separator=", ">): <f.returnPythonType:dtype()> {
+<f.name;format="lsc">(<f.parameters:parameter();separator=", ">): <f.returnPythonType:dtype()> {
     <if(f.isVoid)>
     this.serviceRemote.functionPoolFunc("<po.name>", "<f.name;format="lsc">").call(<f.parameters:encodeArg();separator=", ">);
     <else>
