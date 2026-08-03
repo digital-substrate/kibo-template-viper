@@ -147,7 +147,10 @@ void Database::blobRead(std::int64_t rowId, void * data, std::uint64_t size) con
 
 // MARK: - Blob Create
 Viper::BlobId Database::createBlob(Viper::BlobLayout const & blobLayout, Viper::Blob const & blob) {
-    return _databasing->createBlob(blobLayout, blob);
+    Viper::BlobId const blobId{blobLayout, blob};
+    _databasing->createBlob(blobId, blobLayout, blob);
+
+    return blobId;
 }
 
 // MARK: - Blob Stream

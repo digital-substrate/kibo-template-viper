@@ -217,15 +217,12 @@ void DatabaseSQLite::blobRead(std::int64_t rowId, void * data, std::uint64_t siz
 }
 
 // MARK: - Blob Create
-Viper::BlobId DatabaseSQLite::createBlob(Viper::BlobLayout const & blobLayout, Viper::Blob const & blob) {
+bool DatabaseSQLite::createBlob(Viper::BlobId const & blobId, Viper::BlobLayout const & blobLayout, Viper::Blob const & blob) {
     static std::string const ctx{__FUNCTION__};
     if (!inTransaction())
         throw Viper::SQLiteErrors::mutationOutsideTransaction(component_ds, ctx);
 
-    Viper::BlobId const blobId{blobLayout, blob};
-    Viper::SQLiteTableBlob::create(sqlite, blobId, blobLayout, blob);
-
-    return blobId;
+    return Viper::SQLiteTableBlob::create(sqlite, blobId, blobLayout, blob);
 }
 
 // MARK: - Blob Stream

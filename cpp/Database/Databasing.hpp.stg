@@ -64,7 +64,7 @@ public:
     virtual void blobRead(std::int64_t rowId, void * data, std::uint64_t size) const = 0;
 
     // MARK: - Blob Create
-    virtual Viper::BlobId createBlob(Viper::BlobLayout const & blobLayout, Viper::Blob const & blob) = 0;
+    virtual bool createBlob(Viper::BlobId const & blobId, Viper::BlobLayout const & blobLayout, Viper::Blob const & blob) = 0;
 
     // MARK: - Blob Stream
     virtual Viper::UUId blobStreamCreate(Viper::BlobLayout const & blobLayout, std::uint64_t size) = 0;

@@ -148,8 +148,8 @@ void DatabaseRemoteRPCSideClient::blobRead(std::int64_t rowId, void * data, std:
 }
 
 // MARK: - Blob Create
-Viper::BlobId DatabaseRemoteRPCSideClient::createBlob(Viper::BlobLayout const & blobLayout, Viper::Blob const & blob) {
-    return Viper::RPCSideClientCall::returnBlobId(_call(Viper::RPCPacketCallCreateBlob::make(blobLayout, blob)));
+bool DatabaseRemoteRPCSideClient::createBlob(Viper::BlobId const & blobId, Viper::BlobLayout const & blobLayout, Viper::Blob const & blob) {
+    return Viper::RPCSideClientCall::returnBool(_call(Viper::RPCPacketCallCreateBlobWithId::make(blobId, blobLayout, blob)));
 }
 
 // MARK: - Blob Stream

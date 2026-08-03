@@ -72,7 +72,7 @@ public:
     void blobRead(std::int64_t rowId, void * data, std::uint64_t size) const override;
 
     // MARK: - Blob Create
-    Viper::BlobId createBlob(Viper::BlobLayout const & blobLayout, Viper::Blob const & blob) override;
+    bool createBlob(Viper::BlobId const & blobId, Viper::BlobLayout const & blobLayout, Viper::Blob const & blob) override;
 
     // MARK: - Blob Stream
     Viper::UUId blobStreamCreate(Viper::BlobLayout const & blobLayout, std::uint64_t size) override;

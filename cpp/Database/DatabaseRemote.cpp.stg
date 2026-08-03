@@ -149,8 +149,8 @@ void DatabaseRemote::blobRead(std::int64_t rowId, void * data, std::uint64_t siz
 }
 
 // MARK: - Blob Create
-Viper::BlobId DatabaseRemote::createBlob(Viper::BlobLayout const & blobLayout, Viper::Blob const & blob) {
-    return _client->createBlob(blobLayout, blob);
+bool DatabaseRemote::createBlob(Viper::BlobId const & blobId, Viper::BlobLayout const & blobLayout, Viper::Blob const & blob) {
+    return _client->createBlob(blobId, blobLayout, blob);
 }
 
 // MARK: - Blob Stream
