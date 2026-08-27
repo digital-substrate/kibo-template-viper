@@ -81,7 +81,7 @@ bool set(std::shared_ptr\<Database> const & database, <a.keyType.typeInNamespace
 
     <if(a.documentType.useBlobId)>
     // Check BlobIds
-    auto const value{ValueEncoder::encode(document)};
+    auto const value{ValueEncoder::encode<a.documentType.typeSuffix>(document)};
     if (auto const documentBlobIds{Viper::BlobIdCollector::collect(value)}; !documentBlobIds.empty()) {
         for (auto const blobId : documentBlobIds)
             if (!database->blobInfo(blobId))
@@ -94,7 +94,7 @@ bool set(std::shared_ptr\<Database> const & database, <a.keyType.typeInNamespace
 
     auto const encoder{database->streamCodecInstancing()->createEncoder()};
     Writer writer{encoder};
-    writer.write(document);
+    writer.write<a.documentType.typeSuffix>(document);
 
     return database->set(<a:attachment_runtime_id()>, k, encoder->endEncoding());
 }

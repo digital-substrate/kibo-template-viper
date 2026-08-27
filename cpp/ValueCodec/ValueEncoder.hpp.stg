@@ -16,32 +16,32 @@ main(m) ::= <<
 namespace <m.namespace>::ValueEncoder {
 
 // MARK: - Numbers
-std::shared_ptr\<Viper::ValueBool> encode(bool value);
+std::shared_ptr\<Viper::ValueBool> encode_bool(bool value);
 
-std::shared_ptr\<Viper::ValueUInt8> encode(std::uint8_t value);
-std::shared_ptr\<Viper::ValueUInt16> encode(std::uint16_t value);
-std::shared_ptr\<Viper::ValueUInt32> encode(std::uint32_t value);
-std::shared_ptr\<Viper::ValueUInt64> encode(std::uint64_t value);
+std::shared_ptr\<Viper::ValueUInt8> encode_uint8(std::uint8_t value);
+std::shared_ptr\<Viper::ValueUInt16> encode_uint16(std::uint16_t value);
+std::shared_ptr\<Viper::ValueUInt32> encode_uint32(std::uint32_t value);
+std::shared_ptr\<Viper::ValueUInt64> encode_uint64(std::uint64_t value);
 
-std::shared_ptr\<Viper::ValueInt8> encode(std::int8_t value);
-std::shared_ptr\<Viper::ValueInt16> encode(std::int16_t value);
-std::shared_ptr\<Viper::ValueInt32> encode(std::int32_t value);
-std::shared_ptr\<Viper::ValueInt64> encode(std::int64_t value);
+std::shared_ptr\<Viper::ValueInt8> encode_int8(std::int8_t value);
+std::shared_ptr\<Viper::ValueInt16> encode_int16(std::int16_t value);
+std::shared_ptr\<Viper::ValueInt32> encode_int32(std::int32_t value);
+std::shared_ptr\<Viper::ValueInt64> encode_int64(std::int64_t value);
 
-std::shared_ptr\<Viper::ValueFloat> encode(float value);
-std::shared_ptr\<Viper::ValueDouble> encode(double value);
+std::shared_ptr\<Viper::ValueFloat> encode_float(float value);
+std::shared_ptr\<Viper::ValueDouble> encode_double(double value);
 
 // MARK: - Ids
-std::shared_ptr\<Viper::ValueBlobId> encode(Viper::BlobId const & value);
-std::shared_ptr\<Viper::ValueCommitId> encode(Viper::CommitId const & value);
-std::shared_ptr\<Viper::ValueUUId> encode(Viper::UUId const & value);
+std::shared_ptr\<Viper::ValueBlobId> encode_blob_id(Viper::BlobId const & value);
+std::shared_ptr\<Viper::ValueCommitId> encode_commit_id(Viper::CommitId const & value);
+std::shared_ptr\<Viper::ValueUUId> encode_uuid(Viper::UUId const & value);
 
 // MARK: - String and Blob
-std::shared_ptr\<Viper::ValueString> encode(std::string const & value);
-std::shared_ptr\<Viper::ValueBlob> encode(Viper::Blob const & value);
+std::shared_ptr\<Viper::ValueString> encode_string(std::string const & value);
+std::shared_ptr\<Viper::ValueBlob> encode_blob(Viper::Blob const & value);
 
-std::shared_ptr\<Viper::ValueAny> encode(Viper::Any const & value);
-std::shared_ptr\<Viper::ValueKey> encode(AnyConceptKey const & value);
+std::shared_ptr\<Viper::ValueAny> encode_any(Viper::Any const & value);
+std::shared_ptr\<Viper::ValueKey> encode_AnyConceptKey(AnyConceptKey const & value);
 
 // MARK: - Vecs
 <m.vecFunctions:encode();separator="\n">
@@ -85,7 +85,7 @@ namespace(ns) ::= <<
 <ns.structures:encode();separator="\n">
 >>
 
-encode(v) ::= <%std::shared_ptr\<Viper::<v.ViperValue>> encode(<v.type> const & value);%>
+encode(v) ::= <%std::shared_ptr\<Viper::<v.ViperValue>> encode<v.typeSuffix>(<v.type> const & value);%>
 
 
 

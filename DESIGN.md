@@ -211,6 +211,30 @@ prefix** (`Foo::A` → `Foo_A`, `::` → `_`). The prefix *is* the namespace. Th
 why every Python/TS symbol is prefixed even when a model has a single namespace —
 see *Open directions* for the known cost of that.
 
+### 6.1 Every generated function names the type it operates on
+
+C++ codec and hasher functions carry the suffix of the type they act on, in both
+directions — `read_optional_Ns_Type()` and `write_optional_Ns_Type()`,
+`decode_Ns_Type()` and `encode_Ns_Type()`. The read direction was forced into it
+(C++ does not overload on return type); the write direction applies it by choice.
+
+The generator always knows its target. At every level of the recursion —
+structure field, container element, map key, tuple or variant member — the model
+carries `typeSuffix`, `elementTypeSuffix` or `keyTypeSuffix`. Emitting a
+same-named overload set and letting the compiler resolve the call asks it to redo
+work already done, and charges it a proof of non-viability against N−1 candidates
+at every call site. When one of those candidates takes a `std::optional<T>` — the
+only STL container whose single-argument converting constructor accepts any type,
+so the compiler can reject it neither on arity nor on type — that proof is a full
+constraint evaluation rather than an immediate mismatch. The cost is quadratic in
+the number of generated types.
+
+The rule that follows: **no overloading, no SFINAE and no hand-written template
+in generated code.** What the generator has already monomorphised must stay
+readable, greppable, and present in stack traces. The only templates the C++
+surface emits are `template<> struct std::hash<…>` specializations, which are the
+sole way to hook a generated type into the unordered containers of the STL.
+
 ## 7. Python ↔ TypeScript: parallel by design
 
 The two surfaces are the same design in two idioms and must stay parallel — a

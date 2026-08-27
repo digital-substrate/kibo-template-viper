@@ -12,88 +12,80 @@ main(m) ::= <<
 namespace <m.namespace>::Hasher {
 
 // MARK: - Numbers
-std::size_t hash(bool value) {
+std::size_t hash_bool(bool value) {
    return std::hash\<bool>{}(value);
 }
 
-std::size_t hash(std::uint8_t value) {
+std::size_t hash_uint8(std::uint8_t value) {
    return std::hash\<std::uint8_t>{}(value);
 }
 
-std::size_t hash(std::uint16_t value) {
+std::size_t hash_uint16(std::uint16_t value) {
    return std::hash\<std::uint16_t>{}(value);
 }
 
-std::size_t hash(std::uint32_t value) {
+std::size_t hash_uint32(std::uint32_t value) {
    return std::hash\<std::uint32_t>{}(value);
 }
 
-std::size_t hash(std::uint64_t value) {
+std::size_t hash_uint64(std::uint64_t value) {
    return std::hash\<std::uint64_t>{}(value);
 }
 
-std::size_t hash(std::int8_t value) {
+std::size_t hash_int8(std::int8_t value) {
    return std::hash\<std::int8_t>{}(value);
 }
 
-std::size_t hash(std::int16_t value) {
+std::size_t hash_int16(std::int16_t value) {
    return std::hash\<std::int16_t>{}(value);
 }
 
-std::size_t hash(std::int32_t value) {
+std::size_t hash_int32(std::int32_t value) {
    return std::hash\<std::int32_t>{}(value);
 }
 
-std::size_t hash(std::int64_t value) {
+std::size_t hash_int64(std::int64_t value) {
    return std::hash\<std::int64_t>{}(value);
 }
 
-std::size_t hash(float value) {
+std::size_t hash_float(float value) {
    return std::hash\<float>{}(value);
 }
 
-std::size_t hash(double value) {
+std::size_t hash_double(double value) {
    return std::hash\<double>{}(value);
 }
 
 // MARK: - Ids
-std::size_t hash(Viper::BlobId const & value) {
+std::size_t hash_blob_id(Viper::BlobId const & value) {
    return value.hash();
 }
 
-std::size_t hash(Viper::CommitId const & value) {
+std::size_t hash_commit_id(Viper::CommitId const & value) {
    return value.hash();
 }
 
-std::size_t hash(Viper::UUId const & value) {
+std::size_t hash_uuid(Viper::UUId const & value) {
    return value.hash();
 }
 
 // MARK: - String & Blob
-std::size_t hash(std::string const & value) {
+std::size_t hash_string(std::string const & value) {
    return std::hash\<std::string>{}(value);
 }
 
-std::size_t hash(Viper::Blob const & value) {
+std::size_t hash_blob(Viper::Blob const & value) {
   return value.hash();
 }
 
-std::size_t hash(Viper::Any const & value) {
+std::size_t hash_any(Viper::Any const & value) {
     return value.hash();
 }
 
-std::size_t hash(AnyConceptKey const & value) {
+std::size_t hash_AnyConceptKey(AnyConceptKey const & value) {
     std::size_t result{};
-    Viper::Hash::combine_acc(result, hash(value.instanceId()));
-    Viper::Hash::combine_acc(result, hash(value.runtimeId()));
-    return result;
-}
-
-template\<typename T, size_t n>
-std::size_t hash(std::array\<T, n> const & value) {
-    std::size_t result{};
-    for (auto const & e:  value)
-        Viper::Hash::combine_acc(result, hash(e));
+    Viper::Hash::combine_acc(result, hash_uuid(value.instanceId()));
+    Viper::Hash::combine_acc(result, hash_uuid(value.runtimeId()));
     return result;
 }
 
@@ -130,27 +122,31 @@ std::size_t hash(std::array\<T, n> const & value) {
 >>
 
 vec(v) ::= <<
-std::size_t hash(<v.type> const & value) {
+std::size_t hash<v.typeSuffix>(<v.type> const & value) {
     std::size_t result{};
     for (auto const e : value)
-        Viper::Hash::combine_acc(result, hash(e));
+        Viper::Hash::combine_acc(result, hash<v.elementTypeSuffix>(e));
     return result;
 }
 
 >>
 
 mat(v) ::= <<
-std::size_t hash(<v.type> const & value) {
+std::size_t hash<v.typeSuffix>(<v.type> const & value) {
     std::size_t result{};
-    for (auto const e : value)
-        Viper::Hash::combine_acc(result, hash(e));
+    for (auto const & row : value) {
+        std::size_t rowResult{};
+        for (auto const & e : row)
+            Viper::Hash::combine_acc(rowResult, hash<v.elementTypeSuffix>(e));
+        Viper::Hash::combine_acc(result, rowResult);
+    }
     return result;
 }
 
 >>
 
 tuple(v) ::= <<
-std::size_t hash(<v.type> const & value) {
+std::size_t hash<v.typeSuffix>(<v.type> const & value) {
     std::size_t result{};
     <v.members:{m|<m:tuple_member(i0)>};separator="\n">
     return result;
@@ -158,44 +154,44 @@ std::size_t hash(<v.type> const & value) {
 
 >>
 
-tuple_member(v,i) ::= <%Viper::Hash::combine_acc(result, hash(std::get\<<i>>(value)));%>
+tuple_member(v,i) ::= <%Viper::Hash::combine_acc(result, hash<v.typeSuffix>(std::get\<<i>>(value)));%>
 
 optional(v) ::= <<
-std::size_t hash(<v.type> const & value) {
+std::size_t hash<v.typeSuffix>(<v.type> const & value) {
     std::size_t result{};
     if (value)
-        Viper::Hash::combine_acc(result, hash(*value));
+        Viper::Hash::combine_acc(result, hash<v.elementTypeSuffix>(*value));
     return result;
 }
 
 >>
 
 vector(v) ::= <<
-std::size_t hash(<v.type> const & value) {
+std::size_t hash<v.typeSuffix>(<v.type> const & value) {
     std::size_t result{};
     for (auto const <v.valueRef> e : value)
-        Viper::Hash::combine_acc(result, hash(e));
+        Viper::Hash::combine_acc(result, hash<v.elementTypeSuffix>(e));
     return result;
 }
 
 >>
 
 set(v) ::= <<
-std::size_t hash(<v.type> const & value) {
+std::size_t hash<v.typeSuffix>(<v.type> const & value) {
     std::size_t result{};
     for (auto const & e : value)
-        Viper::Hash::combine_acc(result, hash(e));
+        Viper::Hash::combine_acc(result, hash<v.elementTypeSuffix>(e));
     return 0;
 }
 
 >>
 
 map(v) ::= <<
-std::size_t hash(<v.type> const & value) {
+std::size_t hash<v.typeSuffix>(<v.type> const & value) {
     std::size_t result{};
-    for (auto const & [k, v] : value) {
-        Viper::Hash::combine_acc(result, hash(k));
-        Viper::Hash::combine_acc(result, hash(v));
+    for (auto const & [k, e] : value) {
+        Viper::Hash::combine_acc(result, hash<v.keyTypeSuffix>(k));
+        Viper::Hash::combine_acc(result, hash<v.elementTypeSuffix>(e));
     }
     return result;
 }
@@ -203,19 +199,19 @@ std::size_t hash(<v.type> const & value) {
 >>
 
 xarray(v) ::= <<
-std::size_t hash(<v.type> const & value) {
+std::size_t hash<v.typeSuffix>(<v.type> const & value) {
     std::size_t result{};
     auto const [positions, deletedPositions, elements]{value.memento()};
 
     for (auto const & position : positions)
-        Viper::Hash::combine_acc(result, hash(position));
+        Viper::Hash::combine_acc(result, hash_uuid(position));
 
     for (auto const & position : deletedPositions)
-        Viper::Hash::combine_acc(result, hash(position));
+        Viper::Hash::combine_acc(result, hash_uuid(position));
 
-    for (auto const & [k, v] : elements) {
-        Viper::Hash::combine_acc(result, hash(k));
-        Viper::Hash::combine_acc(result, hash(v));
+    for (auto const & [k, e] : elements) {
+        Viper::Hash::combine_acc(result, hash_uuid(k));
+        Viper::Hash::combine_acc(result, hash<v.elementTypeSuffix>(e));
     }
     return result;
 }
@@ -223,7 +219,7 @@ std::size_t hash(<v.type> const & value) {
 >>
 
 variant(v) ::= <<
-std::size_t hash(<v.type> const & value) {
+std::size_t hash<v.typeSuffix>(<v.type> const & value) {
     switch (value.index()) {
         <v.members:{m|<m:variant_member(i0)>};separator="\n">
         default:
@@ -235,7 +231,7 @@ std::size_t hash(<v.type> const & value) {
 
 variant_member(m,i) ::= <<
 case <i>:
-    return hash(std::get\<<m.type>\>(value));
+    return hash<m.typeSuffix>(std::get\<<m.type>\>(value));
 >>
 
 
@@ -248,27 +244,27 @@ namespace(ns) ::= <<
 >>
 
 concept(c) ::= <<
-std::size_t hash(<c.type> const & value) {
+std::size_t hash<c.typeSuffix>(<c.type> const & value) {
     std::size_t result{};
-    Viper::Hash::combine_acc(result, hash(value.instanceId()));
-    Viper::Hash::combine_acc(result, hash(value.runtimeId()));
+    Viper::Hash::combine_acc(result, hash_uuid(value.instanceId()));
+    Viper::Hash::combine_acc(result, hash_uuid(value.runtimeId()));
     return result;
 }
 
 >>
 
 club(c) ::= <<
-std::size_t hash(<c.type> const & value) {
+std::size_t hash<c.typeSuffix>(<c.type> const & value) {
     std::size_t result{};
-    Viper::Hash::combine_acc(result, hash(value.instanceId()));
-    Viper::Hash::combine_acc(result, hash(value.runtimeId()));
+    Viper::Hash::combine_acc(result, hash_uuid(value.instanceId()));
+    Viper::Hash::combine_acc(result, hash_uuid(value.runtimeId()));
     return result;
 }
 
 >>
 
 enumeration(e) ::= <<
-std::size_t hash(<e.type> value) {
+std::size_t hash<e.typeSuffix>(<e.type> value) {
     switch (value) {
         <e.members:{c|<c:enumeration_case(e)>};separator="\n">
         default:
@@ -280,16 +276,16 @@ std::size_t hash(<e.type> value) {
 >>
 enumeration_case(em,e) ::= <<
 case <e.namespace>::<e.name>::<em.name;format="uf">:
-    return hash(std::string{"<em.name>"});
+    return hash_string(std::string{"<em.name>"});
 
 >>
 
 structure(s) ::= <<
-std::size_t hash(<s.type> const & value) {
+std::size_t hash<s.typeSuffix>(<s.type> const & value) {
     std::size_t result{};
     <s.fields:field();separator="\n">
     return result;
 }
 
 >>
-field(sf) ::= <%Viper::Hash::combine_acc(result, hash(value.<sf.name>));%>
+field(sf) ::= <%Viper::Hash::combine_acc(result, hash<sf.typeSuffix>(value.<sf.name>));%>

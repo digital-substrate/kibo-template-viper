@@ -16,32 +16,32 @@ main(m) ::= <<
 namespace <m.namespace>::ValueHasher {
 
 // MARK: - Numbers
-std::string hexdigest(bool value);
+std::string hexdigest_bool(bool value);
 
-std::string hexdigest(std::uint8_t value);
-std::string hexdigest(std::uint16_t value);
-std::string hexdigest(std::uint32_t value);
-std::string hexdigest(std::uint64_t value);
+std::string hexdigest_uint8(std::uint8_t value);
+std::string hexdigest_uint16(std::uint16_t value);
+std::string hexdigest_uint32(std::uint32_t value);
+std::string hexdigest_uint64(std::uint64_t value);
 
-std::string hexdigest(std::int8_t value);
-std::string hexdigest(std::int16_t value);
-std::string hexdigest(std::int32_t value);
-std::string hexdigest(std::int64_t value);
+std::string hexdigest_int8(std::int8_t value);
+std::string hexdigest_int16(std::int16_t value);
+std::string hexdigest_int32(std::int32_t value);
+std::string hexdigest_int64(std::int64_t value);
 
-std::string hexdigest(float value);
-std::string hexdigest(double value);
+std::string hexdigest_float(float value);
+std::string hexdigest_double(double value);
 
 // MARK: - Ids
-std::string hexdigest(Viper::BlobId const & value);
-std::string hexdigest(Viper::CommitId const & value);
-std::string hexdigest(Viper::UUId const & value);
+std::string hexdigest_blob_id(Viper::BlobId const & value);
+std::string hexdigest_commit_id(Viper::CommitId const & value);
+std::string hexdigest_uuid(Viper::UUId const & value);
 
 // MARK: - String and Blob
-std::string hexdigest(std::string const & value);
-std::string hexdigest(Viper::Blob const & value);
+std::string hexdigest_string(std::string const & value);
+std::string hexdigest_blob(Viper::Blob const & value);
 
-std::string hexdigest(Viper::Any const & value);
-std::string hexdigest(AnyConceptKey const & value);
+std::string hexdigest_any(Viper::Any const & value);
+std::string hexdigest_AnyConceptKey(AnyConceptKey const & value);
 
 // MARK: - Vecs
 <m.vecFunctions:hexdigest();separator="\n">
@@ -77,7 +77,7 @@ std::string hexdigest(AnyConceptKey const & value);
 #endif
 >>
 
-hexdigest(v) ::=<% std::string hexdigest(<v.type> const & value);%>
+hexdigest(v) ::=<% std::string hexdigest<v.typeSuffix>(<v.type> const & value);%>
 
 namespace(ns) ::= <<
 // MARK: - Namespace <ns.name>

@@ -114,7 +114,7 @@ void test<v.typeSuffix>(std::shared_ptr\<Viper::StreamCodecInstancing> const & s
     auto const encoder{streamCodecInstancing->createEncoder()};
     auto const value{TestFuzz::fuzz<v.typeSuffix>()};
     Writer writer{encoder};
-    writer.write(value);
+    writer.write<v.typeSuffix>(value);
     auto const data{encoder->endEncoding()};
 
     auto const decoder{streamCodecInstancing->createDecoder(data)};

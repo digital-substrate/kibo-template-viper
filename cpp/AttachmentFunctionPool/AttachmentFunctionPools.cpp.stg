@@ -44,7 +44,7 @@ namespace <po.name;format="uf"> {
 name(f) ::= <%<f.name;format="lsc">%>
 
 cfp_function_call(f,po) ::= <%AttachmentFunctionPoolBridges::<po.name;format="uf">::<f:name()>(attachment<f.interfaceType><if(f.parameters)>, <f.parameters:parameter_call();separator=", "><endif>)%>
-cfp_function_call_return(f,po) ::= <%ValueEncoder::encode(<f:cfp_function_call(po)>)%>
+cfp_function_call_return(f,po) ::= <%ValueEncoder::encode<f.typeSuffix>(<f:cfp_function_call(po)>)%>
 
 cfp_function(f,po) ::= <<
 // MARK: - <po.name>::<f:name();format="uf">

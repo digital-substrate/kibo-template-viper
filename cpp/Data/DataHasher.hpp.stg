@@ -14,32 +14,32 @@ main(m) ::= <<
 namespace <m.namespace>::Hasher {
 
 // MARK: - Numbers
-std::size_t hash(bool value);
-std::size_t hash(std::uint8_t value);
-std::size_t hash(std::uint16_t value);
-std::size_t hash(std::uint32_t value);
-std::size_t hash(std::uint64_t value);
-std::size_t hash(std::int8_t value);
-std::size_t hash(std::int16_t value);
-std::size_t hash(std::int32_t value);
-std::size_t hash(std::int64_t value);
-std::size_t hash(float value);
-std::size_t hash(double value);
+std::size_t hash_bool(bool value);
+std::size_t hash_uint8(std::uint8_t value);
+std::size_t hash_uint16(std::uint16_t value);
+std::size_t hash_uint32(std::uint32_t value);
+std::size_t hash_uint64(std::uint64_t value);
+std::size_t hash_int8(std::int8_t value);
+std::size_t hash_int16(std::int16_t value);
+std::size_t hash_int32(std::int32_t value);
+std::size_t hash_int64(std::int64_t value);
+std::size_t hash_float(float value);
+std::size_t hash_double(double value);
 
 // MARK: - Ids
-std::size_t hash(Viper::CommitId const & value);
-std::size_t hash(Viper::BlobId const & value);
-std::size_t hash(Viper::UUId const & value);
+std::size_t hash_commit_id(Viper::CommitId const & value);
+std::size_t hash_blob_id(Viper::BlobId const & value);
+std::size_t hash_uuid(Viper::UUId const & value);
 
 // MARK: - String & Blob
-std::size_t hash(std::string const & value);
-std::size_t hash(Viper::Blob const & value);
+std::size_t hash_string(std::string const & value);
+std::size_t hash_blob(Viper::Blob const & value);
 
 // MARK: - Any
-std::size_t hash(Viper::Any const & value);
+std::size_t hash_any(Viper::Any const & value);
 
 // MARK: - AnyConcept
-std::size_t hash(AnyConceptKey const & value);
+std::size_t hash_AnyConceptKey(AnyConceptKey const & value);
 
 // MARK: - Vecs
 <m.vecFunctions:hash();separator="\n">
@@ -84,6 +84,6 @@ namespace(ns) ::= <<
 >>
 
 
-hash(v) ::= <%std::size_t hash(<v.type> const & value);%>
-hash_enum(v) ::= <%std::size_t hash(<v.type> value);%>
+hash(v) ::= <%std::size_t hash<v.typeSuffix>(<v.type> const & value);%>
+hash_enum(v) ::= <%std::size_t hash<v.typeSuffix>(<v.type> value);%>
 

@@ -22,118 +22,118 @@ Writer::Writer(std::shared_ptr\<Viper::StreamWriting> const & streamWriting)
 : streamWriting{streamWriting} {}
 
 // MARK: - Numbers
-void Writer::write(bool value) {
+void Writer::write_bool(bool value) {
     streamWriting->writeBool(value);
 }
 
-void Writer::write(std::uint8_t value) {
+void Writer::write_uint8(std::uint8_t value) {
     streamWriting->writeUInt8(value);
 }
 
-void Writer::write(std::uint16_t value) {
+void Writer::write_uint16(std::uint16_t value) {
     streamWriting->writeUInt16(value);
 }
 
-void Writer::write(std::uint32_t value) {
+void Writer::write_uint32(std::uint32_t value) {
     streamWriting->writeUInt32(value);
 }
 
-void Writer::write(std::uint64_t value) {
+void Writer::write_uint64(std::uint64_t value) {
     streamWriting->writeUInt64(value);
 }
 
-void Writer::write(std::int8_t value) {
+void Writer::write_int8(std::int8_t value) {
     streamWriting->writeInt8(value);
 }
 
-void Writer::write(std::int16_t value) {
+void Writer::write_int16(std::int16_t value) {
     streamWriting->writeInt16(value);
 }
 
-void Writer::write(std::int32_t value) {
+void Writer::write_int32(std::int32_t value) {
     streamWriting->writeInt32(value);
 }
 
-void Writer::write(std::int64_t value) {
+void Writer::write_int64(std::int64_t value) {
     streamWriting->writeInt64(value);
 }
 
-void Writer::write(float value) {
+void Writer::write_float(float value) {
     streamWriting->writeFloat(value);
 }
 
-void Writer::write(double value) {
+void Writer::write_double(double value) {
     streamWriting->writeDouble(value);
 }
 
 // MARK: - Ids
-void Writer::write(Viper::BlobId const & value) {
+void Writer::write_blob_id(Viper::BlobId const & value) {
     streamWriting->writeBlobId(value);
 }
 
-void Writer::write(Viper::CommitId const & value) {
+void Writer::write_commit_id(Viper::CommitId const & value) {
     streamWriting->writeCommitId(value);
 }
 
-void Writer::write(Viper::UUId const & value) {
+void Writer::write_uuid(Viper::UUId const & value) {
     streamWriting->writeUUId(value);
 }
 
 // MARK: - String & Blob
-void Writer::write(std::string const & value) {
+void Writer::write_string(std::string const & value) {
     streamWriting->writeString(value);
 }
 
-void Writer::write(Viper::Blob const & value) {
+void Writer::write_blob(Viper::Blob const & value) {
     streamWriting->writeBlob(value);
 }
 
 // MARK: - Arrays
-void Writer::write(std::uint8_t const * values, std::size_t size) {
+void Writer::write_uint8s(std::uint8_t const * values, std::size_t size) {
     streamWriting->writeUInt8s(values, size);
 }
 
-void Writer::write(std::uint16_t const * values, std::size_t size) {
+void Writer::write_uint16s(std::uint16_t const * values, std::size_t size) {
     streamWriting->writeUInt16s(values, size);
 }
 
-void Writer::write(std::uint32_t const * values, std::size_t size) {
+void Writer::write_uint32s(std::uint32_t const * values, std::size_t size) {
     streamWriting->writeUInt32s(values, size);
 }
 
-void Writer::write(std::uint64_t const * values, std::size_t size) {
+void Writer::write_uint64s(std::uint64_t const * values, std::size_t size) {
     streamWriting->writeUInt64s(values, size);
 }
 
-void Writer::write(std::int8_t const * values, std::size_t size) {
+void Writer::write_int8s(std::int8_t const * values, std::size_t size) {
     streamWriting->writeInt8s(values, size);
 }
 
-void Writer::write(std::int16_t const * values, std::size_t size) {
+void Writer::write_int16s(std::int16_t const * values, std::size_t size) {
     streamWriting->writeInt16s(values, size);
 }
 
-void Writer::write(std::int32_t const * values, std::size_t size) {
+void Writer::write_int32s(std::int32_t const * values, std::size_t size) {
     streamWriting->writeInt32s(values, size);
 }
 
-void Writer::write(std::int64_t const * values, std::size_t size) {
+void Writer::write_int64s(std::int64_t const * values, std::size_t size) {
     streamWriting->writeInt64s(values, size);
 }
 
-void Writer::write(float const * values , std::size_t size) {
+void Writer::write_floats(float const * values , std::size_t size) {
     streamWriting->writeFloats(values, size);
 }
 
-void Writer::write(double const * values, std::size_t size) {
+void Writer::write_doubles(double const * values, std::size_t size) {
     streamWriting->writeDoubles(values, size);
 }
 
-void Writer::write(Viper::Any const & value) {
+void Writer::write_any(Viper::Any const & value) {
     Viper::ValueWriter::write(value.value(), streamWriting);
 }
 
-void Writer::write(AnyConceptKey const & value) {
+void Writer::write_AnyConceptKey(AnyConceptKey const & value) {
     streamWriting->writeUUId(value.instanceId());
     streamWriting->writeUUId(value.runtimeId());
 }
@@ -171,32 +171,32 @@ void Writer::write(AnyConceptKey const & value) {
 >>
 
 vec(v) ::= <<
-void Writer::write(<v.type> const & value) {
-    write(value.data(), <v.size>);
+void Writer::write<v.typeSuffix>(<v.type> const & value) {
+    write<v.elementTypeSuffix>s(value.data(), <v.size>);
 }
 
 >>
 
 mat(v) ::= <<
-void Writer::write(<v.type> const & value) {
-    write(value.at(0).data(), <v.columns> * <v.rows>);
+void Writer::write<v.typeSuffix>(<v.type> const & value) {
+    write<v.elementTypeSuffix>s(value.at(0).data(), <v.columns> * <v.rows>);
 }
 
 >>
 
-tuple_member(v,i) ::= <%write(std::get\<<i>>(value));%>
+tuple_member(v,i) ::= <%write<v.typeSuffix>(std::get\<<i>>(value));%>
 tuple(v) ::= <<
-void Writer::write(<v.type> const & value) {
+void Writer::write<v.typeSuffix>(<v.type> const & value) {
     <v.members:{m|<m:tuple_member(i0)>};separator="\n">
 }
 
 >>
 
 optional(v) ::= <<
-void Writer::write(<v.type> const & value) {
+void Writer::write<v.typeSuffix>(<v.type> const & value) {
     if (value) {
         streamWriting->writeBool(true);
-        write(*value);
+        write<v.elementTypeSuffix>(*value);
     } else {
         streamWriting->writeBool(false);
     }
@@ -205,36 +205,36 @@ void Writer::write(<v.type> const & value) {
 >>
 
 vector(v) ::= <<
-void Writer::write(<v.type> const & value) {
+void Writer::write<v.typeSuffix>(<v.type> const & value) {
     streamWriting->writeUInt64(value.size());
     for (auto const <v.valueRef> e : value)
-        write(e);
+        write<v.elementTypeSuffix>(e);
 }
 
 >>
 
 set(v) ::= <<
-void Writer::write(<v.type> const & value) {
+void Writer::write<v.typeSuffix>(<v.type> const & value) {
     streamWriting->writeUInt64(value.size());
     for (auto const & e : value)
-        write(e);
+        write<v.elementTypeSuffix>(e);
 }
 
 >>
 
 map(v) ::= <<
-void Writer::write(<v.type> const & value) {
+void Writer::write<v.typeSuffix>(<v.type> const & value) {
     streamWriting->writeUInt64(value.size());
-    for (auto const & [k, v] : value) {
-        write(k);
-        write(v);
+    for (auto const & [k, e] : value) {
+        write<v.keyTypeSuffix>(k);
+        write<v.elementTypeSuffix>(e);
     }
 }
 
 >>
 
 xarray(v) ::= <<
-void Writer::write(<v.type> const & value) {
+void Writer::write<v.typeSuffix>(<v.type> const & value) {
    auto const [positions, deletedPositions, elements]{value.memento()};
 
     streamWriting->writeUInt64(positions.size());
@@ -246,16 +246,16 @@ void Writer::write(<v.type> const & value) {
         streamWriting->writeUUId(position);
 
     streamWriting->writeUInt64(elements.size());
-    for (auto const & [k, v] : elements) {
+    for (auto const & [k, e] : elements) {
         streamWriting->writeUUId(k);
-        write(v);
+        write<v.elementTypeSuffix>(e);
     }
 }
 
 >>
 
 variant(v) ::= <<
-void Writer::write(<v.type> const & value) {
+void Writer::write<v.typeSuffix>(<v.type> const & value) {
     auto const index{static_cast\<std::uint8_t>(value.index())};
     streamWriting->writeUInt8(index);
     switch (index) {
@@ -269,12 +269,12 @@ void Writer::write(<v.type> const & value) {
 
 variant_member(m,i) ::= <<
 case <i>:
-    write(std::get\<<m.type>\>(value));
+    write<m.typeSuffix>(std::get\<<m.type>\>(value));
     break;
 >>
 
 enumeration(e) ::= <<
-void Writer::write(<e.type> value) {
+void Writer::write<e.typeSuffix>(<e.type> value) {
     switch (value) {
         <e.members:{c|<c:enumeration_case(e,i0)>};separator="\n">
         default:
@@ -290,15 +290,15 @@ case <e.namespace>::<e.name>::<em.name;format="uf">:
 >>
 
 structure(s) ::= <<
-void Writer::write(<s.type> const & value) {
+void Writer::write<s.typeSuffix>(<s.type> const & value) {
     <s.fields:field();separator="\n">
 }
 
 >>
-field(sf) ::= <%write(value.<sf.name>);%>
+field(sf) ::= <%write<sf.typeSuffix>(value.<sf.name>);%>
 
 concept(c) ::= <<
-void Writer::write(<c.type> const & value) {
+void Writer::write<c.typeSuffix>(<c.type> const & value) {
     streamWriting->writeUUId(value.instanceId());
     streamWriting->writeUUId(value.runtimeId());
 }
@@ -306,7 +306,7 @@ void Writer::write(<c.type> const & value) {
 >>
 
 club(c) ::= <<
-void Writer::write(<c.type> const & value) {
+void Writer::write<c.typeSuffix>(<c.type> const & value) {
     streamWriting->writeUUId(value.instanceId());
     streamWriting->writeUUId(value.runtimeId());
 }

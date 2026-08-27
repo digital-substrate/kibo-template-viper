@@ -45,7 +45,7 @@ parameter_call(p) ::= <%<p.name>%>
 
 name(f) ::= <%<f.name;format="lsc">%>
 fp_function_call(f,po) ::= <%FunctionPoolBridges::<po.name;format="uf">::<f:name()>(<f.parameters:parameter_call();separator=", ">)%>
-fp_function_call_return(f,po) ::= <%ValueEncoder::encode(<f:fp_function_call(po)>)%>
+fp_function_call_return(f,po) ::= <%ValueEncoder::encode<f.typeSuffix>(<f:fp_function_call(po)>)%>
 
 fp_function(f,po) ::= <<
 // MARK: - <po.name>::<f:name();format="uf">

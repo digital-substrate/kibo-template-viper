@@ -109,7 +109,7 @@ namespace_test(ns) ::= <<
 test(v) ::= <<
 void test<v.typeSuffix>() {
     auto const value{TestFuzz::fuzz<v.typeSuffix>()};
-    auto const jsonString{JsonEncoder::encode(value)};
+    auto const jsonString{JsonEncoder::encode<v.typeSuffix>(value)};
     auto const value_decoded{JsonDecoder::decode<v.typeSuffix>(jsonString)};
     VIPER_ASSERT(component_tcj, value_decoded == value);
 }

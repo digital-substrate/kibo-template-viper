@@ -23,48 +23,48 @@ public:
     explicit Writer(std::shared_ptr\<Viper::StreamWriting> const & streamWriting);
 
     // MARK: - Numbers
-    void write(bool value);
-    void write(std::uint8_t value);
-    void write(std::uint16_t value);
-    void write(std::uint32_t value);
-    void write(std::uint64_t value);
+    void write_bool(bool value);
+    void write_uint8(std::uint8_t value);
+    void write_uint16(std::uint16_t value);
+    void write_uint32(std::uint32_t value);
+    void write_uint64(std::uint64_t value);
 
-    void write(std::int8_t value);
-    void write(std::int16_t value);
-    void write(std::int32_t value);
-    void write(std::int64_t value);
+    void write_int8(std::int8_t value);
+    void write_int16(std::int16_t value);
+    void write_int32(std::int32_t value);
+    void write_int64(std::int64_t value);
 
-    void write(float value);
-    void write(double value);
+    void write_float(float value);
+    void write_double(double value);
 
     // MARK: - Ids
-    void write(Viper::BlobId const & value);
-    void write(Viper::CommitId const & value);
-    void write(Viper::UUId const & value);
+    void write_blob_id(Viper::BlobId const & value);
+    void write_commit_id(Viper::CommitId const & value);
+    void write_uuid(Viper::UUId const & value);
 
     // MARK: - String & Blob
-    void write(std::string const & value);
-    void write(Viper::Blob const & value);
+    void write_string(std::string const & value);
+    void write_blob(Viper::Blob const & value);
 
     // MARK: - Arrays
-    void write(std::uint8_t const * values , std::size_t size);
-    void write(std::uint16_t const * values, std::size_t size);
-    void write(std::uint32_t const * values, std::size_t size);
-    void write(std::uint64_t const * values, std::size_t size);
+    void write_uint8s(std::uint8_t const * values , std::size_t size);
+    void write_uint16s(std::uint16_t const * values, std::size_t size);
+    void write_uint32s(std::uint32_t const * values, std::size_t size);
+    void write_uint64s(std::uint64_t const * values, std::size_t size);
 
-    void write(std::int8_t const * values , std::size_t size);
-    void write(std::int16_t const * values, std::size_t size);
-    void write(std::int32_t const * values, std::size_t size);
-    void write(std::int64_t const * values, std::size_t size);
+    void write_int8s(std::int8_t const * values , std::size_t size);
+    void write_int16s(std::int16_t const * values, std::size_t size);
+    void write_int32s(std::int32_t const * values, std::size_t size);
+    void write_int64s(std::int64_t const * values, std::size_t size);
 
-    void write(float const * values, std::size_t size);
-    void write(double const * values, std::size_t size);
+    void write_floats(float const * values, std::size_t size);
+    void write_doubles(double const * values, std::size_t size);
 
     // MARK: - Any
-    void write(Viper::Any const & value);
+    void write_any(Viper::Any const & value);
 
     // MARK: - AnyConcept
-    void write(AnyConceptKey const & value);
+    void write_AnyConceptKey(AnyConceptKey const & value);
 
     // MARK: - Vecs
     <m.vecFunctions:write();separator="\n">
@@ -109,6 +109,6 @@ namespace(ns) ::= <<
 <ns.structures:write();separator="\n">
 >>
 
-write(v) ::= <%void write(<v.type> const & value);%>
-write_enum(v) ::= <%void write(<v.type> value);%>
+write(v) ::= <%void write<v.typeSuffix>(<v.type> const & value);%>
+write_enum(v) ::= <%void write<v.typeSuffix>(<v.type> value);%>
 

@@ -332,7 +332,7 @@ structure(s) ::= <<
 <rest(s.fields):structure_field_initialization_rest();separator="\n"> {}
 
 std::size_t <s.name>::hash() const {
-    return Hasher::hash(*this);
+    return Hasher::hash<s.typeSuffix>(*this);
 }
 
 bool <s.name>::operator==(<s.name> const & other) const {

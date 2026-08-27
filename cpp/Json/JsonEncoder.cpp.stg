@@ -64,8 +64,8 @@ namespace(ns) ::=<<
 >>
 
 encode(v) ::= <<
-std::string encode(<v.type> const & v) {
-    auto const value{ValueEncoder::encode(v)};
+std::string encode<v.typeSuffix>(<v.type> const & v) {
+    auto const value{ValueEncoder::encode<v.typeSuffix>(v)};
     return Viper::JsonValueEncoder::json_encode(value);
 }
 

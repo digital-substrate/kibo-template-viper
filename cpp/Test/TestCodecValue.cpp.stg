@@ -104,7 +104,7 @@ test(v) ::= <<
 void test<v.typeSuffix>() {
     auto const value{TestValueFuzz::fuzz<v.typeSuffix>()};
     auto const v{ValueDecoder::decode<v.typeSuffix>(value)};
-    auto const value_d{ValueEncoder::encode(v)};
+    auto const value_d{ValueEncoder::encode<v.typeSuffix>(v)};
     VIPER_ASSERT(component_tcv, value->equal(value_d));
 }
 

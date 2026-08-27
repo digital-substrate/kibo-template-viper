@@ -57,5 +57,5 @@ namespace(ns) ::= <<
 <ns.structures:encode();separator="\n">
 >>
 
-encode(v) ::= <%std::string encode(<v.type> const & v);%>
+encode(v) ::= <%std::string encode<v.typeSuffix>(<v.type> const & v);%>
 
