@@ -45,6 +45,15 @@ in what is generated — are tracked here.
   `hash(std::array<T, n>)` helper is gone, replaced by an explicit nested loop
   in the `mat` hasher that computes the same value.
 
+### Fixed
+
+- `DataHasher`: the hasher for a `set` computed its result and then returned
+  `0`, so a structure drew no hash information from its set fields and collided
+  with every structure differing only in set contents. Generated sets are
+  `std::set`, hence ordered, so the element-wise combination is well defined;
+  it is now returned. Hash values change for any structure carrying a set
+  field — they are in-memory only and never persisted.
+
 ## [1.2.0] - 2026-06-17
 
 First standalone release of the first-party Kibo templates for the Viper

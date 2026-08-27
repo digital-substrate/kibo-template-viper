@@ -181,7 +181,7 @@ std::size_t hash<v.typeSuffix>(<v.type> const & value) {
     std::size_t result{};
     for (auto const & e : value)
         Viper::Hash::combine_acc(result, hash<v.elementTypeSuffix>(e));
-    return 0;
+    return result;
 }
 
 >>
