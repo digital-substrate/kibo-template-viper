@@ -104,19 +104,24 @@ The runtime's `MAJOR.MINOR` is the compatibility contract — the on-disk
 format and public API are locked across a minor. The `PATCH` is versioned
 **independently per binding**, so the numbers differ between targets:
 
-| Templates    | Runtime                              | Compatible versions          |
-|--------------|--------------------------------------|------------------------------|
-| `typescript` | `@digitalsubstrate/dsviper` (npm)    | `>=1.2.8 <1.3.0`             |
-| `python`     | `dsviper` (PyPI wheel)               | `1.2.x` (built against 1.2.23) |
-| `cpp`        | `viper` (C++ runtime)                | `1.2.x` (built against 1.2.17) |
+| Templates    | Runtime                              | Compatible versions |
+|--------------|--------------------------------------|---------------------|
+| `typescript` | `@digitalsubstrate/dsviper` (npm)    | `>=1.2.8 <1.3.0`    |
+| `python`     | `dsviper` (PyPI wheel)               | `1.2.x`             |
+| `cpp`        | `viper` (C++ runtime)                | `1.2.x`             |
 
-Only the `typescript` output **enforces** this — a `>=1.2.8 <1.3.0` floor
-in the generated `package.json`, matching the rest of the Node ecosystem.
-The floor is `>=1.2.8` (not `1.2.1`) because the generated `vec`/`mat`
-proxies call the binding's `toArray()`, which the binding settled on from
-`1.2.8` onward (a fixed-shape sequence is an array in JS, not a tuple), and
-because `1.2.8` carries a critical runtime fix. The `python` and `cpp`
-outputs carry no version pin; any `1.2.x` runtime is compatible.
+These templates project the runtime's basic surface, so any `1.2.x` of the
+matching binding will do and there is no patch to track. When a template does
+come to need something a particular patch introduced, that becomes a floor —
+and the floor belongs in the generated output, not in this table. A pin the
+consumer's build reads cannot go stale, and it fails where someone will see it.
+
+`typescript` is the one such case today. Its generated `package.json` pins
+`>=1.2.8 <1.3.0` because the generated `vec`/`mat` proxies call the binding's
+`toArray()`, which the binding settled on from `1.2.8` onward (a fixed-shape
+sequence is an array in JS, not a tuple), and because `1.2.8` carries a
+critical runtime fix. The `python` and `cpp` outputs carry no pin, and need
+none.
 
 The MIT license above governs the **templates as source**. The output
 of `kibo` produced from these templates is a derivative work of MIT
