@@ -5,9 +5,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-These are first-party Kibo templates. Changes to the generated C++ or
-Python surface — new projections, renamed outputs, or behavioural shifts
+These are first-party Kibo templates. Changes to the generated C++, Python or
+TypeScript surface — new projections, renamed outputs, or behavioural shifts
 in what is generated — are tracked here.
+
+`MAJOR.MINOR` track the Viper runtime contract; `PATCH` is this repository's own
+stream, independent of the runtime, the `dsviper` wheel and the Node binding.
+The templates are not published on their own: consumers vendor this repository
+and package it themselves, and the `cpp/`, `python/` and `typescript/`
+directories move together as one snapshot. Which runtime version each directory
+targets is in the README's compatibility table.
 
 ## [Unreleased]
 
