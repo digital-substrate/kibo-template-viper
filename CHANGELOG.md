@@ -45,6 +45,18 @@ in what is generated — are tracked here.
   `hash(std::array<T, n>)` helper is gone, replaced by an explicit nested loop
   in the `mat` hasher that computes the same value.
 
+- **The remote attachment `get` prototype builds its return type in place.**
+  It read `ValueType::type_optional_<document>()`, a generated accessor whose
+  existence required Kibo to register an `optional` derived type — and with it a
+  full codec, hasher and descriptor family in nine modules — for every
+  attachment document type in the model. It now calls
+  `Viper::TypeOptional::make(ValueType::type_<document>())` directly, which is
+  what that accessor did internally. This was the sole remaining consumer of
+  those derived types; Kibo stops synthesising them (see its 1.2.11 entry). On a
+  model with 366 attachments the generated C++ shrinks by 12%. The prototype
+  declared to the runtime is unchanged, and it is built once per attachment at
+  pool registration, never on a hot path.
+
 ### Fixed
 
 - `DataHasher`: the hasher for a `set` computed its result and then returned

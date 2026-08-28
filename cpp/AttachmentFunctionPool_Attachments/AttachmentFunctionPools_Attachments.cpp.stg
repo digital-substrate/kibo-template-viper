@@ -172,7 +172,7 @@ public:
         std::vector\<Viper::FunctionPrototype::Parameter> parameters;
         parameters.push_back({"key", ValueType::type<a.keyType.typeSuffix>()});
 
-        auto returnType{ValueType::type_optional<a.documentType.typeSuffix>()};
+        auto returnType{Viper::TypeOptional::make(ValueType::type<a.documentType.typeSuffix>())};
 
         return std::make_shared\<F_<a:func_n("get")>\>(
             Viper::FunctionPrototype::make("<a:func_n("get")>", std::move(parameters), std::move(returnType)),
