@@ -72,6 +72,17 @@ version as either one.
   declared to the runtime is unchanged, and it is built once per attachment at
   pool registration, never on a hot path.
 
+- **Generated files now name the template version that produced them.** The
+  header read `Templates: MIT (kibo-template-viper)` and named no version, so a
+  generated file identified its generator (`by kibo-X.Y.Z.jar`) but not the
+  templates — the half that determines most of what is emitted. It now reads
+  `Templates: kibo-template-viper 1.2.1 (MIT)`, in all three targets.
+
+  Until the header block is factored out, that string is repeated in every
+  `.stg` and must be bumped at each release. The block is copied verbatim into
+  93 files, which is the same reason the licence lines cannot be corrected in
+  one place either.
+
 ### Fixed
 
 - `DataHasher`: the hasher for a `set` computed its result and then returned
