@@ -43,6 +43,7 @@ std::shared_ptr\<Viper::ValueBlob> fuzz_blob();
 // MARK: - Ids
 std::shared_ptr\<Viper::ValueUUId> fuzz_uuid();
 std::shared_ptr\<Viper::ValueBlobId> fuzz_blob_id();
+std::shared_ptr\<Viper::ValueCommitId> fuzz_commit_id();
 
 // MARK: - Any
 std::shared_ptr\<Viper::ValueAny> fuzz_any();

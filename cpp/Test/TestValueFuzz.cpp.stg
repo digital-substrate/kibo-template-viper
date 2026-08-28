@@ -127,6 +127,11 @@ std::shared_ptr\<Viper::ValueUUId> fuzz_uuid() {
     return Viper::ValueUUId::cast(fuzz(type));
 }
 
+std::shared_ptr\<Viper::ValueCommitId> fuzz_commit_id() {
+    auto const type{ValueType::type_commit_id()};
+    return Viper::ValueCommitId::cast(fuzz(type));
+}
+
 // MARK: - Any
 std::shared_ptr\<Viper::ValueAny> fuzz_any() {
     auto const type{Viper::TypeAny::Instance()};

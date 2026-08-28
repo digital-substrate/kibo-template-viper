@@ -16,7 +16,7 @@ main(m) ::= <<
 namespace <m.namespace>::TestFuzz {
 
 // MARK: - Numbers
-std::uint8_t fuzz_bool();
+bool fuzz_bool();
 
 std::uint8_t fuzz_uint8();
 std::uint16_t fuzz_uint16();
@@ -38,6 +38,7 @@ Viper::Blob fuzz_blob();
 // MARK: - Ids
 Viper::UUId fuzz_uuid();
 Viper::BlobId fuzz_blob_id();
+Viper::CommitId fuzz_commit_id();
 
 // MARK - Any
 std::shared_ptr\<Viper::ValueAny> fuzz_any();

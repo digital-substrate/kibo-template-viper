@@ -66,6 +66,21 @@ in what is generated — are tracked here.
   it is now returned. Hash values change for any structure carrying a set
   field — they are in-memory only and never persisted.
 
+- **`TestFuzz::fuzz_bool` was declared but never defined, and `fuzz_uint8`
+  carried its body.** A single copy-paste produced three defects: `fuzz_bool`
+  was declared returning `std::uint8_t` instead of `bool`, no definition of it
+  existed, and `fuzz_uint8` drew from the boolean generator and decoded through
+  `decode_bool`. A model with a `bool` attachment document failed to compile —
+  brace-initialising a `bool` from a `std::uint8_t` narrows — and would have
+  failed to link. The third defect was silent and universal: `fuzz_uint8`
+  produced only 0 and 1 for every model, weakening that generator without
+  breaking anything.
+
+- **`TestFuzz::fuzz_commit_id` did not exist.** `blob_id` and `uuid` had fuzz
+  functions in both harness layers; `commit_id` had been left out of both. Any
+  model declaring an attachment whose document is a `commit_id` failed to
+  generate a compilable test harness.
+
 ## [1.2.0] - 2026-06-17
 
 First standalone release of the first-party Kibo templates for the Viper

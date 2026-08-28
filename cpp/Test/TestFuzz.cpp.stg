@@ -13,9 +13,14 @@ main(m) ::= <<
 namespace <m.namespace>::TestFuzz {
 
 // MARK: - Numbers
-std::uint8_t fuzz_uint8() {
+bool fuzz_bool() {
     auto const value{TestValueFuzz::fuzz_bool()};
     return ValueDecoder::decode_bool(value);
+}
+
+std::uint8_t fuzz_uint8() {
+    auto const value{TestValueFuzz::fuzz_uint8()};
+    return ValueDecoder::decode_uint8(value);
 }
 
 std::uint16_t fuzz_uint16() {
@@ -83,6 +88,11 @@ Viper::BlobId fuzz_blob_id() {
 Viper::UUId fuzz_uuid() {
     auto const value{TestValueFuzz::fuzz_uuid()};
     return ValueDecoder::decode_uuid(value);
+}
+
+Viper::CommitId fuzz_commit_id() {
+    auto const value{TestValueFuzz::fuzz_commit_id()};
+    return ValueDecoder::decode_commit_id(value);
 }
 
 // MARK: - Any
