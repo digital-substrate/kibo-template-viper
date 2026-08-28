@@ -24,7 +24,16 @@ output from different template versions, and what a generated file reports —
 that repackages both into a single artefact should not read that artefact's
 version as either one.
 
-## [Unreleased]
+## [1.2.1] - 2026-08-28
+
+The C++ write direction stops asking the compiler to resolve what the generator
+already knows, and the fuzz harness gains the two entry points no model had ever
+required. Breaking for hand-written code that calls the codec, hasher or digest
+functions; generated call sites update by regeneration alone. The read
+direction, the on-disk format and the runtime contract are unchanged.
+
+Pairs with Kibo 1.2.11, which stops synthesising the container types this
+release's last anticipated consumer needed. Generated files now name both.
 
 ### Changed
 
