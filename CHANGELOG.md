@@ -32,8 +32,9 @@ required. Breaking for hand-written code that calls the codec, hasher or digest
 functions; generated call sites update by regeneration alone. The read
 direction, the on-disk format and the runtime contract are unchanged.
 
-Pairs with Kibo 1.2.11, which stops synthesising the container types this
-release's last anticipated consumer needed. Generated files now name both.
+Pairs with Kibo 1.2.11, which makes anticipated container types a per-target
+decision — this release removes the C++ surface's last use of them. Generated
+files now name both versions.
 
 ### Changed
 
@@ -70,16 +71,17 @@ release's last anticipated consumer needed. Generated files now name both.
   in the `mat` hasher that computes the same value.
 
 - **The remote attachment `get` prototype builds its return type in place.**
-  It read `ValueType::type_optional_<document>()`, a generated accessor whose
-  existence required Kibo to register an `optional` derived type — and with it a
-  full codec, hasher and descriptor family in nine modules — for every
-  attachment document type in the model. It now calls
-  `Viper::TypeOptional::make(ValueType::type_<document>())` directly, which is
-  what that accessor did internally. This was the sole remaining consumer of
-  those derived types; Kibo stops synthesising them (see its 1.2.11 entry). On a
-  model with 366 attachments the generated C++ shrinks by 12%. The prototype
-  declared to the runtime is unchanged, and it is built once per attachment at
-  pool registration, never on a hot path.
+  It read `ValueType::type_optional_<document>()`, a generated accessor that
+  exists only because Kibo registers an `optional` derived type per attachment
+  document. It now calls `Viper::TypeOptional::make(ValueType::type_<document>())`
+  directly, which is what that accessor did internally.
+
+  This was the C++ surface's only use of those derived types, and removing it
+  lets Kibo skip them for a native binding (see its 1.2.11 entry) — the C++ arm
+  builds attachment containers element by element and needs nothing else. The
+  Python and TypeScript arms still wrap them in proxy classes and are unaffected.
+  The prototype declared to the runtime is unchanged, and it is built once per
+  attachment at pool registration, never on a hot path.
 
 - **Generated files now name the template version that produced them.** The
   header read `Templates: MIT (kibo-template-viper)` and named no version, so a
