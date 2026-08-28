@@ -16,6 +16,14 @@ and package it themselves, and the `cpp/`, `python/` and `typescript/`
 directories move together as one snapshot. Which runtime version each directory
 targets is in the README's compatibility table.
 
+Kibo and these templates were distributed as one thing until `1.2.0`, the first
+standalone release, and have moved on separate patch streams since. Their
+numbers are therefore not interchangeable: the same Kibo jar renders different
+output from different template versions, and what a generated file reports —
+`Generated from … by kibo-X.Y.Z.jar` — names the generator alone. A consumer
+that repackages both into a single artefact should not read that artefact's
+version as either one.
+
 ## [Unreleased]
 
 ### Changed
