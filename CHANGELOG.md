@@ -24,7 +24,20 @@ output from different template versions, and what a generated file reports —
 that repackages both into a single artefact should not read that artefact's
 version as either one.
 
-## [Unreleased]
+## [1.2.2] - 2026-08-31
+
+A memory-safety fix in the C++ stream surface, and a gap closed in what the
+generated manifests declare about themselves. `Reader` and `Writer` held their
+stream by reference where every call site passes a pointer to a derived type,
+so the reference bound to a converted temporary that died at the end of the
+constructor. It is undefined behaviour rather than a diagnosable error, and it
+reaches every generated C++ SDK built from `1.2.1` or earlier: regeneration is
+the only cure, and waiting for a crash is not a plan.
+
+No signature changes, no on-disk format change, and no runtime contract change,
+so hand-written call sites are unaffected. The generated `pyproject.toml` and
+`tsconfig.json` gain the header every other generated file already carried;
+their content is otherwise unchanged.
 
 ### Fixed
 
