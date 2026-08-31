@@ -1,0 +1,8 @@
+# End-of-line policy carried by the repository rather than by each clone's
+# core.autocrlf, so a checkout is byte-identical on macOS, Linux and Windows.
+# Without it the Windows default checks shell scripts out with CRLF, where
+# Git Bash rejects them, and a clone configured to avoid that instead lets
+# CRLF into the index.
+
+* text=auto eol=lf
+
