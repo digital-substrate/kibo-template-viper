@@ -58,6 +58,17 @@ version as either one.
   These were the only members declared by reference anywhere in the template
   set, of any type; none remain.
 
+### Added
+
+- **The generated `pyproject.toml` and `tsconfig.json` now name the template
+  version.** Every other generated file already opened with `Templates:
+  kibo-template-viper X.Y.Z (MIT)`; these two did not, and the Python
+  manifest's header named neither the model nor the generator. That stamp is
+  how someone holding generated code decides whether a fix applies to their
+  SDK, so a file omitting it is a file that cannot answer the question. The
+  generated `package.json` stays the one exception, and by necessity: npm
+  parses it as strict JSON, which has no comment syntax.
+
 ## [1.2.1] - 2026-08-28
 
 The C++ write direction stops asking the compiler to resolve what the generator
