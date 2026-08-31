@@ -20,8 +20,8 @@ namespace <m.namespace> {
 
 class Reader final {
 public:
-    std::shared_ptr\<Viper::StreamReading> const & streamReading;
-    std::shared_ptr\<Viper::Definitions const> const & definitions;
+    std::shared_ptr\<Viper::StreamReading> const streamReading;
+    std::shared_ptr\<Viper::Definitions const> const definitions;
 
     Reader(std::shared_ptr\<Viper::StreamReading> const & streamReading,
            std::shared_ptr\<Viper::Definitions const> const & definitions);

@@ -24,6 +24,40 @@ output from different template versions, and what a generated file reports —
 that repackages both into a single artefact should not read that artefact's
 version as either one.
 
+## [Unreleased]
+
+### Fixed
+
+- **`Reader` and `Writer` held their stream by reference, and it dangled.** The
+  members were declared `std::shared_ptr<Viper::StreamReading> const &` (and
+  likewise `definitions`, `streamWriting`), while every call site passes a
+  pointer to a derived type — `createDecoder` returns
+  `shared_ptr<StreamDecoding>`, `createEncoder` returns
+  `shared_ptr<StreamEncoding>`, and `StreamDecoding` derives from
+  `StreamReading`. That conversion is not an identity, so the compiler
+  materialises a converted `shared_ptr` temporary, binds the reference to it,
+  and destroys it at the end of the constructor's full-expression. Every read
+  through the member afterwards is a use of a dead stack slot. The members are
+  now values; the constructor parameters stay `const &`, so the initialiser
+  lists copy instead of binding — one refcount pair per `Reader` or `Writer`,
+  both short-lived stack objects built once per encode or decode.
+
+  *For generated SDKs* — no signature changes, so hand-written call sites are
+  unaffected. But any SDK generated before this carries the defect and only
+  regeneration clears it. It is undefined behaviour, not a diagnosable error:
+  the reused stack frame often still holds a plausible pointer, so a decoder
+  can appear to work for a long time before it stops. Anyone shipping generated
+  C++ from an earlier snapshot should regenerate rather than wait for a crash.
+
+  Caught by `test_codec` in devkit-codegen-test, which segfaulted in
+  `Reader::read_float()`. AddressSanitizer places the fault far earlier, at the
+  first `Reader` constructed anywhere — `stack-use-after-scope` in
+  `ValueDecoder::decode_vec2_uint8`, reading the unnamed temporary two slots
+  above the `decoder` it was converted from.
+
+  These were the only members declared by reference anywhere in the template
+  set, of any type; none remain.
+
 ## [1.2.1] - 2026-08-28
 
 The C++ write direction stops asking the compiler to resolve what the generator

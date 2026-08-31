@@ -18,7 +18,7 @@ namespace <m.namespace> {
 
 class Writer final {
 public:
-    std::shared_ptr\<Viper::StreamWriting> const & streamWriting;
+    std::shared_ptr\<Viper::StreamWriting> const streamWriting;
 
     explicit Writer(std::shared_ptr\<Viper::StreamWriting> const & streamWriting);
 
