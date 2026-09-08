@@ -24,6 +24,68 @@ output from different template versions, and what a generated file reports —
 that repackages both into a single artefact should not read that artefact's
 version as either one.
 
+## [1.2.3] - 2026-09-08
+
+`AnyConceptKey` becomes usable as a key in the standard unordered containers,
+which its interface had promised all along. The generated C++ header declared
+`hash()` and `operator==` on the type but never emitted the matching `std::hash`
+specialisation, so `std::unordered_map<Ns::AnyConceptKey, V>` did not compile.
+Purely additive: no signature changes, no on-disk format change, no runtime
+contract change, and nothing that compiled before compiles differently now.
+
+The generation header that opens every generated file also stops saying the same
+thing three different ways, and the TypeScript barrel gains the runtime and
+licence notice its Python counterpart already carried.
+
+### Fixed
+
+- **`std::hash<Ns::AnyConceptKey>` was never generated.** The header emits a
+  specialisation for every concept, club and structure key, driven by the
+  `concepts`, `clubs` and `structures` lists. `AnyConceptKey` belongs to none of
+  them — it is written out on its own, ahead of the namespaces — and so was
+  skipped. An unspecialised `std::hash` is disabled rather than defined, so the
+  omission surfaces as a compile error at the first `unordered_map` or
+  `unordered_set` keyed by the type: diagnosable and loud, unlike the 1.2.2
+  defect, but it left the type unusable in the one place its `hash()` accessor
+  exists for. The specialisation is now emitted unconditionally, since the class
+  itself is generated unconditionally.
+
+  *For generated SDKs* — additive. Hand-written code that compiled keeps
+  compiling; code that could not compile now can, once regenerated. No
+  regeneration is needed by anyone not reaching for that specialisation.
+
+  `AnyConceptKey` was the only type in the C++ surface declaring `hash()` and
+  `operator==` without a `std::hash` specialisation; none remain.
+
+- The `// MARK: - std::hash for STL unordered container compatibility.` banner
+  was emitted once per non-empty group, so a generated header could carry it up
+  to three times. It now appears once, above the whole block.
+
+### Changed
+
+- **The generation header wraps identically across the three languages.** Its
+  runtime paragraph names a different artefact per target — the `viper` C++
+  runtime, `dsviper`, `@digitalsubstrate/dsviper` — and that is the only part
+  that should differ. The rest was already word for word the same, but the line
+  breaks were not: C++ ended each line on a clause boundary, while Python and
+  TypeScript split `Commercial use / requires a Commercial Licence` mid-phrase.
+  All three now follow the C++ breaks. No wording change, no line added or
+  removed; 19 templates touched, and the C++ tree is untouched.
+
+### Added
+
+- **The generated `index.ts` now carries the runtime and licence notice.** The
+  TypeScript barrel opened with the stamp alone, while its Python counterpart
+  `__init__.py` carried the full notice — the same file in the same role, saying
+  two different things about what it pulls in. Neither names the runtime in its
+  own body; both re-export the whole SDK, so the runtime follows them. The
+  notice now says so in both.
+
+  The rule the tree follows is otherwise intact: a generated file carries the
+  runtime paragraph when it reaches for the runtime. The two manifests keep the
+  short header — `pyproject.toml` and `tsconfig.json` reference nothing — and
+  `package.json` stays without a header at all, npm parsing it as strict JSON.
+
 ## [1.2.2] - 2026-08-31
 
 A memory-safety fix in the C++ stream surface, and a gap closed in what the
