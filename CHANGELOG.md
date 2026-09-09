@@ -31,6 +31,23 @@ The Python and TypeScript surfaces are unchanged.
 
 ### Fixed
 
+- **A `vec` or `mat` of 64-bit integers was typed as `number[]` in TypeScript.** The
+  element spelling was written into the templates rather than derived: the constructor
+  parameter, `toArray`, `row` and `setRow` all said `number[]` whatever the element. A
+  `vec` takes only numeric DSM types, so most of them are `number` and the mistake was
+  invisible — but `int64` and `uint64` cross the Node binding as `bigint`, and the
+  binding says so: `ValueVec.toArray()` returns `NumericOutputValue[]`, which is
+  `number | bigint`.
+
+  The generated code narrowed that with `as number[]`, so TypeScript accepted arithmetic
+  on values that arrive as `bigint` and the mismatch surfaced only at run time, as
+  `Cannot mix BigInt and other types`. A cast hid it from the compiler; nothing else
+  would have caught it.
+
+  The four spellings now derive from the element, so `vec<int64, 2>` renders `bigint[]`.
+  No model in the codegen test declares a 64-bit `vec`, so generated output is unchanged
+  and the fix is shown on a probe model.
+
 - **An attachment's xarray `remove` function was registered under a truncated name,
   and two of them collided.** The helper that builds these names takes the structure
   field; one of its twenty-one call sites passed the field's *name* instead, so

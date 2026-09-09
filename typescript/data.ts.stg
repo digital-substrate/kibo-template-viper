@@ -416,7 +416,7 @@ vec(v) ::= <<
 // <v.dsmType>
 export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueVec> {
 
-    constructor(value?: dsviper.ValueVec | number[]) {
+    constructor(value?: dsviper.ValueVec | <v.pythonElementType:tsType()>[]) {
         if (value instanceof dsviper.ValueVec) {
             if (!value.type().equals(mt.type<v.typeSuffix>())) {
                 throw new TypeError("value is not a <v.dsmType>");
@@ -449,8 +449,8 @@ export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueVec> {
         }
     }
 
-    toArray(): number[] {
-        return this.vprValue.toArray() as number[];
+    toArray(): <v.pythonElementType:tsType()>[] {
+        return this.vprValue.toArray() as <v.pythonElementType:tsType()>[];
     }
 
     copy(): <v.pythonType.proxy> {
@@ -469,7 +469,7 @@ mat(v) ::= <<
 // <v.dsmType>
 export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueMat> {
 
-    constructor(value?: dsviper.ValueMat | number[][]) {
+    constructor(value?: dsviper.ValueMat | <v.pythonElementType:tsType()>[][]) {
         if (value instanceof dsviper.ValueMat) {
             if (!value.type().equals(mt.type<v.typeSuffix>())) {
                 throw new TypeError("value is not a <v.dsmType>");
@@ -504,16 +504,16 @@ export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueMat> {
         this.vprValue.set(row, column, <v.pythonElementType:unwrap("value")>);
     }
 
-    row(row: number): number[] {
-        return (this.vprValue.toArray() as number[][])[row];
+    row(row: number): <v.pythonElementType:tsType()>[] {
+        return (this.vprValue.toArray() as <v.pythonElementType:tsType()>[][])[row];
     }
 
-    setRow(row: number, values: number[]): void {
+    setRow(row: number, values: <v.pythonElementType:tsType()>[]): void {
         values.forEach((value, column) => this.vprValue.set(row, column, value));
     }
 
-    toArray(): number[][] {
-        return this.vprValue.toArray() as number[][];
+    toArray(): <v.pythonElementType:tsType()>[][] {
+        return this.vprValue.toArray() as <v.pythonElementType:tsType()>[][];
     }
 
     copy(): <v.pythonType.proxy> {
