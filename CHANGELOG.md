@@ -24,6 +24,34 @@ output from different template versions, and what a generated file reports —
 that repackages both into a single artefact should not read that artefact's
 version as either one.
 
+## [Unreleased]
+
+Two C++ template defects, both surfaced by the render diagnostics kibo now prints.
+The Python and TypeScript surfaces are unchanged.
+
+### Fixed
+
+- **An attachment's xarray `remove` function was registered under a truncated name,
+  and two of them collided.** The helper that builds these names takes the structure
+  field; one of its twenty-one call sites passed the field's *name* instead, so
+  inside the helper the property lookup ran against a string and resolved to nothing.
+  The generated C++ class kept its correct name while the prototype it registered
+  lost the field: `..._remove_` where its siblings read `..._insert_f_xarray` and
+  `..._update_f_xarray`.
+
+  The consequence is not cosmetic. Every xarray field of one attachment document
+  produced the *same* truncated name, and the runtime rejects a duplicate — it throws
+  `alreadyRegisteredFunctionName`. A document carrying two xarray fields therefore
+  generated code that could not register its attachment pool at all. The codegen test
+  fixture is exactly that shape, and compiles the generated sources without
+  registering the pool, which is why this went unseen.
+
+- **A conditional include in `FunctionPoolRemotes.cpp` could never fire.** It was
+  guarded by `m.usePrototypeData`, which the Template Model does not carry and never
+  has, so the guard was always false. Nothing was missing from the output: the
+  generated header already includes the data header unconditionally, and the source
+  includes that header. The dead guard is removed; generated output is unchanged.
+
 ## [1.2.3] - 2026-09-08
 
 `AnyConceptKey` becomes usable as a key in the standard unordered containers,

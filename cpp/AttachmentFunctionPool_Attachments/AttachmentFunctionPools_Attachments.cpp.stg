@@ -497,7 +497,7 @@ public:
         parameters.push_back({"position", ValueType::type_uuid()});
 
         return std::make_shared\<F_<a:func_nf("remove",sf)>\>(
-            Viper::FunctionPrototype::make("<a:func_nf("remove",sf.name)>", std::move(parameters), ValueType::type_void()),
+            Viper::FunctionPrototype::make("<a:func_nf("remove",sf)>", std::move(parameters), ValueType::type_void()),
             "remove in xarray for property .<sf.name> of the document.");
     }
 

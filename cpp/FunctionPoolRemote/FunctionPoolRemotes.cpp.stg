@@ -12,10 +12,6 @@ main(m) ::= <<
 
 #include "Viper_ServiceRemote.hpp"
 
-<if(m.usePrototypeData)>
-#include "<m.namespace>_Data.hpp"
-<endif>
-
 namespace <m.namespace>::FunctionPoolRemotes {
 
 <m.functionPools:fp();separator="\n">
