@@ -31,6 +31,17 @@ The Python and TypeScript surfaces are unchanged.
 
 ### Fixed
 
+- **A key proxy's docstring counted the key twice.** It read
+  `[A proxy class for a key<Test::ConceptAKey>]`, wrapping `key<…>` around a name that
+  already ended in `Key`. The docstring named the entity through `getType()`, which for a
+  concept or a club is the C++ key type; the Template Model carried no DSM spelling for an
+  entity to reach for instead. Kibo now provides one, and the docstring reads
+  `key<Test::ConceptA>`.
+
+  Requires kibo with `getDsmType()` on concepts and clubs. Only this docstring changes —
+  comments and messages keep naming entities as they did, since moving those to the DSM
+  name is a change of convention rather than a defect, and belongs to 1.3.
+
 - **A `vec` or `mat` of 64-bit integers was typed as `number[]` in TypeScript.** The
   element spelling was written into the templates rather than derived: the constructor
   parameter, `toArray`, `row` and `setRow` all said `number[]` whatever the element. A

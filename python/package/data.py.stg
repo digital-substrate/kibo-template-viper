@@ -157,7 +157,7 @@ docstring(v, d) ::= <<
 
 docstring_key(v, d) ::= <<
 """
-[A proxy class for a key\<<v.type>\>]
+[A proxy class for a key\<<v.dsmType>\>]
 <if(v.hasDocumentation)>
 
 <v.documentation>
