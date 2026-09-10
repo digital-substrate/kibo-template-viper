@@ -100,15 +100,42 @@ runtime it depends on:
 
 ### Compatible runtime versions
 
-The runtime's `MAJOR.MINOR` is the compatibility contract — the on-disk
-format and public API are locked across a minor. The `PATCH` is versioned
-**independently per binding**, so the numbers differ between targets:
+This repository's version is its own — it is a product, and its number says nothing
+about what it sits between. Those are declared, and every generated file carries the
+same declarations in its header:
+
+| | |
+|---|---|
+| **consumes** | Template Model 2, exposed by kibo |
+| **cpp target** | the `viper` C++ runtime 1.2 |
+| **python target** | `dsviper` 1.2 |
+| **typescript target** | `@digitalsubstrate/dsviper` 1.2 (floor `>=1.2.8`) |
+
+A release of this pack is driven by its **targets**: a projection appears because a
+binding gained something to project. The Template Model it consumes moves on kibo's
+own cadence and is a floor, not a co-version — that this pack is at `2.0.0` while it
+consumes Template Model 2 is a **coincidence, not a rule**.
+
+Nothing in the number warns that an upgrade breaks: this pack requires the
+Template Model it declares, and a pack written against an earlier one does not
+render. The CHANGELOG and the generator's render diagnostics carry that warning
+— see kibo's `MIGRATING.md`.
+
+The runtime is a separate axis. Its `MAJOR.MINOR` is the compatibility contract
+— the on-disk format and public API are locked across a minor — and the `PATCH`
+is versioned **independently per binding**, so the numbers differ between
+targets:
 
 | Templates    | Runtime                              | Compatible versions |
 |--------------|--------------------------------------|---------------------|
-| `typescript` | `@digitalsubstrate/dsviper` (npm)    | `>=1.2.8 <1.3.0`    |
+| `typescript` | `@digitalsubstrate/dsviper` (npm)    | `>=1.2.8 <2.0.0`    |
 | `python`     | `dsviper` (PyPI wheel)               | `1.2.x`             |
 | `cpp`        | `viper` (C++ runtime)                | `1.2.x`             |
+
+Every generated file names its runtime and that range in its header, so a
+consumer holding generated code can answer the question without this table.
+`python tools/bump_version.py --check` fails if the templates of one target
+disagree on it.
 
 These templates project the runtime's basic surface, so any `1.2.x` of the
 matching binding will do and there is no patch to track. When a template does
@@ -117,7 +144,7 @@ and the floor belongs in the generated output, not in this table. A pin the
 consumer's build reads cannot go stale, and it fails where someone will see it.
 
 `typescript` is the one such case today. Its generated `package.json` pins
-`>=1.2.8 <1.3.0` because the generated `vec`/`mat` proxies call the binding's
+`>=1.2.8 <2.0.0` because the generated `vec`/`mat` proxies call the binding's
 `toArray()`, which the binding settled on from `1.2.8` onward (a fixed-shape
 sequence is an array in JS, not a tuple), and because `1.2.8` carries a
 critical runtime fix. The `python` and `cpp` outputs carry no pin, and need

@@ -271,41 +271,72 @@ model with two call-form examples**, not two different attachment APIs. Reconcil
 future major line, not the maintenance line — and neither form is a bug, so there is no
 correctness reason to force it.
 
-### Why a `.ts` template reads `pythonType.proxy`
+### What a template reads about a type, and what it never computes
 
-Both surfaces read the model through a per-entity `pythonType` accessor —
-`<e.pythonType.proxy>`, `<sf.pythonType.type>`, and the `useProxy` predicate behind
-`wrap`/`unwrap` (§4). The name predates the TypeScript surface, but its members are
-**language-neutral generated identifiers**, not Python — with exactly one exception:
+Both surfaces read the model through a per-entity `bindingType` accessor. It names the
+**space** — how a type appears seen through the binding — and carries everything the
+target needs in order to write it:
 
-- `.proxy` — the generated class name (`Set_Foo_Bar`, `Foo_MaterialKey`). Identical on
-  both surfaces; this is why a `.ts` template legitimately writes `<e.pythonType.proxy>`.
-- `.useProxy` — the POD-passthrough predicate (§4). Pure logic.
-- `.type` — the scalar *leaf* spelling (`int`, `str`, `None`, `dsviper.ValueBlob`). **This
-  member alone is Python.**
+- `.type` — how **this target** writes the type: the generated proxy class when the type
+  needs one, the binding's own spelling of a primitive when it does not. `int64` is `int`
+  in Python and `bigint` in TypeScript for the very same runtime `ValueInt64`.
+- `.proxy` — the generated class name alone, identical across bindings. Used where a
+  *name* is being built rather than a type written: a runtime-id constant, a `…Key`
+  class declaration.
+- `.useProxy` — whether the type has a proxy at all. This is what `wrap` / `unwrap` turn on.
+- `.valueConstructor` — the runtime value class to build when handing a host value back to
+  the runtime, absent when the value already is one. The Node binding needs it on the way
+  in; the Python one takes host values as they are.
+- `.typeSuffix` — the neutral key naming the generated symbol.
 
-So the TypeScript templates read `.proxy` and `.useProxy` freely but **never**
-`pythonType.type`; they resolve scalar leaves with their own `tsType()` dictionary
-(`boolean`, `number`, `bigint`, `string`, `void`, …). Reaching for `<x.pythonType.type>`
-in a `.ts` template would emit a Python spelling (`str`, `None`) into TypeScript — a bug.
+Fixed-size containers carry their own spelling the same way: a `vec` exposes
+`bindingSequenceType`, a `mat` that and `bindingColumnType` — `tuple[int, int]` in Python,
+`number[]` in TypeScript.
 
-A parallel trap lives on the **structural** container objects (`vec`/`set`/…): their bare
-`.type` is the **C++** spelling (`std::set<…>`), while `.dsmType` is the neutral DSM
-spelling (`set<…>`). In Python and TypeScript comments/docstrings use `.dsmType`, never
-`.type`. Same rule both times: `.proxy`, `.useProxy` and `.dsmType` are language-neutral;
-every other type-spelling accessor — `pythonType.type` (Python leaves), a structural
-`.type` (C++) — belongs to one specific target and must not cross into another.
+**Every spelling comes from the generator.** A template still chooses between *forms* — the
+`d.` module prefix, `X.wrap(v)` against `X(v)`, an `as` cast — because those depend on the
+file and the idiom, not on the type. But it never rewrites a type, and it carries no lookup
+table. That is kibo's contract: the converter computes the types, the template arranges
+them. A dictionary in a `.stg` is the sign the contract has slipped, and the C++ templates —
+which have never carried one — are the reference.
 
-**Why the accessor keeps the name `pythonType` (deferred by design, not inertia).**
-Renaming it to something neutral (`scalarType`) is a change to the **model API that every
-template author reads** — first- and third-party alike — so it is a coordinated change to
-the code generator, tracked for a future generator release rather than done piecemeal on
-the maintenance line. The decisive point is that the rename would leave the **generated
-output byte-identical**: only the accessor's spelling changes, never the strings it
-returns. With no functional difference to buy, there is nothing to rush — the maintenance
-line keeps `pythonType` as the stable model API and reads it correctly per the rule above.
-This section is what tells a template author, when the neutral accessor eventually lands,
-that the two are the same handle under two names.
+This is what `--converter` selects. A target is a binding style plus, for a delegating one,
+the vocabulary of the binding it crosses (`BindingVocabulary` in the generator). Adding a
+target is one small class there, not a dictionary copied into every template file that
+needs it.
+
+### Which space a generated name belongs to
+
+A generated file names types in two very different situations, and they do not take the
+same space.
+
+**In a type position — a signature, an annotation, a declaration — use the target's
+spelling**: `bindingType.type`, or `.proxy` where a *name* is being built rather than a
+type written. That is the code the reader writes and calls.
+
+**In a comment, a docstring, a `repr` or an exception message — use the DSM name.** The
+DSM name carries the *semantics*; `Map_int8_to_string` is only this binding's
+implementation of it. Two things follow from that, and both are load-bearing:
+
+- Every one of these messages guards a **runtime** type comparison
+  (`value.type() != mt.type…()`), and a runtime type is a DSM type. Naming it any other
+  way describes the check inaccurately.
+- The DSM name is what the author wrote in the `.dsm`, and it is **identical across the
+  three targets**, so the same mismatch reads the same wherever it surfaces.
+
+It is also more precise than a host spelling: a variant member of DSM type `uint8` used to
+report `variant does not hold a int` in Python and `a number` in TypeScript, where two
+members of different widths would have raised indistinguishable errors.
+
+Every entity therefore carries `getDsmType()` beside its target spelling, and a tuple or
+variant member (`TemplateType`) carries all three spaces at once — `dsmType`, `type` and
+`bindingType`.
+
+A parallel rule lives on the **structural** container objects (`vec`/`set`/…): their bare
+`.type` is the **C++** spelling (`std::set<…>`), while `.dsmType` is the DSM one
+(`set<…>`). Same rule both times: `.proxy`, `.useProxy`, `.typeSuffix` and `.dsmType` are
+language-neutral; every other type-spelling accessor belongs to one specific target and
+must not cross into another.
 
 ## 8. Changing a template safely
 

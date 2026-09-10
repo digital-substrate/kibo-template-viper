@@ -9,8 +9,33 @@ These are first-party Kibo templates. Changes to the generated C++, Python or
 TypeScript surface — new projections, renamed outputs, or behavioural shifts
 in what is generated — are tracked here.
 
-`MAJOR.MINOR` track the Viper runtime contract; `PATCH` is this repository's own
-stream, independent of the runtime, the `dsviper` wheel and the Node binding.
+This repository's version is its own — it is a product, and its number says nothing
+about what it sits between. Those are declared, and every generated file carries the
+same declarations in its header:
+
+| | |
+|---|---|
+| **consumes** | Template Model 2, exposed by kibo |
+| **cpp target** | the `viper` C++ runtime 1.2 |
+| **python target** | `dsviper` 1.2 |
+| **typescript target** | `@digitalsubstrate/dsviper` 1.2 (floor `>=1.2.8`) |
+
+A release of this pack is driven by its **targets**: a projection appears because a
+binding gained something to project. The Template Model it consumes moves on kibo's
+own cadence and is a floor, not a co-version — that this pack is at `2.0.0` while it
+consumes Template Model 2 is a **coincidence, not a rule**.
+
+They used to track the Viper runtime contract instead. Two things made that the wrong
+number to carry it. The generated surface and the runtime are the two sides of one design
+(`DESIGN.md` §1) and they do not move at the same rate: this repository and the generator
+keep changing to serve whoever reads the generated code — names, ergonomics, what is
+projected at all — while the runtime is locked across a minor by contract and is not
+expected to move. And the three targets never agreed on a runtime version anyway, since
+each binding versions its patch stream independently. One number could not carry both
+sides, so it now carries the one that moves.
+
+Which runtime each target is generated against is stated where it belongs: the README's
+compatibility table, and — since 2.0.0 — the header of every generated file.
 The templates are not published on their own: consumers vendor this repository
 and package it themselves, and the `cpp/`, `python/` and `typescript/`
 directories move together as one snapshot. Which runtime version each directory
@@ -23,6 +48,77 @@ output from different template versions, and what a generated file reports —
 `Generated from … by kibo-X.Y.Z.jar` — names the generator alone. A consumer
 that repackages both into a single artefact should not read that artefact's
 version as either one.
+
+## [2.0.0] - 2026-09-10
+
+Requires **kibo 2.0**; these templates do not render against an earlier generator. The
+runtime they target is unchanged — `viper` / `dsviper` 1.2.x, and
+`@digitalsubstrate/dsviper` `>=1.2.8 <2.0.0` — and is now named, with its version, in the
+header of every generated file.
+
+
+Two C++ template defects, the delegating templates losing every lookup table they carried,
+and the TypeScript remote calls losing two workarounds the binding never needed. Generated
+output changes in the two prototype names named below and in the remote-call lines.
+**Requires a kibo that carries the binding vocabularies.**
+
+### Changed
+
+- **Remote calls stop encoding their arguments, and stop casting their result.** Every
+  generated TypeScript remote call wrapped each argument — `new dsviper.ValueInt64(a)` —
+  and cast the result through `as unknown as dsviper.OutputValue`. Both date from the
+  TypeScript port, when the call path was worked out by probing, and neither was revisited
+  as the binding's typings settled.
+
+  Neither is needed at the declared floor. In `node-v1.2.8`, `ServiceRemoteFunction::Call`
+  marshals each argument through `checkValue(env, arg, parameters[i].type)`, which takes a
+  wrapped value or coerces the native one against the type the prototype declares — every
+  integer width, bigint for the 64-bit ones, strings, and even a string into a uuid, a
+  commit id or a blob id. And 1.2.8 already declares
+  `call(...args: InputValue[]): OutputValue`, so there is nothing to cast.
+
+  Calls now read `call(a, b)`, and a proxy argument still passes its `vprValue`. Verified
+  by type-checking the generated `service` package against the published
+  `@digitalsubstrate/dsviper@1.2.8`: clean.
+
+- **Comments, docstrings, reprs and exception messages name the DSM type.** They named
+  three different spaces at once: containers used the DSM spelling, entities the C++ one
+  (`Test::ConceptAKey`), and a variant member the binding one (`int`, `Test_StructureS`) —
+  in the same generated file.
+
+  All of them guard a runtime type comparison, and a runtime type is a DSM type; the DSM
+  name is also what the author wrote in the `.dsm`, and it reads the same in all three
+  targets. So `identifier is not a Test::ConceptAKey` becomes `… a Test::ConceptA`,
+  `# concept Test::ConceptAKey` becomes `# concept Test::ConceptA`, and the doubled key in
+  `[A proxy class for a key<Test::ConceptAKey>]` is gone.
+
+  It is also more precise: a variant member of DSM type `uint8` reported
+  `variant does not hold a int` in Python and `a number` in TypeScript, so two members of
+  different widths raised indistinguishable errors. No model in the codegen test has such
+  a variant, so this was latent.
+
+  Type positions are untouched — they still use the target's own spelling.
+
+- **The templates no longer spell types; they read them.** Both delegating surfaces used
+  to carry their own lookup tables — `tsLeaf` and `valueCtor` on the TypeScript side, and
+  the Python one reaching back into the generator for the same thing. Thirteen copies of
+  two tables across thirteen files, plus the helpers that walked them.
+
+  The generator now states them, once per target, and the templates read `bindingType.type`
+  for how this target writes a type, `bindingType.valueConstructor` for the runtime value
+  class to build on the way in, and `bindingSequenceType` / `bindingColumnType` for the
+  fixed-size containers. Accessors follow the rename: `bindingType`, `bindingElementType`,
+  `bindingKeyType`, `bindingMembers`, `returnBindingType`.
+
+  `wrap`, `unwrap`, `dtype` and `valueEncode` remain, because choosing between `d.X` and
+  `X`, or between `X.wrap(v)` and `new dsviper.ValueInt64(v)`, depends on the file and the
+  idiom rather than on the type. What is gone is every table and every rewriting of a type
+  inside a template — the register the C++ templates have always been written in.
+
+  One thing this fixes on the way: `vec` and `mat` hard-coded `number[]` and `number[][]`
+  in TypeScript whatever their element, which would have been wrong for a `vec<string, 2>`.
+  They now render the element's own spelling. No model in the codegen test has such a vec,
+  so generated output is unchanged.
 
 ## [1.2.4] - 2026-09-10
 

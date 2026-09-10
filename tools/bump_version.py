@@ -21,7 +21,23 @@ from pathlib import Path
 
 TARGETS = ("cpp", "python", "typescript")
 
-STAMP = re.compile(r"(Templates: kibo-template-viper )(\d+\.\d+\.\d+)( \(MIT\)\.)")
+STAMP = re.compile(r"(Templates: kibo-template-viper )(\d+\.\d+\.\d+)( \(MIT\))")
+
+# The Template Model revision this pack is written against — the accessors it reads
+# from the generator. It is a declared dependency, not this repository's version: a
+# pack ships a feature because its target gained something to project, and goes on
+# needing the same model. One pack, one model, so the templates must agree.
+MODEL = re.compile(r"Template Model (\d+)\.")
+
+# The runtime a target is generated against, stamped beside the runtime it
+# qualifies. The template version no longer carries it -- MAJOR.MINOR tracks the
+# Template Model kibo exposes, not the runtime -- so the generated file has to
+# say it itself, and the three targets do not agree on it.
+RUNTIME = {
+    "cpp": re.compile(r"the `viper` C\+\+ runtime (\S+),"),
+    "python": re.compile(r"imports `dsviper` (\S+),"),
+    "typescript": re.compile(r"imports `@digitalsubstrate/dsviper` (.+?),"),
+}
 VERSION = re.compile(r"^\d+\.\d+\.\d+$")
 RELEASED = re.compile(r"^## \[(\d+\.\d+\.\d+)\]", re.MULTILINE)
 
@@ -51,20 +67,32 @@ def templates(root):
 
 
 def survey(root):
-    """Return (stamped, versions, unstamped) across the template tree."""
+    """Return (stamped, versions, unstamped, runtimes, models) across the tree."""
     stamped, versions, unstamped = [], set(), []
+    runtimes = {target: set() for target in TARGETS}
+    models = set()
     for path in templates(root):
         rel = path.relative_to(root).as_posix()
-        match = STAMP.search(read(path))
+        text = read(path)
+        match = STAMP.search(text)
         if match:
             stamped.append(path)
             versions.add(match.group(2))
         elif rel not in EXEMPT:
             unstamped.append(rel)
-    return stamped, versions, unstamped
+
+        target = rel.split("/", 1)[0]
+        runtime = RUNTIME[target].search(text)
+        if runtime:
+            runtimes[target].add(runtime.group(1))
+
+        model = MODEL.search(text)
+        if model:
+            models.add(model.group(1))
+    return stamped, versions, unstamped, runtimes, models
 
 
-def check(root, total, stamped, versions, unstamped):
+def check(root, total, stamped, versions, unstamped, runtimes, models):
     """Report every invariant that is broken. Returns an exit code."""
     if not total:
         print("error: no templates found; is this the repository root?", file=sys.stderr)
@@ -82,6 +110,17 @@ def check(root, total, stamped, versions, unstamped):
         print("error: templates disagree on the version: "
               + ", ".join(sorted(versions)), file=sys.stderr)
         failed = True
+
+    if len(models) > 1:
+        print("error: templates disagree on the Template Model they need: "
+              + ", ".join(sorted(models)), file=sys.stderr)
+        failed = True
+
+    for target, found in runtimes.items():
+        if len(found) > 1:
+            print(f"error: {target} templates disagree on the runtime they target: "
+                  + ", ".join(sorted(found)), file=sys.stderr)
+            failed = True
 
     return 1 if failed else 0
 
@@ -111,9 +150,9 @@ def main():
 
     root = Path(__file__).resolve().parent.parent
     total = templates(root)
-    stamped, versions, unstamped = survey(root)
+    stamped, versions, unstamped, runtimes, models = survey(root)
 
-    code = check(root, total, stamped, versions, unstamped)
+    code = check(root, total, stamped, versions, unstamped, runtimes, models)
     if code:
         return code
 
@@ -135,7 +174,7 @@ def main():
     for path in stamped:
         write(path, STAMP.sub(r"\g<1>" + args.version + r"\g<3>", read(path)))
 
-    after_stamped, after_versions, _ = survey(root)
+    after_stamped, after_versions, _, _, _ = survey(root)
     if after_versions != {args.version} or len(after_stamped) != len(stamped):
         print("error: rewrite did not converge (found {}, {} of {} stamped)"
               .format(", ".join(sorted(after_versions)), len(after_stamped), len(stamped)),
