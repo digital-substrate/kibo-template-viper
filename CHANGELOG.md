@@ -24,7 +24,7 @@ output from different template versions, and what a generated file reports —
 that repackages both into a single artefact should not read that artefact's
 version as either one.
 
-## [Unreleased]
+## [1.2.4] - 2026-09-10
 
 Two C++ template defects, both surfaced by the render diagnostics kibo now prints.
 The Python and TypeScript surfaces are unchanged.
