@@ -6,7 +6,7 @@ main(m) ::= <<
 // Commercial use requires a Commercial Licence from Digital Substrate.
 // <m.generated>
 
-#include "<m.namespace>_DatabaseRemoteRPCSideClient.hpp"
+#include "<m.include.DatabaseRemoteRPCSideClient>"
 
 #include "Viper_Codec.hpp"
 #include "Viper_DatabaseRemoteErrors.hpp"

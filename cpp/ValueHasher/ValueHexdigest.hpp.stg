@@ -9,7 +9,7 @@ main(m) ::= <<
 #ifndef <m.namespace>_ValueHasher_hpp
 #define <m.namespace>_ValueHasher_hpp
 
-#include "<m.namespace>_Data.hpp"
+#include "<m.include.Data>"
 
 #include "Viper_Values.hpp"
 

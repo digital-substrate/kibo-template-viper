@@ -9,7 +9,7 @@ main(m) ::= <<
 #ifndef <m.namespace>_DatabaseSQLite_hpp
 #define <m.namespace>_DatabaseSQLite_hpp
 
-#include "<m.namespace>_Databasing.hpp"
+#include "<m.include.Databasing>"
 
 #include "Viper_BlobInfo.hpp"
 #include "Viper_BlobStatistics.hpp"

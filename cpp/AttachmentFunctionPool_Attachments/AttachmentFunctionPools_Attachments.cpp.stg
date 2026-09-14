@@ -6,13 +6,13 @@ main(m) ::= <<
 // Commercial use requires a Commercial Licence from Digital Substrate.
 // <m.generated>
 
-#include "<m.namespace>_AttachmentFunctionPools_Attachments.hpp"
+#include "<m.include.AttachmentFunctionPools_Attachments>"
 
-#include "<m.namespace>_Attachments.hpp"
-#include "<m.namespace>_Definitions.hpp"
-#include "<m.namespace>_Path.hpp"
-#include "<m.namespace>_ValueDecoder.hpp"
-#include "<m.namespace>_ValueType.hpp"
+#include "<m.include.Attachments>"
+#include "<m.include.Definitions>"
+#include "<m.include.Path>"
+#include "<m.include.ValueDecoder>"
+#include "<m.include.ValueType>"
 
 #include "Viper_AttachmentGettingFunction.hpp"
 #include "Viper_AttachmentMutatingFunction.hpp"

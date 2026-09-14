@@ -6,8 +6,8 @@ main(m) ::= <<
 // Commercial use requires a Commercial Licence from Digital Substrate.
 // <m.generated>
 
-#include "<m.namespace>_DatabaseRemote.hpp"
-#include "<m.namespace>_DatabaseRemoteRPCSideClient.hpp"
+#include "<m.include.DatabaseRemote>"
+#include "<m.include.DatabaseRemoteRPCSideClient>"
 
 namespace <m.namespace> {
 

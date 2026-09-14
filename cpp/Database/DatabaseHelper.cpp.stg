@@ -6,7 +6,7 @@ main(m) ::= <<
 // Commercial use requires a Commercial Licence from Digital Substrate.
 // <m.generated>
 
-#include "<m.namespace>_DatabaseHelper.hpp"
+#include "<m.include.DatabaseHelper>"
 
 #include "Viper_BlobInfo.hpp"
 

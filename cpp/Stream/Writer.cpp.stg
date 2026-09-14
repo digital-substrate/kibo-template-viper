@@ -6,7 +6,7 @@ main(m) ::= <<
 // Commercial use requires a Commercial Licence from Digital Substrate.
 // <m.generated>
 
-#include "<m.namespace>_Writer.hpp"
+#include "<m.include.Writer>"
 
 #include "Viper_Any.hpp"
 #include "Viper_TypeEncoder.hpp"

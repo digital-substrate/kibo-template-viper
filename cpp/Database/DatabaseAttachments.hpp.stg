@@ -9,8 +9,8 @@ main(m) ::= <<
 #ifndef <m.namespace>_DatabaseAttachment_hpp
 #define <m.namespace>_DatabaseAttachment_hpp
 
-#include "<m.namespace>_Data.hpp"
-#include "<m.namespace>_Database.hpp"
+#include "<m.include.Data>"
+#include "<m.include.Database>"
 
 <m.nameSpaces:namespace(m);separator="\n">
 

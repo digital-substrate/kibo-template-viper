@@ -6,9 +6,9 @@ main(m) ::= <<
 // Commercial use requires a Commercial Licence from Digital Substrate.
 // <m.generated>
 
-#include "<m.namespace>_Database.hpp"
-#include "<m.namespace>_TestDatabaseFuzz.hpp"
-#include "<m.namespace>_TestValueFuzz.hpp"
+#include "<m.include.Database>"
+#include "<m.include.TestDatabaseFuzz>"
+#include "<m.include.TestValueFuzz>"
 
 #include "Viper_Error.hpp"
 #include "Viper_StringHelper.hpp"

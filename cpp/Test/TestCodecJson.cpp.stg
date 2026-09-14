@@ -6,10 +6,10 @@ main(m) ::= <<
 // Commercial use requires a Commercial Licence from Digital Substrate.
 // <m.generated>
 
-#include "<m.namespace>_TestCodecJson.hpp"
-#include "<m.namespace>_TestFuzz.hpp"
-#include "<m.namespace>_JsonDecoder.hpp"
-#include "<m.namespace>_JsonEncoder.hpp"
+#include "<m.include.TestCodecJson>"
+#include "<m.include.TestFuzz>"
+#include "<m.include.JsonDecoder>"
+#include "<m.include.JsonEncoder>"
 
 #include "Viper_GeneralErrors.hpp"
 #include "Viper_JsonDSMDefinitionsDecoder.hpp"

@@ -6,7 +6,7 @@ main(m) ::= <<
 // Commercial use requires a Commercial Licence from Digital Substrate.
 // <m.generated>
 
-#include "<m.namespace>_Path.hpp"
+#include "<m.include.Path>"
 
 <m.nameSpaces:namespace(m);separator="\n">
 

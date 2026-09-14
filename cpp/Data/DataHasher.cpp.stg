@@ -6,7 +6,7 @@ main(m) ::= <<
 // Commercial use requires a Commercial Licence from Digital Substrate.
 // <m.generated>
 
-#include "<m.namespace>_DataHasher.hpp"
+#include "<m.include.DataHasher>"
 #include "Viper_Hash.hpp"
 
 namespace <m.namespace>::Hasher {

@@ -6,8 +6,8 @@ main(m) ::= <<
 // Commercial use requires a Commercial Licence from Digital Substrate.
 // <m.generated>
 
-#include "<m.namespace>_ValueHexdigest.hpp"
-#include "<m.namespace>_ValueEncoder.hpp"
+#include "<m.include.ValueHexdigest>"
+#include "<m.include.ValueEncoder>"
 
 #include "Viper_HashSHA1.hpp"
 #include "Viper_ValueHasher.hpp"

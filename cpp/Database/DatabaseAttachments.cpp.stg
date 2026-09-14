@@ -6,12 +6,12 @@ main(m) ::= <<
 // Commercial use requires a Commercial Licence from Digital Substrate.
 // <m.generated>
 
-#include "<m.namespace>_DatabaseAttachments.hpp"
-#include "<m.namespace>_Database.hpp"
-#include "<m.namespace>_Definitions.hpp"
-#include "<m.namespace>_Reader.hpp"
-#include "<m.namespace>_ValueEncoder.hpp"
-#include "<m.namespace>_Writer.hpp"
+#include "<m.include.DatabaseAttachments>"
+#include "<m.include.Database>"
+#include "<m.include.Definitions>"
+#include "<m.include.Reader>"
+#include "<m.include.ValueEncoder>"
+#include "<m.include.Writer>"
 
 #include "Viper_BlobIdCollector.hpp"
 #include "Viper_DatabaseErrors.hpp"

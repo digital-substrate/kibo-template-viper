@@ -6,8 +6,8 @@ main(m) ::= <<
 // Commercial use requires a Commercial Licence from Digital Substrate.
 // <m.generated>
 
-#include "<m.namespace>_ValueType.hpp"
-#include "<m.namespace>_Definitions.hpp"
+#include "<m.include.ValueType>"
+#include "<m.include.Definitions>"
 
 #include "Viper_Types.hpp"
 

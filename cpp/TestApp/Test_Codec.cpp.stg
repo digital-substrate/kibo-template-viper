@@ -6,10 +6,10 @@ main(m) ::= <<
 // Commercial use requires a Commercial Licence from Digital Substrate.
 // <m.generated>
 
-#include "<m.namespace>_TestCodecStream.hpp"
-#include "<m.namespace>_TestCodecJson.hpp"
-#include "<m.namespace>_TestCodecValue.hpp"
-#include "<m.namespace>_TestValueFuzz.hpp"
+#include "<m.include.TestCodecStream>"
+#include "<m.include.TestCodecJson>"
+#include "<m.include.TestCodecValue>"
+#include "<m.include.TestValueFuzz>"
 
 #include "Viper_Error.hpp"
 #include "Viper_StreamTokenBinaryCodec.hpp"

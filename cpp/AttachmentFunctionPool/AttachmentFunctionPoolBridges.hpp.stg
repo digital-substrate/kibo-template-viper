@@ -9,7 +9,7 @@ main(m) ::= <<
 #ifndef <m.namespace>_AttachmentFunctionPoolBridges_hpp
 #define <m.namespace>_AttachmentFunctionPoolBridges_hpp
 
-#include "<m.namespace>_Data.hpp"
+#include "<m.include.Data>"
 
 #include "Viper_AttachmentGetting.hpp"
 #include "Viper_AttachmentMutating.hpp"

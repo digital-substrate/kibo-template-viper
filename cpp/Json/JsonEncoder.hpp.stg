@@ -9,7 +9,7 @@ main(m) ::= <<
 #ifndef <m.namespace>_JsonEncoder_hpp
 #define <m.namespace>_JsonEncoder_hpp
 
-#include "<m.namespace>_Data.hpp"
+#include "<m.include.Data>"
 
 namespace <m.namespace>::JsonEncoder {
 

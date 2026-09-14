@@ -6,9 +6,9 @@ main(m) ::= <<
 // Commercial use requires a Commercial Licence from Digital Substrate.
 // <m.generated>
 
-#include "<m.namespace>_Python_Definitions.hpp"
-#include "<m.namespace>_Definitions.hpp"
-#include "<m.namespace>_ValueType.hpp"
+#include "<m.include.Python_Definitions>"
+#include "<m.include.Definitions>"
+#include "<m.include.ValueType>"
 
 #include "P_ViperWrapper.hpp"
 #include "P_Viper_Attachment.hpp"

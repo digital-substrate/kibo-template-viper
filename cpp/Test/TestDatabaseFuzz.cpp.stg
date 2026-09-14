@@ -6,9 +6,9 @@ main(m) ::= <<
 // Commercial use requires a Commercial Licence from Digital Substrate.
 // <m.generated>
 
-#include "<m.namespace>_TestDatabaseFuzz.hpp"
-#include "<m.namespace>_TestFuzz.hpp"
-#include "<m.namespace>_DatabaseAttachments.hpp"
+#include "<m.include.TestDatabaseFuzz>"
+#include "<m.include.TestFuzz>"
+#include "<m.include.DatabaseAttachments>"
 
 <m.nameSpaces:namespace(m);separator="\n">
 

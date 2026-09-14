@@ -6,14 +6,14 @@ main(m) ::= <<
 // Commercial use requires a Commercial Licence from Digital Substrate.
 // <m.generated>
 
-#include "<m.namespace>_Definitions.hpp"
+#include "<m.include.Definitions>"
 
 #include "Viper_DefinitionsDecoder.hpp"
 #include "Viper_StreamTokenBinaryCodec.hpp"
 
 #include \<cstring>
 
-#include "<m.namespace>_Resources.hpp"
+#include "<m.include.Resources>"
 
 namespace <m.namespace> {
 

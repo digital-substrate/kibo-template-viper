@@ -9,7 +9,7 @@ main(m) ::= <<
 #ifndef <m.namespace>_TestFuzz_hpp
 #define <m.namespace>_TestFuzz_hpp
 
-#include "<m.namespace>_Data.hpp"
+#include "<m.include.Data>"
 
 #include \<memory>
 

@@ -6,8 +6,8 @@ main(m) ::= <<
 // Commercial use requires a Commercial Licence from Digital Substrate.
 // <m.generated>
 
-#include "<m.namespace>_Reader.hpp"
-#include "<m.namespace>_ValueType.hpp"
+#include "<m.include.Reader>"
+#include "<m.include.ValueType>"
 
 #include "Viper_TypeAny.hpp"
 #include "Viper_TypeErrors.hpp"

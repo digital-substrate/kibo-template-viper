@@ -9,7 +9,7 @@ main(m) ::= <<
 #ifndef <m.namespace>_DatabaseRemote_hpp
 #define <m.namespace>_DatabaseRemote_hpp
 
-#include "<m.namespace>_Databasing.hpp"
+#include "<m.include.Databasing>"
 
 #include "Viper_Socket.hpp"
 

@@ -9,7 +9,7 @@ main(m) ::= <<
 #ifndef <m.namespace>_Writer_hpp
 #define <m.namespace>_Writer_hpp
 
-#include "<m.namespace>_Data.hpp"
+#include "<m.include.Data>"
 
 #include "Viper_StreamWriting.hpp"
 #include "Viper_XArray.hpp"

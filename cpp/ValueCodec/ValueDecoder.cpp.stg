@@ -6,10 +6,10 @@ main(m) ::= <<
 // Commercial use requires a Commercial Licence from Digital Substrate.
 // <m.generated>
 
-#include "<m.namespace>_ValueDecoder.hpp"
-#include "<m.namespace>_Definitions.hpp"
-#include "<m.namespace>_Reader.hpp"
-#include "<m.namespace>_ValueType.hpp"
+#include "<m.include.ValueDecoder>"
+#include "<m.include.Definitions>"
+#include "<m.include.Reader>"
+#include "<m.include.ValueType>"
 
 #include "Viper_StreamBinaryCodec.hpp"
 #include "Viper_StreamDecoding.hpp"

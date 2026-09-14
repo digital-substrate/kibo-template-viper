@@ -6,13 +6,13 @@ main(m) ::= <<
 // Commercial use requires a Commercial Licence from Digital Substrate.
 // <m.generated>
 
-#include "<m.namespace>_TestCodecValue.hpp"
-#include "<m.namespace>_Definitions.hpp"
-#include "<m.namespace>_Reader.hpp"
-#include "<m.namespace>_ValueDecoder.hpp"
-#include "<m.namespace>_ValueEncoder.hpp"
-#include "<m.namespace>_TestValueFuzz.hpp"
-#include "<m.namespace>_Writer.hpp"
+#include "<m.include.TestCodecValue>"
+#include "<m.include.Definitions>"
+#include "<m.include.Reader>"
+#include "<m.include.ValueDecoder>"
+#include "<m.include.ValueEncoder>"
+#include "<m.include.TestValueFuzz>"
+#include "<m.include.Writer>"
 
 #include "Viper_GeneralErrors.hpp"
 

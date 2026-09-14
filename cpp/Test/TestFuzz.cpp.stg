@@ -6,9 +6,9 @@ main(m) ::= <<
 // Commercial use requires a Commercial Licence from Digital Substrate.
 // <m.generated>
 
-#include "<m.namespace>_TestFuzz.hpp"
-#include "<m.namespace>_ValueDecoder.hpp"
-#include "<m.namespace>_TestValueFuzz.hpp"
+#include "<m.include.TestFuzz>"
+#include "<m.include.ValueDecoder>"
+#include "<m.include.TestValueFuzz>"
 
 namespace <m.namespace>::TestFuzz {
 

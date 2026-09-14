@@ -6,10 +6,10 @@ main(m) ::= <<
 // Commercial use requires a Commercial Licence from Digital Substrate.
 // <m.generated>
 
-#include "<m.namespace>_JsonEncoder.hpp"
-#include "<m.namespace>_Definitions.hpp"
-#include "<m.namespace>_ValueEncoder.hpp"
-#include "<m.namespace>_ValueType.hpp"
+#include "<m.include.JsonEncoder>"
+#include "<m.include.Definitions>"
+#include "<m.include.ValueEncoder>"
+#include "<m.include.ValueType>"
 
 #include "Viper_DefinitionsToDSMDefinitions.hpp"
 #include "Viper_JsonDSMDefinitionsEncoder.hpp"

@@ -9,7 +9,7 @@ main(m) ::= <<
 #ifndef <m.namespace>_FunctionPoolRemotes_hpp
 #define <m.namespace>_FunctionPoolRemotes_hpp
 
-#include "<m.namespace>_Data.hpp"
+#include "<m.include.Data>"
 
 #include "Viper_ServiceRemote.hpp"
 

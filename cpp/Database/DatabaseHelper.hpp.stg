@@ -9,7 +9,7 @@ main(m) ::= <<
 #ifndef <m.namespace>_DatabaseHelper_hpp
 #define <m.namespace>_DatabaseHelper_hpp
 
-#include "<m.namespace>_Database.hpp"
+#include "<m.include.Database>"
 
 namespace <m.namespace>::DatabaseHelper {
 

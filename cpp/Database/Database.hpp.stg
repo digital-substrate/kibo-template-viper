@@ -9,7 +9,7 @@ main(m) ::= <<
 #ifndef <m.namespace>_Database_hpp
 #define <m.namespace>_Database_hpp
 
-#include "<m.namespace>_Databasing.hpp"
+#include "<m.include.Databasing>"
 
 #include "Viper_BlobStream.hpp"
 
