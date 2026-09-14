@@ -50,10 +50,10 @@ void test_Types();
 
 namespace(ns) ::= <<
 // MARK: - Namespace <ns.name>
-<m.concepts:test();separator="\n">
-<m.clubs:test();separator="\n">
-<m.enumerations:test();separator="\n">
-<m.structures:test();separator="\n">
+<ns.concepts:test();separator="\n">
+<ns.clubs:test();separator="\n">
+<ns.enumerations:test();separator="\n">
+<ns.structures:test();separator="\n">
 >>
 
 test(v) ::= <%void test<v.typeSuffix>();%>
