@@ -16,7 +16,7 @@ pool(p) ::= <<
 
 #include "Viper_Values.hpp"
 
-namespace <p.name;format="uf"> {
+namespace <p.model.namespace>::<p.name;format="uf"> {
 
 <p.functions:fp_prototype();separator="\n">
 

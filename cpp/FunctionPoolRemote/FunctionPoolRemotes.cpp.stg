@@ -15,7 +15,7 @@ pool(p) ::= <<
 
 #include "Viper_ServiceRemote.hpp"
 
-namespace <p.name;format="uf"> {
+namespace <p.model.namespace>::<p.name;format="uf"> {
 
 <p:fp()>
 

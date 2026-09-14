@@ -15,6 +15,11 @@ model(m) ::= <<
 
 namespace <m.namespace>::ValueHasher {
 
+// The shared helper every hexdigest goes through. It was only ever defined in the
+// implementation and never declared, because nothing outside that one file called it.
+// A unit's implementation does.
+std::string hexdigestValue(std::shared_ptr\<Viper::Value const> const & value);
+
 // MARK: - Numbers
 std::string hexdigest_bool(bool value);
 
@@ -75,6 +80,10 @@ std::string hexdigest_AnyConceptKey(AnyConceptKey const & value);
 #endif
 >>
 
+// One file per unit. The scope keeps the -n enclosing namespace until Data moves:
+// a unit file whose scope is `Test::` cannot see types that still live in
+// `Features::Test::`. The file split and the enclosing-namespace removal are separable,
+// but only in this order.
 // One file per unit, holding what belongs to that unit and nothing else. It reaches
 // Data through u.model.include because Data has not been split yet: it still lives
 // under -n. When it is, this becomes u.include.Data, and the edit is visible in a diff
@@ -94,7 +103,7 @@ unit(u) ::= <<
 
 #include "Viper_Values.hpp"
 
-namespace <u.name>::ValueHasher {
+namespace <u.model.namespace>::<u.name>::ValueHasher {
 
 <u.concepts:hexdigest();separator="\n">
 <u.clubs:hexdigest();separator="\n">

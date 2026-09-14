@@ -30,7 +30,7 @@ attachment_type(a) ::= <%ValueType::attachment_<a.namespace>_<a.identifier>()%>
 
 attachment(a) ::= <<
 // MARK: - <a.representation>
-namespace <a.namespace>::Attachments::<a.identifier> {
+namespace <u.model.namespace>::<a.namespace>::Attachments::<a.identifier> {
 
 std::set\<<a.keyType.typeInNamespace>\> keys(std::shared_ptr\<Viper::AttachmentGetting> const & attachmentGetting) {
     std::set\<<a.keyType.typeInNamespace>\> result;

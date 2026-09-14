@@ -139,12 +139,13 @@ unit(u) ::= <<
 // <u.model.generated>
 
 #include "<u.include.ValueHexdigest>"
+#include "<u.model.include.ValueHexdigest>"   // hexdigestValue, in the base
 #include "<u.model.include.ValueEncoder>"
 
 #include "Viper_HashSHA1.hpp"
 #include "Viper_ValueHasher.hpp"
 
-namespace <u.name>::ValueHasher {
+namespace <u.model.namespace>::<u.name>::ValueHasher {
 
 <u.enumerations:{v|<unit_hexdigest(v, u)>};separator="\n">
 <u.structures:{v|<unit_hexdigest(v, u)>};separator="\n">
