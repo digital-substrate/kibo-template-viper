@@ -7,7 +7,7 @@ main(m) ::= <<
 # <m.generated>
 
 """
-Getters, setters and collaborative setters for attachments defined for <m.namespace>.
+Getters, setters and field-level setters for attachments defined for <m.namespace>.
 """
 
 from __future__ import annotations
