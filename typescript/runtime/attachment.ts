@@ -40,7 +40,7 @@ export interface Mutating extends Setting {
                    position: dsviper.ValueUUId): void;
 }
 
-export class AttachmentProxy<K, D> {
+export class AttachmentProxy<K, D, KS = Sequence<K>> {
     private readonly runtimeId: dsviper.ValueUUId;
     private readonly definitions: () => dsviper.DefinitionsConst;
     private resolved?: dsviper.Attachment;
@@ -57,8 +57,8 @@ export class AttachmentProxy<K, D> {
         return (this.resolved ??= this.definitions().checkAttachment(this.runtimeId));
     }
 
-    keys(getting: Getting): Sequence<K> {
-        return new Sequence<K>(getting.keys(this.descriptor));
+    keys(getting: Getting): KS {
+        return wrap(getting.keys(this.descriptor)) as KS;
     }
 
     enumerate(getting: Getting): [K, D | undefined][] {
@@ -70,13 +70,11 @@ export class AttachmentProxy<K, D> {
             .map(([key, document]) => [wrap(key), wrap(document)]);
     }
 
-    diffKeys(current: Getting, other: Getting):
-            [Sequence<K>, Sequence<K>, Sequence<K>, Sequence<K>] {
+    diffKeys(current: Getting, other: Getting): [KS, KS, KS, KS] {
         const groups = dsviper.AttachmentGetting.diffKeys(
             current as unknown as dsviper.AttachmentGetting,
             other as unknown as dsviper.AttachmentGetting, this.descriptor);
-        return groups.map((group) => new Sequence<K>(group)) as unknown as
-            [Sequence<K>, Sequence<K>, Sequence<K>, Sequence<K>];
+        return groups.map((group) => wrap(group)) as unknown as [KS, KS, KS, KS];
     }
 
     has(getting: Getting, key: K): boolean {

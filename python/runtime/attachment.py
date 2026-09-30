@@ -14,9 +14,10 @@ from .proxy import Proxy, unwrap as _unwrap, wrap as _wrap
 
 K = typing.TypeVar("K", bound=Proxy)
 D = typing.TypeVar("D")
+KS = typing.TypeVar("KS")
 
 
-class AttachmentProxy(typing.Generic[K, D]):
+class AttachmentProxy(typing.Generic[K, D, KS]):
 
     def __init__(self, runtime_id: dsviper.ValueUUId,
                  definitions: Callable[[], dsviper.DefinitionsConst],
@@ -32,8 +33,8 @@ class AttachmentProxy(typing.Generic[K, D]):
         return self._definitions().check_attachment(self._runtime_id)
 
 
-    def keys(self, getting: dsviper.AttachmentGetting) -> set[K]:
-        return {_wrap(key) for key in getting.keys(self.descriptor)}
+    def keys(self, getting: dsviper.AttachmentGetting) -> KS:
+        return _wrap(getting.keys(self.descriptor))
 
     def has(self, getting: dsviper.AttachmentGetting, key: K) -> bool:
         return getting.has(self.descriptor, key.vpr_value)
@@ -48,10 +49,10 @@ class AttachmentProxy(typing.Generic[K, D]):
                 for key, document in source.enumerate(self.descriptor, encoded=encoded)]
 
     def diff_keys(self, current: dsviper.AttachmentGetting, other: dsviper.AttachmentGetting
-                  ) -> tuple[set[K], set[K], set[K], set[K]]:
+                  ) -> tuple[KS, KS, KS, KS]:
         added, removed, different, same = dsviper.AttachmentGetting.diff_keys(
             current, other, self.descriptor)
-        wrapped = [{_wrap(key) for key in group} for group in (added, removed, different, same)]
+        wrapped = [_wrap(group) for group in (added, removed, different, same)]
         return wrapped[0], wrapped[1], wrapped[2], wrapped[3]
 
 
