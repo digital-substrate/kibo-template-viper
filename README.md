@@ -83,6 +83,17 @@ This repo is for **first-party templates only** (DS-maintained). Third
 parties writing their own templated features follow the same `.stg`
 conventions but live in their own repos.
 
+A project can add its features to the pack's selection: a manifest of the same shape as
+`features.json`, whose templates sit beside it (`<manifest dir>/<language>/<template>`), and
+whose features may require the pack's.
+
+```
+$ ./resolve.py cpp MyReport --with path/to/my-templates/features.json
+```
+
+In Python, `resolve.templates("cpp", ["MyReport"], extra=["path/to/my-templates/features.json"])`.
+A feature name the pack already declares is refused.
+
 ## License
 
 This project is licensed under the MIT License — see [LICENSE](LICENSE).
