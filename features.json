@@ -1,0 +1,152 @@
+{
+  "_comment": [
+    "A feature is what a project asks for; a template is what kibo renders. This file is the",
+    "map between them, so templates stay flat and selection is expressed one level up.",
+    "`requires` was measured, not decided: it is the #include graph of the generated C++,",
+    "interface (.hpp -> .hpp) and build (.cpp -> .hpp) unioned, since asking for a feature",
+    "means compiling it. Re-measure it when the templates move."
+  ],
+  "cpp": {
+    "Base": {
+      "doc": "The type system and everything that cannot be pulled apart from it. Data, Codec, Model and AnyConcept include one another in both directions; there is no cut.",
+      "templates": [
+        "data.cpp.stg",
+        "data.hpp.stg",
+        "codec.cpp.stg",
+        "codec.hpp.stg",
+        "model.cpp.stg",
+        "model.hpp.stg",
+        "any_concept.cpp.stg",
+        "any_concept.hpp.stg"
+      ],
+      "requires": []
+    },
+    "Fields": {
+      "doc": "The name and the path of every field, as constants: code that handles structures through the dynamic API gets completion instead of a string it can misspell. Selectable alone; Attachments builds its typed field setters on it.",
+      "templates": [
+        "fields.cpp.stg",
+        "fields.hpp.stg"
+      ],
+      "requires": []
+    },
+    "Attachments": {
+      "doc": "The attachments a unit declares, read and written in memory or in a database.",
+      "templates": [
+        "attachments.cpp.stg",
+        "attachments.hpp.stg"
+      ],
+      "requires": [
+        "Base",
+        "Fields"
+      ]
+    },
+    "AttachmentPool": {
+      "doc": "The model's attachments exposed to the dynamic world.",
+      "templates": [
+        "attachment_pool.cpp.stg",
+        "attachment_pool.hpp.stg"
+      ],
+      "requires": [
+        "Base",
+        "Attachments"
+      ]
+    },
+    "Pool": {
+      "doc": "A function pool, server side: the functions the application implements, and the pool that registers them.",
+      "templates": [
+        "pool.cpp.stg",
+        "pool.hpp.stg"
+      ],
+      "requires": [
+        "Base"
+      ]
+    },
+    "PoolRemote": {
+      "doc": "A function pool, client side: `Remote`, which calls the pool through a service. Selectable without Pool, so a client does not link the functions only a server implements.",
+      "templates": [
+        "remote.cpp.stg",
+        "remote.hpp.stg"
+      ],
+      "requires": [
+        "Base"
+      ]
+    },
+    "PythonDefinitions": {
+      "doc": "The model's types, attachments and field paths as constants of a Python module embedded in a C++ application, for scripts using the dynamic API. What Fields is to C++ code, for that Python.",
+      "templates": [
+        "python_definitions.cpp.stg",
+        "python_definitions.hpp.stg"
+      ],
+      "requires": [
+        "Base",
+        "Attachments"
+      ],
+      "note": "Compiles against Python.h and viper's P_Viper wrappers, which the laboratory does not build: GraphEditor is where it is exercised."
+    }
+  },
+  "python": {
+    "Base": {
+      "doc": "The package: its entry point, the types each namespace declares, the attachments, and the container bindings the model mentions.",
+      "templates": [
+        "__init__.py.stg",
+        "data.py.stg",
+        "attachments.py.stg",
+        "containers.py.stg"
+      ],
+      "requires": []
+    },
+    "Pool": {
+      "doc": "A function pool and its client edge. Most projects have none: a pool is a service surface, not a consequence of having a model.",
+      "templates": [
+        "pool/__init__.py.stg",
+        "pool.py.stg"
+      ],
+      "requires": [
+        "Base"
+      ]
+    },
+    "Wheel": {
+      "doc": "What makes the package installable, and therefore typed.",
+      "templates": [
+        "pyproject.toml.stg",
+        "py.typed.stg"
+      ],
+      "requires": [
+        "Base"
+      ],
+      "note": "These two do not land beside the modules: py.typed goes inside the package, pyproject.toml one level up at the project root. A project script renders them with a different -o. Measured: without py.typed a consumer gets `Stub file not found` and every annotation in the package is invisible; without pyproject.toml `pip install` refuses the directory outright."
+    }
+  },
+  "typescript": {
+    "Base": {
+      "doc": "The package: its entry point, the types each namespace declares, the attachments, and the container bindings the model mentions.",
+      "templates": [
+        "index.ts.stg",
+        "data.ts.stg",
+        "attachments.ts.stg",
+        "containers.ts.stg"
+      ],
+      "requires": []
+    },
+    "Pool": {
+      "doc": "A function pool and its client edge. Most projects have none: a pool is a service surface, not a consequence of having a model.",
+      "templates": [
+        "pool/index.ts.stg",
+        "pool.ts.stg"
+      ],
+      "requires": [
+        "Base"
+      ]
+    },
+    "Package": {
+      "doc": "What makes the package buildable and installable: package.json and tsconfig.json, at the package root, the sources staying in src/.",
+      "templates": [
+        "package.json.stg",
+        "tsconfig.json.stg"
+      ],
+      "requires": [
+        "Base"
+      ]
+    }
+  }
+}
