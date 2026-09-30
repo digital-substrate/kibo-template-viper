@@ -419,6 +419,15 @@ type Bound<V> = {
 
 const bound = new Map<() => dsviper.Type, unknown>();
 
+export function declaredFor(type: dsviper.Type): (new (value: dsviper.Value) => View) | undefined {
+    for (const [typeOf, held] of bound) {
+        if (typeOf().equals(type)) {
+            return held as new (value: dsviper.Value) => View;
+        }
+    }
+    return undefined;
+}
+
 function boundFor(view: unknown, type: dsviper.Type): unknown {
     for (const [typeOf, held] of bound) {
         if (Object.getPrototypeOf(held as object) === view && typeOf().equals(type)) {

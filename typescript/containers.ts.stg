@@ -9,6 +9,8 @@ model(m) ::= <<
 import dsviper from "@digitalsubstrate/dsviper";
 
 import { mappingOf, optionalOf, orderedOf, sequenceOf, variantOf } from "./_codegen/container.js";
+import type * as containers from "./containers.js";
+import type { AnyConceptKey } from "./_codegen/registry.js";
 <m.nameSpaces:{u|import * as <u.name;format="lsc"> from "./<u.name;format="lsc">/data.js";};separator="\n">
 
 <primitives()>
@@ -24,15 +26,15 @@ import { mappingOf, optionalOf, orderedOf, sequenceOf, variantOf } from "./_code
 <m.xarrayFunctions:element();separator="\n">
 <m.variantFunctions:variant();separator="\n">
 
-<m.vecFunctions:bound("sequenceOf");separator="\n">
-<m.matFunctions:bound("sequenceOf");separator="\n">
-<m.tupleFunctions:bound("sequenceOf");separator="\n">
-<m.optionalFunctions:bound("optionalOf");separator="\n">
-<m.vectorFunctions:bound("sequenceOf");separator="\n">
-<m.setFunctions:bound("sequenceOf");separator="\n">
-<m.mapFunctions:bound("mappingOf");separator="\n">
-<m.xarrayFunctions:bound("orderedOf");separator="\n">
-<m.variantFunctions:bound("variantOf");separator="\n">
+<m.vecFunctions:{v|<bound(v, {sequenceOf\<<v.bindingElementType.qualified>\>})>};separator="\n">
+<m.matFunctions:{v|<bound(v, "sequenceOf")>};separator="\n">
+<m.tupleFunctions:{v|<bound(v, {sequenceOf\<<v.members:{t|<t.bindingType.qualified>};separator=" | ">\>})>};separator="\n">
+<m.optionalFunctions:{v|<bound(v, {optionalOf\<<v.bindingElementType.qualified>\>})>};separator="\n">
+<m.vectorFunctions:{v|<bound(v, {sequenceOf\<<v.bindingElementType.qualified>\>})>};separator="\n">
+<m.setFunctions:{v|<bound(v, {sequenceOf\<<v.bindingElementType.qualified>\>})>};separator="\n">
+<m.mapFunctions:{v|<bound(v, {mappingOf\<<v.bindingKeyType.qualified>, <v.bindingElementType.qualified>\>})>};separator="\n">
+<m.xarrayFunctions:{v|<bound(v, {orderedOf\<<v.bindingElementType.qualified>\>})>};separator="\n">
+<m.variantFunctions:{v|<bound(v, {variantOf\<<v.members:{t|<t.bindingType.qualified>};separator=" | ">\>})>};separator="\n">
 >>
 
 primitives() ::= <<
@@ -71,4 +73,7 @@ tuple(v) ::= <%const type<v.typeSuffix> = () => new dsviper.<v.viperType>([<v.me
 variant(v) ::= <%const type<v.typeSuffix> = () => new dsviper.<v.viperType>([<v.members:member();separator=", ">]);%>
 member(t) ::= <%type<t.typeSuffix>()%>
 
-bound(v, factory) ::= <%export const <v.bindingType.proxy> = <factory>(type<v.typeSuffix>);%>
+bound(v, factory) ::= <<
+export const <v.bindingType.proxy> = <factory>(type<v.typeSuffix>);
+export type <v.bindingType.proxy> = InstanceType\<typeof <v.bindingType.proxy>\>;
+>>

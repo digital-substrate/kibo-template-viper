@@ -13,7 +13,8 @@ import dsviper
 from .. import definitions
 import typing
 
-from .._codegen import AnyConceptKey, AttachmentProxy, Mapping, Ordered, Sequence
+from .._codegen import AnyConceptKey, AttachmentProxy
+from .. import containers
 from .. import <u.name;format="lsc">
 <u.dependencies.attachments:{d|from .. import <d.name;format="lsc">};separator="\n">
 
@@ -60,21 +61,21 @@ def set_<sf.name;format="snake">(self, mutating: dsviper.AttachmentMutating, key
 document(a, s) ::= <%<if(a.documentType.field.isSet)><set_ops(a.documentType.field, s, "None", "", false)><elseif(a.documentType.field.isMap)><map_ops(a.documentType.field, s, "None", "", false)><elseif(a.documentType.field.isXArray)><xarray_ops(a.documentType.field, s, "None", "", false)><endif>%>
 
 set_ops(t, s, path, suffix, label) ::= <<
-def union<suffix>(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, value: typing.Iterable[<t.bindingElementType.qualified>]) -> None:
+def union<suffix>(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, value: <t.bindingType.qualified>) -> None:
     self._union_in_set(mutating, key, <path>, value)
 
-def subtract<suffix>(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, value: typing.Iterable[<t.bindingElementType.qualified>]) -> None:
+def subtract<suffix>(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, value: <t.bindingType.qualified>) -> None:
     self._subtract_in_set(mutating, key, <path>, value)
 >>
 
 map_ops(t, s, path, suffix, label) ::= <<
-def union<suffix>(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, value: typing.Mapping[<t.bindingKeyType.qualified>, <t.bindingElementType.qualified>]) -> None:
+def union<suffix>(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, value: <t.bindingType.qualified>) -> None:
     self._union_in_map(mutating, key, <path>, value)
 
-def subtract<suffix>(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, value: typing.Iterable[<t.bindingKeyType.qualified>]) -> None:
+def subtract<suffix>(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, value: <t.bindingKeySetType.qualified>) -> None:
     self._subtract_in_map(mutating, key, <path>, value)
 
-def update<suffix>(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, value: typing.Mapping[<t.bindingKeyType.qualified>, <t.bindingElementType.qualified>]) -> None:
+def update<suffix>(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, value: <t.bindingType.qualified>) -> None:
     self._update_in_map(mutating, key, <path>, value)
 >>
 

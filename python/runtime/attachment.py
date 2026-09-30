@@ -9,10 +9,10 @@ from typing import Callable
 
 import dsviper
 
-from .proxy import unwrap as _unwrap, wrap as _wrap
+from .proxy import Proxy, unwrap as _unwrap, wrap as _wrap
 
 
-K = typing.TypeVar("K")
+K = typing.TypeVar("K", bound=Proxy)
 D = typing.TypeVar("D")
 
 
@@ -51,8 +51,8 @@ class AttachmentProxy(typing.Generic[K, D]):
                   ) -> tuple[set[K], set[K], set[K], set[K]]:
         added, removed, different, same = dsviper.AttachmentGetting.diff_keys(
             current, other, self.descriptor)
-        return tuple({_wrap(key) for key in group}
-                     for group in (added, removed, different, same))
+        wrapped = [{_wrap(key) for key in group} for group in (added, removed, different, same)]
+        return wrapped[0], wrapped[1], wrapped[2], wrapped[3]
 
 
     def set(self, mutating: dsviper.AttachmentMutating | dsviper.Database, key: K, value: D):

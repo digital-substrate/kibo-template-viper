@@ -82,7 +82,10 @@ import typing
 
 import dsviper
 
-from .._codegen import AnyConceptKey, Mapping, Ordered, Sequence, wrap
+from .._codegen import AnyConceptKey, wrap
+
+if typing.TYPE_CHECKING:
+    from .. import containers
 
 <p.dependencies.functions:{d|from .. import <d.name;format="lsc">};separator="\n">
 >>

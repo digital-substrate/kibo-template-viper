@@ -3,7 +3,7 @@
 
 import dsviper from "@digitalsubstrate/dsviper";
 
-import { Mapping, Optional, Ordered, Sequence, Variant, View } from "./container.js";
+import { Mapping, Optional, Ordered, Sequence, Variant, View, declaredFor } from "./container.js";
 import { AnyConceptKey, Proxy } from "./proxy.js";
 
 export { AnyConceptKey } from "./proxy.js";
@@ -54,6 +54,22 @@ export function wrap(value: dsviper.OutputValue | dsviper.Value): any {
         case "variant":
             return wrap((value as dsviper.ValueVariant).unwrap());
         case "map":
+        case "xarray":
+        case "vector":
+        case "set":
+        case "vec":
+        case "mat":
+        case "tuple": {
+            const declared = declaredFor(value.type());
+            if (declared !== undefined) {
+                return new declared(value);
+            }
+            break;
+        }
+    }
+
+    switch (value.typeCode()) {
+        case "map":
             return new Mapping(dsviper.ValueMap.cast(value));
         case "xarray":
             return new Ordered(dsviper.ValueXArray.cast(value));
@@ -92,17 +108,33 @@ export function unwrap(value: unknown): dsviper.InputValue {
     if (value instanceof Proxy || value instanceof View) {
         return value.vprValue;
     }
-    if (Array.isArray(value)) {
-        return value.map(unwrap) as dsviper.InputValue;
-    }
-
-    if (value instanceof Set) {
-        return Array.from(value, unwrap) as dsviper.InputValue;
-    }
-    if (value instanceof Map) {
-        return new Map(Array.from(value, ([k, v]) => [unwrap(k), unwrap(v)])) as unknown as dsviper.InputValue;
+    if (holdsGenerated(value)) {
+        throw new TypeError("a native container of generated values: build the generated container "
+                            + "of this shape instead, so that a wrong element is refused where it is added");
     }
     return value as dsviper.InputValue;
+}
+
+function holdsGenerated(value: unknown): boolean {
+    if (value instanceof Proxy || value instanceof View) {
+        return true;
+    }
+    if (Array.isArray(value) || value instanceof Set) {
+        for (const element of value) {
+            if (holdsGenerated(element)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    if (value instanceof Map) {
+        for (const [k, v] of value) {
+            if (holdsGenerated(k) || holdsGenerated(v)) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 export function setField(structure: dsviper.ValueStructure, name: string, value: unknown): void {

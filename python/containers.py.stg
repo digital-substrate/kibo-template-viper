@@ -9,11 +9,16 @@ model(m) ::= <<
 from __future__ import annotations
 
 import functools
+import typing
 
 import dsviper
 
-from ._codegen import (mapping_of, optional_of, ordered_of, sequence_of,
-                       variant_of)
+from . import definitions
+from ._codegen import Declared, Mapping, Optional, Ordered, Sequence, Variant, declare
+
+if typing.TYPE_CHECKING:
+    from . import containers
+    from ._codegen import AnyConceptKey
 <m.nameSpaces:{u|from . import <u.name;format="lsc">};separator="\n">
 
 <primitives()>
@@ -29,15 +34,17 @@ from ._codegen import (mapping_of, optional_of, ordered_of, sequence_of,
 <m.xarrayFunctions:element();separator="\n">
 <m.variantFunctions:variant();separator="\n">
 
-<m.vecFunctions:bound("sequence_of");separator="\n">
-<m.matFunctions:bound("sequence_of");separator="\n">
-<m.tupleFunctions:bound("sequence_of");separator="\n">
-<m.optionalFunctions:bound("optional_of");separator="\n">
-<m.vectorFunctions:bound("sequence_of");separator="\n">
-<m.setFunctions:bound("sequence_of");separator="\n">
-<m.mapFunctions:bound("mapping_of");separator="\n">
-<m.xarrayFunctions:bound("ordered_of");separator="\n">
-<m.variantFunctions:bound("variant_of");separator="\n">
+<m.vecFunctions:sequence_class();separator="\n\n">
+<m.matFunctions:matrix_class();separator="\n\n">
+<m.tupleFunctions:tuple_class();separator="\n\n">
+<m.optionalFunctions:optional_class();separator="\n\n">
+<m.vectorFunctions:sequence_class();separator="\n\n">
+<m.setFunctions:sequence_class();separator="\n\n">
+<m.mapFunctions:mapping_class();separator="\n\n">
+<m.xarrayFunctions:ordered_class();separator="\n\n">
+<m.variantFunctions:variant_class();separator="\n\n">
+
+declare(<[m.vecFunctions, m.matFunctions, m.tupleFunctions, m.optionalFunctions, m.vectorFunctions, m.setFunctions, m.mapFunctions, m.xarrayFunctions, m.variantFunctions]:{v|<v.bindingType.proxy>};separator=", ">)
 >>
 
 primitives() ::= <<
@@ -62,10 +69,10 @@ type_AnyConceptKey = lambda: dsviper.TypeKey(dsviper.TypeAnyConcept())
 >>
 
 named(u, m) ::= <<
-<u.concepts:{c|type_<u.name>_<c.name>Key = <u.name;format="lsc">.<c.name>Key.type};separator="\n">
-<u.clubs:{c|type_<u.name>_<c.name>Key = <u.name;format="lsc">.<c.name>Key.type};separator="\n">
-<u.enumerations:{e|type_<u.name>_<e.name> = <u.name;format="lsc">.<e.name>.type};separator="\n">
-<u.structures:{s|type_<u.name>_<s.name> = <u.name;format="lsc">.<s.name>.type};separator="\n">
+<u.concepts:{c|def type_<u.name>_<c.name>Key() -> dsviper.Type: return dsviper.TypeKey(definitions().check_concept(<u.name;format="lsc">.data.<c.name;format="usc">))};separator="\n">
+<u.clubs:{c|def type_<u.name>_<c.name>Key() -> dsviper.Type: return dsviper.TypeKey(definitions().check_club(<u.name;format="lsc">.data.<c.name;format="usc">))};separator="\n">
+<u.enumerations:{e|def type_<u.name>_<e.name>() -> dsviper.Type: return definitions().check_enumeration(<u.name;format="lsc">.data.<e.name;format="usc">)};separator="\n">
+<u.structures:{s|def type_<u.name>_<s.name>() -> dsviper.Type: return definitions().check_structure(<u.name;format="lsc">.data.<s.name;format="usc">)};separator="\n">
 >>
 
 vec(v) ::= <%@functools.cache<\n>def type<v.typeSuffix>(): return dsviper.<v.viperType>(type<v.elementTypeSuffix>(), <v.size>)%>
@@ -76,4 +83,33 @@ tuple(v) ::= <%@functools.cache<\n>def type<v.typeSuffix>(): return dsviper.<v.v
 variant(v) ::= <%@functools.cache<\n>def type<v.typeSuffix>(): return dsviper.<v.viperType>([<v.members:member();separator=", ">])%>
 member(t) ::= <%type<t.typeSuffix>()%>
 
-bound(v, factory) ::= <%<v.bindingType.proxy> = <factory>(type<v.typeSuffix>)%>
+sequence_class(v) ::= <<
+<declared(v, {Sequence["<v.bindingElementType.qualified>"]})>
+>>
+matrix_class(v) ::= <<
+<declared(v, {Sequence[typing.Any]})>
+>>
+tuple_class(v) ::= <<
+<declared(v, {Sequence["<v.members:{t|<t.bindingType.qualified>};separator=" | ">"]})>
+>>
+optional_class(v) ::= <<
+<declared(v, {Optional["<v.bindingElementType.qualified>"]})>
+>>
+mapping_class(v) ::= <<
+<declared(v, {Mapping["<v.bindingKeyType.qualified>", "<v.bindingElementType.qualified>"]})>
+>>
+ordered_class(v) ::= <<
+<declared(v, {Ordered["<v.bindingElementType.qualified>"]})>
+>>
+variant_class(v) ::= <<
+<declared(v, {Variant["<v.members:{t|<t.bindingType.qualified>};separator=" | ">"]})>
+>>
+
+declared(v, base) ::= <<
+class <v.bindingType.proxy>(Declared, <base>):
+    __slots__ = ()
+
+    @classmethod
+    def type(cls) -> dsviper.Type:
+        return type<v.typeSuffix>()
+>>

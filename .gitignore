@@ -8,3 +8,4 @@
 # Claude Code — "have but don't commit" pattern
 CLAUDE.md
 .claude/
+__pycache__/

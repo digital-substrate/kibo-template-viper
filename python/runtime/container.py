@@ -63,15 +63,16 @@ class Sequence(View, typing.Generic[E]):
     def __len__(self) -> int:
         return len(self._value)
 
-    def __iter__(self) -> typing.Iterator[typing.Any]:
+    def __iter__(self) -> typing.Iterator[E]:
         if hasattr(self._value, "__iter__"):
             return (wrap(element) for element in self._value)
 
         type_ = self._value.type()
         if hasattr(type_, "columns"):
             columns, rows = type_.columns(), type_.rows()
-            return (tuple(wrap(self._value.at(column, row)) for row in range(rows))
-                    for column in range(columns))
+            return typing.cast(typing.Iterator[E],
+                               (tuple(wrap(self._value.at(column, row)) for row in range(rows))
+                                for column in range(columns)))
         return (wrap(self._value.at(index)) for index in range(len(self._value)))
 
     def __getitem__(self, index) -> E:
@@ -343,7 +344,7 @@ class Ordered(View, typing.Generic[E]):
         return _forward(self, name)
 
     def to_vector(self):
-        return sequence_of(self._value.to_vector().type)(self._value.to_vector())
+        return wrap(self._value.to_vector())
 
     def empty(self) -> bool:
         return len(self._value) == 0
@@ -412,60 +413,50 @@ class Variant(View, typing.Generic[E]):
         raise AttributeError(f"'{name}' designates no alternative: {known}")
 
 
-_BOUND: dict[tuple, type] = {}
+_CASTS: dict[type, typing.Callable[[typing.Any], typing.Any]] = {
+    Sequence: lambda value: value,
+    Mapping: dsviper.ValueMap.cast,
+    Ordered: dsviper.ValueXArray.cast,
+    Optional: dsviper.ValueOptional.cast,
+    Variant: dsviper.ValueVariant.cast,
+}
+
+_DECLARED: dict[str, type] = {}
 
 
-def _bind(view, type_fn, cast):
-    cached = _BOUND.get((view, type_fn().representation()))
-    if cached is not None:
-        return cached
+class Declared:
+    __slots__ = ()
 
-    class Bound(view):
-        __slots__ = ()
+    @classmethod
+    def type(cls) -> typing.Any:
+        raise NotImplementedError
 
-        @classmethod
-        def type(cls):
-            return type_fn()
+    @classmethod
+    def decode(cls, blob, **kwargs):
+        return cls(dsviper.Value.decode(blob, cls.type(), _definitions(), **kwargs))
 
-        @classmethod
-        def decode(cls, blob, **kwargs):
-            return cls(dsviper.Value.decode(blob, type_fn(), _definitions(), **kwargs))
-
-        def __init__(self, value: typing.Any = None):
-            value = unwrap(value) if hasattr(value, "_unwrap") else value
-            if isinstance(value, dsviper.Value) and value.type() == type_fn():
-                View.__init__(self, value)
-                return
-
-            try:
-                View.__init__(self, cast(dsviper.Value.create(type_fn(), unwrap(value))))
-            except dsviper.ViperError as refusal:
-                raise TypeError(
-                    f"this value is not a {type_fn().representation()}") from refusal
-
-    Bound.__name__ = Bound.__qualname__ = type_fn().representation()
-    _BOUND[(view, type_fn().representation())] = Bound
-    return Bound
+    def __init__(self, value: typing.Any = None) -> None:
+        if isinstance(value, View):
+            value = value.vpr_value
+        expected = type(self).type()
+        if isinstance(value, dsviper.Value) and value.type() == expected:
+            View.__init__(typing.cast(View, self), value)
+            return
+        view = next(base for base in type(self).__mro__ if base in _CASTS)
+        try:
+            built = _CASTS[view](dsviper.Value.create(expected, unwrap(value)))
+        except dsviper.ViperError as refusal:
+            raise TypeError(f"this value is not a {expected.representation()}") from refusal
+        View.__init__(typing.cast(View, self), built)
 
 
-def sequence_of(type_fn):
-    return _bind(Sequence, type_fn, lambda v: v)
+def declare(*classes: typing.Any) -> None:
+    for cls in classes:
+        _DECLARED[cls.type().representation()] = cls
 
 
-def mapping_of(type_fn):
-    return _bind(Mapping, type_fn, dsviper.ValueMap.cast)
-
-
-def ordered_of(type_fn):
-    return _bind(Ordered, type_fn, dsviper.ValueXArray.cast)
-
-
-def optional_of(type_fn):
-    return _bind(Optional, type_fn, dsviper.ValueOptional.cast)
-
-
-def variant_of(type_fn):
-    return _bind(Variant, type_fn, dsviper.ValueVariant.cast)
+def declared(value: typing.Any) -> typing.Any:
+    return _DECLARED.get(value.type().representation())
 
 
 def _alternative_name(type_) -> str:

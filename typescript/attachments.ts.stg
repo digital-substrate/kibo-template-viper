@@ -9,7 +9,7 @@ unit(u) ::= <<
 import dsviper from "@digitalsubstrate/dsviper";
 
 import { AttachmentProxy, type Mutating } from "../_codegen/attachment.js";
-import { Mapping, Ordered, Sequence } from "../_codegen/container.js";
+import type * as containers from "../containers.js";
 import { AnyConceptKey } from "../_codegen/registry.js";
 import { definitions } from "../index.js";
 <u.dependencies.attachments:{d|import * as <d.name;format="lsc"> from "../<d.name;format="lsc">/data.js";};separator="\n">
@@ -59,25 +59,25 @@ document(a, s) ::= <%<if(a.documentType.field.isSet)><set_ops(a.documentType.fie
 key(s) ::= <%<s.keyType.bindingType.qualified>%>
 
 set_ops(t, s, path, suffix, label) ::= <<
-union<suffix>(mutating: Mutating, key: <key(s)>, value: Iterable\<<t.bindingElementType.qualified>\>): void {
-    this.unionInSet(mutating, key, <path>, Array.from(value));
+union<suffix>(mutating: Mutating, key: <key(s)>, value: <t.bindingType.qualified>): void {
+    this.unionInSet(mutating, key, <path>, value);
 }
 
-subtract<suffix>(mutating: Mutating, key: <key(s)>, value: Iterable\<<t.bindingElementType.qualified>\>): void {
-    this.subtractInSet(mutating, key, <path>, Array.from(value));
+subtract<suffix>(mutating: Mutating, key: <key(s)>, value: <t.bindingType.qualified>): void {
+    this.subtractInSet(mutating, key, <path>, value);
 }
 >>
 
 map_ops(t, s, path, suffix, label) ::= <<
-union<suffix>(mutating: Mutating, key: <key(s)>, value: ReadonlyMap\<<t.bindingKeyType.qualified>, <t.bindingElementType.qualified>\>): void {
+union<suffix>(mutating: Mutating, key: <key(s)>, value: <t.bindingType.qualified>): void {
     this.unionInMap(mutating, key, <path>, value);
 }
 
-subtract<suffix>(mutating: Mutating, key: <key(s)>, value: Iterable\<<t.bindingKeyType.qualified>\>): void {
-    this.subtractInMap(mutating, key, <path>, Array.from(value));
+subtract<suffix>(mutating: Mutating, key: <key(s)>, value: <t.bindingKeySetType.qualified>): void {
+    this.subtractInMap(mutating, key, <path>, value);
 }
 
-update<suffix>(mutating: Mutating, key: <key(s)>, value: ReadonlyMap\<<t.bindingKeyType.qualified>, <t.bindingElementType.qualified>\>): void {
+update<suffix>(mutating: Mutating, key: <key(s)>, value: <t.bindingType.qualified>): void {
     this.updateInMap(mutating, key, <path>, value);
 }
 >>

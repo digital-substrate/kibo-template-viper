@@ -15,8 +15,10 @@ import typing
 import dsviper
 
 from .. import definitions
-from .._codegen import (NEUF as _NEUF, AnyConceptKey, Mapping, Ordered, Proxy, Sequence,
-                        is_known, register, unwrap, wrap)
+from .._codegen import NEUF as _NEUF, AnyConceptKey, Proxy, is_known, register, unwrap, wrap
+
+if typing.TYPE_CHECKING:
+    from .. import containers
 <u.dependencies.types:{d|from .. import <d.name;format="lsc">};separator="\n">
 
 <u.concepts:runtime_id();separator="\n">

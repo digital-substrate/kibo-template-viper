@@ -100,7 +100,11 @@ def wrap(value) -> typing.Any:
     if code == "variant":
         return wrap(value.unwrap())
 
-    from .container import Mapping, Ordered, Sequence
+    from .container import Mapping, Ordered, Sequence, declared
+
+    cls = declared(value)
+    if cls is not None:
+        return cls(value)
 
     if code == "map":
         return Mapping(value)
@@ -128,13 +132,18 @@ def is_known(value) -> bool:
 def unwrap(value) -> typing.Any:
     if hasattr(value, "_unwrap"):
         return value._unwrap()
-    if isinstance(value, (list, tuple)):
-        return [unwrap(element) for element in value]
-    if isinstance(value, set):
-        return {unwrap(element) for element in value}
-    if isinstance(value, dict):
-        return {unwrap(key): unwrap(element) for key, element in value.items()}
+    if _holds_generated(value):
+        raise TypeError("a native container of generated values: build the generated container "
+                        "of this shape instead, so that a wrong element is refused where it is added")
     return value
+
+
+def _holds_generated(value) -> bool:
+    if isinstance(value, dict):
+        return any(_holds_generated(k) or _holds_generated(v) for k, v in value.items())
+    if isinstance(value, (list, tuple, set, frozenset)):
+        return any(_holds_generated(element) for element in value)
+    return hasattr(value, "_unwrap")
 
 
 class AnyConceptKey(Proxy):

@@ -45,7 +45,7 @@ preamble(p) ::= <<
 <if(p.hasDocumentation)>/** <p.documentation;format="comment"> */<endif>
 import dsviper from "@digitalsubstrate/dsviper";
 
-import { Mapping, Ordered, Sequence } from "../_codegen/container.js";
+import type * as containers from "../containers.js";
 import { AnyConceptKey, unwrap, wrap } from "../_codegen/registry.js";
 <p.dependencies.functions:{d|import * as <d.name;format="lsc"> from "../<d.name;format="lsc">/data.js";};separator="\n">
 
