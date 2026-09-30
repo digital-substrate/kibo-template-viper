@@ -1,6 +1,6 @@
 # cpp — flat templates, features declared in `../features.json`
 
-A namespace here is a **file-name prefix**, not a directory: `ModelA_Data.hpp`. C++ already
+A namespace here is a **file-name prefix**, not a directory: `<ns>_<unit>_data.hpp`. C++ already
 has namespaces, so the generated code declares them; the file system carries only enough to
 keep two same-named types in separate files.
 
