@@ -41,12 +41,11 @@ RUNTIME = {
 VERSION = re.compile(r"^\d+\.\d+\.\d+$")
 RELEASED = re.compile(r"^## \[(\d+\.\d+\.\d+)\]", re.MULTILINE)
 
-# Templates whose generated output is strict JSON. JSON has no comment syntax,
-# so stamping them would break the file for every parser that reads it -- npm,
-# in the one case below. The rest of the project generated alongside them
-# carries the stamp, so the snapshot is still identifiable.
+# Templates whose generated output cannot carry a comment. The rest of the project
+# generated alongside them carries the stamp, so the snapshot is still identifiable.
 EXEMPT = {
-    "typescript/project/package.json.stg": "npm parses package.json as strict JSON",
+    "typescript/package.json.stg": "npm parses package.json as strict JSON",
+    "python/py.typed.stg": "an empty PEP 561 marker",
 }
 
 
