@@ -1,33 +1,47 @@
 # kibo-template-viper
 
-First-party templated features targeting the Viper ecosystem
-(Viper C++ runtime + [dsviper](https://docs.digitalsubstrate.io/dsviper/)
-Python binding). Consumed by [Kibo](https://docs.digitalsubstrate.io/kibo/) to
-generate the static API surface that lets C++ and Python developers
-work against typed wrappers instead of stringly-typed metadata.
+First-party templated features targeting the Viper ecosystem: the Viper C++ runtime, and
+its [dsviper](https://docs.digitalsubstrate.io/dsviper/) Python and Node.js bindings.
+Consumed by [Kibo](https://docs.digitalsubstrate.io/kibo/) 2 to generate the static API
+surface that lets C++, Python and TypeScript developers work against typed classes instead
+of stringly-typed metadata.
 
 ## Documentation
 
 Full documentation: https://docs.digitalsubstrate.io/kibo-template-viper/
 
-Maintainer design note for the Python & TypeScript proxy templates:
-[`DESIGN.md`](DESIGN.md).
+Design note — the Dual Reality the generated code rests on: [`DESIGN.md`](DESIGN.md).
 
 Part of the [DevKit ecosystem](https://docs.digitalsubstrate.io/).
 
 ## Layout
 
 ```
-cpp/                     # C++ surface templates targeting Viper C++ API
-   Data/                 # struct, enum, concept, club implementations
-   Database/             # SQLite persistence
-   Stream/, Json/        # codecs
-   ValueCodec, ValueType, ValueHasher
-   Attachments/, AttachmentFunctionPool/, FunctionPool/
-   Test/, TestApp/
+features.json            # the features a project selects, their templates, what they require
+resolve.py               # the closure of a selection: the templates kibo must render
 
-python/                  # Python surface templates targeting dsviper API
-   package/              # the importable Python package generated for a model
+cpp/*.stg                # C++ targeting the Viper C++ runtime
+python/*.stg             # the Python package a model generates, over dsviper
+python/runtime/          # the runtime every generated Python package carries, as `_codegen`
+typescript/*.stg         # the TypeScript package, over @digitalsubstrate/dsviper
+typescript/runtime/      # the runtime every generated TypeScript package carries
+```
+
+**One namespace is one unit.** C++ gets a file-name prefix, Python and TypeScript a module
+directory, so two namespaces of one model may declare the same name.
+
+**Templates are flat; features are declared.** A project names the features it wants, and
+`resolve.py` walks what they require:
+
+| target | features |
+|---|---|
+| `cpp` | `Base` (data, codec, model, any concept), `Fields`, `Attachments`, `AttachmentPool`, `Pool`, `PoolRemote`, `PythonDefinitions` |
+| `python` | `Base`, `Pool`, `Wheel` |
+| `typescript` | `Base`, `Pool`, `Package` |
+
+```
+$ ./resolve.py cpp Attachments
+features : Base Fields Attachments
 ```
 
 For the conceptual ground (templated feature, Template Model, the role
@@ -39,32 +53,29 @@ of Kibo), see the user-facing docs:
 
 ## Public contract
 
-These templates are surface templates: each one is a static projection
-of one Viper runtime feature (Database, Codec, Stream, Attachments, …).
-They are part of the Viper public API by another name — modifying
-`cpp/Database` is no more anodyne than modifying
-`viper/src/Viper/Viper_Database.hpp`.
+These templates are surface templates: each one is a static projection of the Viper
+runtime — its types, its attachments, its function pools. What they generate is a public
+API by another name: renaming a generated class, field or operation breaks the code written
+against it, and is a breaking change of this pack.
 
-Versioning follows the Viper C++ API and dsviper Python API public-
-contract lines: any breaking change to a `cpp/` template tracks the
-corresponding C++ API bump; same for `python/` against dsviper.
+This repository versions itself (see *Compatible runtime versions* below): a release is
+stamped into every template, and every generated file carries the stamp.
 
 ## Usage
 
-Templates here are consumed by Kibo, which produces the generated code:
+Kibo renders one template, or a directory of them, per run. A project resolves its features,
+then renders each template:
 
 ```bash
-java -jar kibo-X.Y.Z.jar \
-    -c cpp \
-    -n MyApp \
-    -d MyApp.dsm.json \
-    -t /path/to/this/repo/cpp/Database \
-    -o ./generated
+for stg in $(python3 -c "import resolve; print(*resolve.templates('cpp', ['Attachments']))"); do
+    java -jar kibo-2.X.Y.jar -c cpp -n myapp -d MyApp.dsm.json -t "$stg" -o ./generated
+done
 ```
 
-In practice, `dsm_util.py` and the various `generate.py` scripts
-resolve this path automatically via the sibling-checkout convention
-or via the `KIBO_TEMPLATES` environment variable.
+`-n` names the generated infrastructure: the C++ namespace, the Python and TypeScript
+package. A Python or TypeScript package also carries its runtime: copy `python/runtime/`
+into it as `_codegen/` (`typescript/runtime/` into `src/_codegen/`). The model's definitions
+are embedded beside it by the project — `resources.py`, `resources.ts`, `<ns>_resources.hpp`.
 
 ## Third-party templates
 
@@ -107,9 +118,9 @@ same declarations in its header:
 | | |
 |---|---|
 | **consumes** | Template Model 2, exposed by kibo |
-| **cpp target** | the `viper` C++ runtime 1.2 |
-| **python target** | `dsviper` 1.2 |
-| **typescript target** | `@digitalsubstrate/dsviper` 1.2 (floor `>=1.2.8`) |
+| **cpp target** | the `viper` C++ runtime 1.2, with its static layer |
+| **python target** | `dsviper` 1.2 (floor `>=1.2.27`) |
+| **typescript target** | `@digitalsubstrate/dsviper` 1.2 (floor `>=1.2.13`) |
 
 A release of this pack is driven by its **targets**: a projection appears because a
 binding gained something to project. The Template Model it consumes moves on kibo's
@@ -128,27 +139,26 @@ targets:
 
 | Templates    | Runtime                              | Compatible versions |
 |--------------|--------------------------------------|---------------------|
-| `typescript` | `@digitalsubstrate/dsviper` (npm)    | `>=1.2.8 <2.0.0`    |
-| `python`     | `dsviper` (PyPI wheel)               | `1.2.x`             |
-| `cpp`        | `viper` (C++ runtime)                | `1.2.x`             |
+| `typescript` | `@digitalsubstrate/dsviper` (npm)    | `>=1.2.13 <1.3.0`   |
+| `python`     | `dsviper` (PyPI wheel)               | `>=1.2.27 <1.3`     |
+| `cpp`        | `viper` (C++ runtime)                | `1.2`, with the static layer |
 
 Every generated file names its runtime and that range in its header, so a
 consumer holding generated code can answer the question without this table.
 `python tools/bump_version.py --check` fails if the templates of one target
 disagree on it.
 
-These templates project the runtime's basic surface, so any `1.2.x` of the
-matching binding will do and there is no patch to track. When a template does
-come to need something a particular patch introduced, that becomes a floor —
-and the floor belongs in the generated output, not in this table. A pin the
-consumer's build reads cannot go stale, and it fails where someone will see it.
+A floor is set by what a template uses, and it lives in the generated output, where the
+consumer's build reads it:
 
-`typescript` is the one such case today. Its generated `package.json` pins
-`>=1.2.8 <2.0.0` because the generated `vec`/`mat` proxies call the binding's
-`toArray()`, which the binding settled on from `1.2.8` onward (a fixed-shape
-sequence is an array in JS, not a tuple), and because `1.2.8` carries a
-critical runtime fix. The `python` and `cpp` outputs carry no pin, and need
-none.
+- **`python`**: the runtime tests `isinstance(value, dsviper.Value)` and reads with
+  `Value.decode(..., encoded=False)`, which the wheel offers from `1.2.27`. The generated
+  `pyproject.toml` declares it.
+- **`typescript`**: the generated `package.json` declares `>=1.2.13 <1.3.0`.
+- **`cpp`**: the generated code crosses to a `Value`, and hashes, through the runtime's
+  static layer — `Viper_StaticType`, `Viper_StaticWriter`, `Viper_StaticReader`,
+  `Viper_StaticHash` — on viper's `LTS-1.2` branch. A C++ project builds the runtime from
+  source, so it needs a checkout that carries those headers.
 
 The MIT license above governs the **templates as source**. The output
 of `kibo` produced from these templates is a derivative work of MIT

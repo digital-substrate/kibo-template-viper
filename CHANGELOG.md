@@ -16,9 +16,9 @@ same declarations in its header:
 | | |
 |---|---|
 | **consumes** | Template Model 2, exposed by kibo |
-| **cpp target** | the `viper` C++ runtime 1.2 |
-| **python target** | `dsviper` 1.2 |
-| **typescript target** | `@digitalsubstrate/dsviper` 1.2 (floor `>=1.2.8`) |
+| **cpp target** | the `viper` C++ runtime 1.2, with its static layer |
+| **python target** | `dsviper` 1.2 (floor `>=1.2.27`) |
+| **typescript target** | `@digitalsubstrate/dsviper` 1.2 (floor `>=1.2.13`) |
 
 A release of this pack is driven by its **targets**: a projection appears because a
 binding gained something to project. The Template Model it consumes moves on kibo's
@@ -49,76 +49,75 @@ output from different template versions, and what a generated file reports —
 that repackages both into a single artefact should not read that artefact's
 version as either one.
 
-## [2.0.0] - 2026-09-10
+## [Unreleased] — 2.0.0
 
-Requires **kibo 2.0**; these templates do not render against an earlier generator. The
-runtime they target is unchanged — `viper` / `dsviper` 1.2.x, and
-`@digitalsubstrate/dsviper` `>=1.2.8 <2.0.0` — and is now named, with its version, in the
-header of every generated file.
-
-
-Two C++ template defects, the delegating templates losing every lookup table they carried,
-and the TypeScript remote calls losing two workarounds the binding never needed. Generated
-output changes in the two prototype names named below and in the remote-call lines.
-**Requires a kibo that carries the binding vocabularies.**
+Requires **kibo 2** and its Template Model 2; these templates do not render against an
+earlier generator. The runtimes they target stay on the 1.2 line, with floors:
+`dsviper >= 1.2.27`, `@digitalsubstrate/dsviper >= 1.2.13`, and a `viper` C++ runtime that
+carries its static layer. Every generated file names its runtime and its range in its
+header. The generated surface changes throughout: code written against 1.2 output needs
+migrating.
 
 ### Changed
 
-- **Remote calls stop encoding their arguments, and stop casting their result.** Every
-  generated TypeScript remote call wrapped each argument — `new dsviper.ValueInt64(a)` —
-  and cast the result through `as unknown as dsviper.OutputValue`. Both date from the
-  TypeScript port, when the call path was worked out by probing, and neither was revisited
-  as the binding's typings settled.
+- **One DSM namespace is one unit.** C++ gets a file-name prefix and a `namespace`, Python
+  and TypeScript a module directory (`<package>.<unit>`). Two namespaces of one model may
+  declare the same name, and a type no longer carries its namespace as a prefix
+  (`Graph_VertexKey` becomes `graph.VertexKey`).
+- **Templates are flat, and a project selects features.** `features.json` maps each feature
+  to its templates and to the features it requires; `resolve.py` walks the closure. C++:
+  `Base`, `Fields`, `Attachments`, `AttachmentPool`, `Pool`, `PoolRemote`,
+  `PythonDefinitions`. Python: `Base`, `Pool`, `Wheel`. TypeScript: `Base`, `Pool`,
+  `Package`.
+- **`-n` names the generated infrastructure** — the C++ namespace, the Python and TypeScript
+  package — and the application keeps its own namespace.
+- **Python and TypeScript carry a runtime instead of a class per container shape.** The
+  proxy base, the registry that wraps and unwraps values, the container views
+  (`Sequence`, `Mapping`, `Ordered`, `Optional`, `Variant`) and the attachment accessor are
+  written once, in `python/runtime/` and `typescript/runtime/`, and copied into every
+  generated package as `_codegen`. A container field is a live view over the value, and
+  accepts the host's own list, set or dict when written.
+- **Attachments are grouped by concept in every target**:
+  `<package>.<unit>.attachments.<Concept>.<attachment>.<operation>` in Python, the same path
+  as nested scopes in C++ and TypeScript. `get` returns the document or `None`
+  (`undefined`), with no optional to unwrap; the field-level operations are typed methods.
+- **Python follows its own idiom**: fields and operations in snake_case, enumerations as
+  `enum.Enum`, the wrapped value as `vpr_value`.
+- **The generated C++ crosses to a `Value`, and hashes, through the runtime's static layer**
+  (`Viper_StaticType`, `Viper_StaticWriter`, `Viper_StaticReader`, `Viper_StaticHash`), found
+  by argument-dependent lookup. A key hashes through `std::hash`; a child key widens
+  implicitly to its parent's, and a parent key narrows with `<Child>Key::from`.
+- **A default key names its concept**, as the 1.2 runtime stored it, and a structure field
+  starts with the default value the model declares.
+- **Function pools use the DSM spelling** for their functions, in C++ and on the wire; each
+  language keeps its idiom for the static names. `Pool` is the server side, `PoolRemote` the
+  client side, so a client does not link the functions only a server implements.
+- **The model's documentation reaches the generated code** in all three targets, and nothing
+  else does: a generated file carries its header and the documentation the model declares.
 
-  Neither is needed at the declared floor. In `node-v1.2.8`, `ServiceRemoteFunction::Call`
-  marshals each argument through `checkValue(env, arg, parameters[i].type)`, which takes a
-  wrapped value or coerces the native one against the type the prototype declares — every
-  integer width, bigint for the 64-bit ones, strings, and even a string into a uuid, a
-  commit id or a blob id. And 1.2.8 already declares
-  `call(...args: InputValue[]): OutputValue`, so there is nothing to cast.
+### Removed
 
-  Calls now read `call(a, b)`, and a proxy argument still passes its `vprValue`. Verified
-  by type-checking the generated `service` package against the published
-  `@digitalsubstrate/dsviper@1.2.8`: clean.
+- **`Stream` and `ValueCodec`**: the static layer is the runtime's, and the codec generated
+  in `Base` bridges the C++ types to a `Value` through it.
+- **`Json` and `ValueHasher`**: JSON, XML and a hexdigest are one call on what `encode`
+  returns.
+- **`Database`**: `Viper::Database` of the runtime has the surface, and the attachments take
+  a database as well as a state.
+- **`ValueType`**: absorbed into `Base` (the unit's model file); in Python and TypeScript,
+  into `containers` and the package entry point, with `definitions`.
+- **Python and TypeScript `database_attachments`, `path`, `value_type`, `definitions`**:
+  absorbed into the attachments, the package entry point and the containers; field paths
+  are not exposed — the typed field operations cover them.
+- **`Test` and `TestApp`**: they test the generator, not an application, and stay with the
+  laboratory, `devkit-codegen-test`.
 
-- **Comments, docstrings, reprs and exception messages name the DSM type.** They named
-  three different spaces at once: containers used the DSM spelling, entities the C++ one
-  (`Test::ConceptAKey`), and a variant member the binding one (`int`, `Test_StructureS`) —
-  in the same generated file.
+### Added
 
-  All of them guard a runtime type comparison, and a runtime type is a DSM type; the DSM
-  name is also what the author wrote in the `.dsm`, and it reads the same in all three
-  targets. So `identifier is not a Test::ConceptAKey` becomes `… a Test::ConceptA`,
-  `# concept Test::ConceptAKey` becomes `# concept Test::ConceptA`, and the doubled key in
-  `[A proxy class for a key<Test::ConceptAKey>]` is gone.
-
-  It is also more precise: a variant member of DSM type `uint8` reported
-  `variant does not hold a int` in Python and `a number` in TypeScript, so two members of
-  different widths raised indistinguishable errors. No model in the codegen test has such
-  a variant, so this was latent.
-
-  Type positions are untouched — they still use the target's own spelling.
-
-- **The templates no longer spell types; they read them.** Both delegating surfaces used
-  to carry their own lookup tables — `tsLeaf` and `valueCtor` on the TypeScript side, and
-  the Python one reaching back into the generator for the same thing. Thirteen copies of
-  two tables across thirteen files, plus the helpers that walked them.
-
-  The generator now states them, once per target, and the templates read `bindingType.type`
-  for how this target writes a type, `bindingType.valueConstructor` for the runtime value
-  class to build on the way in, and `bindingSequenceType` / `bindingColumnType` for the
-  fixed-size containers. Accessors follow the rename: `bindingType`, `bindingElementType`,
-  `bindingKeyType`, `bindingMembers`, `returnBindingType`.
-
-  `wrap`, `unwrap`, `dtype` and `valueEncode` remain, because choosing between `d.X` and
-  `X`, or between `X.wrap(v)` and `new dsviper.ValueInt64(v)`, depends on the file and the
-  idiom rather than on the type. What is gone is every table and every rewriting of a type
-  inside a template — the register the C++ templates have always been written in.
-
-  One thing this fixes on the way: `vec` and `mat` hard-coded `number[]` and `number[][]`
-  in TypeScript whatever their element, which would have been wrong for a `vec<string, 2>`.
-  They now render the element's own spelling. No model in the codegen test has such a vec,
-  so generated output is unchanged.
+- **`Fields`** (C++): every field's name and path as constants, for code that handles
+  structures through the dynamic API.
+- **`Package`** (TypeScript): `package.json` and `tsconfig.json` at the package root, the
+  counterpart of Python's `Wheel`.
+- **`PythonDefinitions`** (C++): the constants an embedded Python interpreter needs.
 
 ## [1.2.4] - 2026-09-10
 
