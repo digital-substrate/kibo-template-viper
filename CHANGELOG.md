@@ -98,7 +98,14 @@ migrating.
   the dynamic attribute lookup that served them is gone. An any reads as `AnyValue`, a view
   whose content comes back as the generated class, and takes any value, a generated one
   included.
-- **TypeScript containers declare what each kind does.** A vector is a `Vector` (`append`,
+- **Containers declare what each kind does, in both languages.** Python: a vector is a `Vector`
+  (`append`, `insert`, `extend`, `pop`, `remove`, `count`, `index`, `exchange`, `front`,
+  `back`, `[i] =`, `del`, `+`, `+=`), a set a `SetView` (`add`, `remove`, `discard`, `pop`,
+  `min`, `max`, the set operations, their `_update` forms and operators), a vec or a tuple a
+  `Fixed` (`set`, `[i] =`; a tuple's `get_<i>()` typed by its member), a mat a `Matrix`
+  (`at`, `set`, `m[c, r]`, `m[c]`); a map adds `popitem`, `min`, `max`, an xarray
+  `disable_position`, `extend`, `contains`; no view forwards an undeclared name through
+  `__getattr__`, so mypy refuses a method the kind does not have. TypeScript: A vector is a `Vector` (`append`,
   `insert`, `set`, `extend`, `concat`, `pop`, `remove`, `clear`, `count`, `index`,
   `exchange`, `front`, `back`), a set a `SetView` (`add`, `remove`, `discard`, `pop`,
   `min`, `max`, `union`, `intersection`, `difference`, `symmetricDifference` and their

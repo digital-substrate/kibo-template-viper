@@ -64,70 +64,22 @@ class Sequence(View, typing.Generic[E]):
         return len(self._value)
 
     def __iter__(self) -> typing.Iterator[E]:
-        if hasattr(self._value, "__iter__"):
-            return (wrap(element) for element in self._value)
+        return (wrap(element) for element in self._value)
 
-        type_ = self._value.type()
-        if hasattr(type_, "columns"):
-            columns, rows = type_.columns(), type_.rows()
-            return typing.cast(typing.Iterator[E],
-                               (tuple(wrap(self._value.at(column, row)) for row in range(rows))
-                                for column in range(columns)))
-        return (wrap(self._value.at(index)) for index in range(len(self._value)))
-
-    def __getitem__(self, index) -> E:
-        if isinstance(index, tuple):
-            return wrap(self._value.at(*index))
+    def __getitem__(self, index: int) -> E:
         return wrap(self._value[index])
 
-    def __setitem__(self, index: int, element: E) -> None:
-        self._value[index] = unwrap(element)
+    def __contains__(self, element: object) -> bool:
+        return _unwrap_deep(element) in self._value
 
-    def __contains__(self, element) -> bool:
-        return unwrap(element) in self._value
-
-    def at(self, *position) -> E:
-        return wrap(self._value.at(*position))
-
-    def append(self, element: E) -> None:
-        if hasattr(self._value, "append"):
-            self._value.append(unwrap(element))
-        else:
-            self._value.add(unwrap(element))
-
-    def add(self, element: E) -> None:
-        self.append(element)
-
-    def insert(self, index: int, element: E) -> None:
-        self._value.insert(index, unwrap(element))
-
-    def extend(self, elements) -> None:
-        for element in elements:
-            self.append(element)
-
-    def pop(self, *args) -> E:
-        return wrap(self._value.pop(*args))
-
-    def remove(self, element: E) -> None:
-        self._value.remove(unwrap(element))
-
-    def discard(self, element: E) -> None:
-        self._value.discard(unwrap(element))
-
-    def index(self, element: E):
-        return self._value.index(unwrap(element))
-
-    def count(self, element: E) -> int:
-        return self._value.count(unwrap(element))
+    def at(self, index: int) -> E:
+        return wrap(self._value.at(index))
 
     def contains(self, element: E) -> bool:
-        return self._value.contains(unwrap(element))
-
-    def clear(self) -> None:
-        self._value.clear()
+        return _unwrap_deep(element) in self._value
 
     def empty(self) -> bool:
-        return self._value.empty()
+        return len(self._value) == 0
 
     def size(self) -> int:
         return len(self._value)
@@ -135,65 +87,220 @@ class Sequence(View, typing.Generic[E]):
     def to_list(self) -> list[E]:
         return list(self)
 
-    def to_tuple(self) -> tuple:
+    def to_tuple(self) -> tuple[E, ...]:
         return tuple(self)
 
-    def __add__(self, other):
-        return type(self)(self._value + unwrap(other))
 
-    def __iadd__(self, other):
-        self._value += unwrap(other)
+class Vector(Sequence[E]):
+    __slots__ = ()
+
+    def __setitem__(self, index: int, element: E) -> None:
+        self._value[index] = unwrap(element)
+
+    def __delitem__(self, index: int) -> None:
+        del self._value[index]
+
+    def set(self, index: int, element: E) -> None:
+        self._value.set(index, unwrap(element))
+
+    def append(self, element: E) -> None:
+        self._value.append(unwrap(element))
+
+    def insert(self, index: int, element: E) -> None:
+        self._value.insert(index, unwrap(element))
+
+    def extend(self, elements: typing.Iterable[E]) -> None:
+        for element in elements:
+            self._value.append(unwrap(element))
+
+    def pop(self, index: int = -1) -> E:
+        return wrap(self._value.pop(index))
+
+    def remove(self, element: E) -> None:
+        self._value.remove(unwrap(element))
+
+    def clear(self) -> None:
+        self._value.clear()
+
+    def count(self, element: E) -> int:
+        return self._value.count(unwrap(element))
+
+    def index(self, element: E) -> int:
+        return self._value.index(unwrap(element))
+
+    def exchange(self, first: int, second: int) -> None:
+        self._value.exchange(first, second)
+
+    def front(self) -> E:
+        return wrap(self._value.front())
+
+    def back(self) -> E:
+        return wrap(self._value.back())
+
+    def __add__(self, other: Vector[E] | typing.Iterable[E]) -> typing.Self:
+        return type(self)(self._value + _unwrap_deep(other))
+
+    def __iadd__(self, other: Vector[E] | typing.Iterable[E]) -> typing.Self:
+        self._value += _unwrap_deep(other)
         return self
 
-    def __getattr__(self, name: str):
-        if name.startswith("get_") and name[4:].isdigit():
-            return lambda _i=int(name[4:]): self[_i]
-        return _forward(self, name)
 
-    def union(self, other):
-        return type(self)(self._value.union(unwrap(other)))
+class SetView(Sequence[E]):
+    __slots__ = ()
 
-    def intersection(self, other):
-        return type(self)(self._value.intersection(unwrap(other)))
+    def add(self, element: E) -> None:
+        self._value.add(unwrap(element))
 
-    def difference(self, other):
-        return type(self)(self._value.difference(unwrap(other)))
+    def remove(self, element: E) -> None:
+        self._value.remove(unwrap(element))
 
-    def update(self, other) -> None:
-        self._value.update(unwrap(other))
+    def discard(self, element: E) -> None:
+        self._value.discard(unwrap(element))
 
-    def __or__(self, other):
+    def pop(self) -> E:
+        return wrap(self._value.pop())
+
+    def pop_max(self) -> E:
+        return wrap(self._value.pop_max())
+
+    def clear(self) -> None:
+        self._value.clear()
+
+    def min(self) -> E:
+        return wrap(self._value.min())
+
+    def max(self) -> E:
+        return wrap(self._value.max())
+
+    def extend(self, elements: typing.Iterable[E]) -> None:
+        for element in elements:
+            self._value.add(unwrap(element))
+
+    def union(self, other: SetView[E] | typing.Iterable[E]) -> typing.Self:
+        return type(self)(self._value.union(_unwrap_deep(other)))
+
+    def intersection(self, other: SetView[E] | typing.Iterable[E]) -> typing.Self:
+        return type(self)(self._value.intersection(_unwrap_deep(other)))
+
+    def difference(self, other: SetView[E] | typing.Iterable[E]) -> typing.Self:
+        return type(self)(self._value.difference(_unwrap_deep(other)))
+
+    def symmetric_difference(self, other: SetView[E] | typing.Iterable[E]) -> typing.Self:
+        return type(self)(self._value.symmetric_difference(_unwrap_deep(other)))
+
+    def update(self, other: SetView[E] | typing.Iterable[E]) -> None:
+        self._value.update(_unwrap_deep(other))
+
+    def intersection_update(self, other: SetView[E] | typing.Iterable[E]) -> None:
+        self._value.intersection_update(_unwrap_deep(other))
+
+    def difference_update(self, other: SetView[E] | typing.Iterable[E]) -> None:
+        self._value.difference_update(_unwrap_deep(other))
+
+    def symmetric_difference_update(self, other: SetView[E] | typing.Iterable[E]) -> None:
+        self._value.symmetric_difference_update(_unwrap_deep(other))
+
+    def issubset(self, other: SetView[E] | typing.Iterable[E]) -> bool:
+        return self._value.issubset(_unwrap_deep(other))
+
+    def issuperset(self, other: SetView[E] | typing.Iterable[E]) -> bool:
+        return self._value.issuperset(_unwrap_deep(other))
+
+    def isdisjoint(self, other: SetView[E] | typing.Iterable[E]) -> bool:
+        return self._value.isdisjoint(_unwrap_deep(other))
+
+    def __or__(self, other: SetView[E] | typing.Iterable[E]) -> typing.Self:
         return self.union(other)
 
-    def __and__(self, other):
+    def __and__(self, other: SetView[E] | typing.Iterable[E]) -> typing.Self:
         return self.intersection(other)
 
-    def __sub__(self, other):
+    def __sub__(self, other: SetView[E] | typing.Iterable[E]) -> typing.Self:
         return self.difference(other)
 
-    def __ior__(self, other):
-        self._value.update(unwrap(other))
-        return self
-
-    def __iand__(self, other):
-        self._value.intersection_update(unwrap(other))
-        return self
-
-    def __isub__(self, other):
-        self._value.difference_update(unwrap(other))
-        return self
-
-    def symmetric_difference(self, other):
-        return type(self)(self._value.symmetric_difference(unwrap(other)))
-
-    def __xor__(self, other):
+    def __xor__(self, other: SetView[E] | typing.Iterable[E]) -> typing.Self:
         return self.symmetric_difference(other)
 
-    def __ixor__(self, other):
-        if hasattr(self._value, "symmetric_difference_update"):
-            self._value.symmetric_difference_update(unwrap(other))
-            return self
-        return type(self)(self._value.symmetric_difference(unwrap(other)))
+    def __ior__(self, other: SetView[E] | typing.Iterable[E]) -> typing.Self:
+        self.update(other)
+        return self
+
+    def __iand__(self, other: SetView[E] | typing.Iterable[E]) -> typing.Self:
+        self.intersection_update(other)
+        return self
+
+    def __isub__(self, other: SetView[E] | typing.Iterable[E]) -> typing.Self:
+        self.difference_update(other)
+        return self
+
+    def __ixor__(self, other: SetView[E] | typing.Iterable[E]) -> typing.Self:
+        self.symmetric_difference_update(other)
+        return self
+
+
+class Fixed(Sequence[E]):
+    __slots__ = ()
+
+    def __setitem__(self, index: int, element: E) -> None:
+        self._value.set(index, unwrap(element))
+
+    def set(self, index: int, element: E) -> None:
+        self._value.set(index, unwrap(element))
+
+
+class Matrix(View, typing.Generic[E]):
+    __slots__ = ()
+
+    def __len__(self) -> int:
+        return len(self._value)
+
+    def __iter__(self) -> typing.Iterator[tuple[E, ...]]:
+        return (self.column(index) for index in range(self.columns()))
+
+    @typing.overload
+    def __getitem__(self, position: int) -> tuple[E, ...]: ...
+
+    @typing.overload
+    def __getitem__(self, position: tuple[int, int]) -> E: ...
+
+    def __getitem__(self, position):
+        if isinstance(position, tuple):
+            return wrap(self._value.at(*position))
+        return self.column(position)
+
+    @typing.overload
+    def __setitem__(self, position: int, element: typing.Sequence[E]) -> None: ...
+
+    @typing.overload
+    def __setitem__(self, position: tuple[int, int], element: E) -> None: ...
+
+    def __setitem__(self, position, element) -> None:
+        if isinstance(position, tuple):
+            self._value.set(position[0], position[1], unwrap(element))
+            return
+        for row, held in enumerate(element):
+            self._value.set(position, row, unwrap(held))
+
+    def columns(self) -> int:
+        return self._value.columns()
+
+    def rows(self) -> int:
+        return self._value.rows()
+
+    def at(self, column: int, row: int) -> E:
+        return wrap(self._value.at(column, row))
+
+    def set(self, column: int, row: int, element: E) -> None:
+        self._value.set(column, row, unwrap(element))
+
+    def column(self, index: int) -> tuple[E, ...]:
+        return tuple(wrap(self._value.at(index, row)) for row in range(self.rows()))
+
+    def size(self) -> int:
+        return len(self._value)
+
+    def to_tuple(self) -> tuple[tuple[E, ...], ...]:
+        return tuple(self)
 
 
 class Mapping(View, typing.Generic[K, E]):
@@ -227,8 +334,8 @@ class Mapping(View, typing.Generic[K, E]):
         return wrap(self._value.get(unwrap(key), unwrap(default))) if default is not None \
             else (wrap(self._value.at(unwrap(key))) if unwrap(key) in self._value else None)
 
-    def setdefault(self, key: K, element: E) -> None:
-        self._value.setdefault(unwrap(key), unwrap(element))
+    def setdefault(self, key: K, element: E) -> E:
+        return wrap(self._value.setdefault(unwrap(key), unwrap(element)))
 
     def pop(self, key: K, *args) -> E:
         return wrap(self._value.pop(unwrap(key), *[unwrap(a) for a in args]))
@@ -242,8 +349,8 @@ class Mapping(View, typing.Generic[K, E]):
     def contains(self, key: K) -> bool:
         return self._value.contains(unwrap(key))
 
-    def update(self, other) -> None:
-        self._value.update(unwrap(other))
+    def update(self, other: Mapping[K, E] | dict[K, E]) -> None:
+        self._value.update(_unwrap_deep(other))
 
     def clear(self) -> None:
         self._value.clear()
@@ -254,8 +361,15 @@ class Mapping(View, typing.Generic[K, E]):
     def size(self) -> int:
         return len(self._value)
 
-    def __getattr__(self, name: str):
-        return _forward(self, name)
+    def popitem(self) -> tuple[K, E]:
+        key, element = self._value.popitem()
+        return wrap(key), wrap(element)
+
+    def min(self) -> K:
+        return wrap(self._value.min())
+
+    def max(self) -> K:
+        return wrap(self._value.max())
 
     def keys(self) -> list[K]:
         return list(self)
@@ -339,10 +453,17 @@ class Ordered(View, typing.Generic[E]):
     def items(self) -> list[tuple[dsviper.ValueUUId, E]]:
         return [(position, wrap(element)) for position, element in self._value.items()]
 
-    def __getattr__(self, name: str):
-        return _forward(self, name)
+    def disable_position(self, position: dsviper.ValueUUId) -> None:
+        self._value.disable_position(position)
 
-    def to_vector(self):
+    def extend(self, elements: typing.Iterable[E]) -> None:
+        for element in elements:
+            self._value.append(unwrap(element))
+
+    def contains(self, element: E) -> bool:
+        return _unwrap_deep(element) in self._value
+
+    def to_vector(self) -> Vector[E]:
         return wrap(self._value.to_vector())
 
     def empty(self) -> bool:
@@ -418,7 +539,10 @@ class AnyValue(View):
 
 
 _CASTS: dict[type, typing.Callable[[typing.Any], typing.Any]] = {
-    Sequence: lambda value: value,
+    Vector: dsviper.ValueVector.cast,
+    SetView: dsviper.ValueSet.cast,
+    Fixed: lambda value: value,
+    Matrix: dsviper.ValueMat.cast,
     Mapping: dsviper.ValueMap.cast,
     Ordered: dsviper.ValueXArray.cast,
     Optional: dsviper.ValueOptional.cast,
@@ -473,21 +597,3 @@ def declare(*classes: typing.Any) -> None:
 
 def declared(value: typing.Any) -> typing.Any:
     return _DECLARED.get(value.type().representation())
-
-
-def _forward(view: View, name: str) -> typing.Any:
-    inner: typing.Any = getattr(view.vpr_value, name, None)
-    if inner is None:
-        raise AttributeError(f"neither the view nor {view.vpr_value.type().representation()} has '{name}'")
-    if not callable(inner):
-        return wrap(inner)
-
-    def forwarded(*args, **kwargs) -> typing.Any:
-        result: typing.Any = inner(*[unwrap(a) for a in args], **kwargs)
-        if isinstance(result, dsviper.Value):
-            return type(view)(result) if result.type() == view.vpr_value.type() else wrap(result)
-        if isinstance(result, tuple):
-            return tuple(wrap(r) if isinstance(r, dsviper.Value) else r for r in result)
-        return result
-
-    return forwarded

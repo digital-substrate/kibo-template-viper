@@ -14,7 +14,7 @@ import typing
 import dsviper
 
 from . import definitions
-from ._codegen import AnyValue, Declared, Mapping, Optional, Ordered, Sequence, Variant, declare
+from ._codegen import AnyValue, Declared, Fixed, Mapping, Matrix, Optional, Ordered, SetView, Variant, Vector, declare
 
 if typing.TYPE_CHECKING:
     from . import containers
@@ -34,12 +34,12 @@ if typing.TYPE_CHECKING:
 <m.xarrayFunctions:element();separator="\n">
 <m.variantFunctions:variant();separator="\n">
 
-<m.vecFunctions:sequence_class();separator="\n\n">
+<m.vecFunctions:fixed_class();separator="\n\n">
 <m.matFunctions:matrix_class();separator="\n\n">
 <m.tupleFunctions:tuple_class();separator="\n\n">
 <m.optionalFunctions:optional_class();separator="\n\n">
-<m.vectorFunctions:sequence_class();separator="\n\n">
-<m.setFunctions:sequence_class();separator="\n\n">
+<m.vectorFunctions:vector_class();separator="\n\n">
+<m.setFunctions:set_class();separator="\n\n">
 <m.mapFunctions:mapping_class();separator="\n\n">
 <m.xarrayFunctions:ordered_class();separator="\n\n">
 <m.variantFunctions:variant_class();separator="\n\n">
@@ -83,14 +83,27 @@ tuple(v) ::= <%@functools.cache<\n>def type<v.typeSuffix>(): return dsviper.<v.v
 variant(v) ::= <%@functools.cache<\n>def type<v.typeSuffix>(): return dsviper.<v.viperType>([<v.members:member();separator=", ">])%>
 member(t) ::= <%type<t.typeSuffix>()%>
 
-sequence_class(v) ::= <<
-<declared(v, {Sequence["<v.bindingElementType.qualified>"]})>
+vector_class(v) ::= <<
+<declared(v, {Vector["<v.bindingElementType.qualified>"]})>
+>>
+set_class(v) ::= <<
+<declared(v, {SetView["<v.bindingElementType.qualified>"]})>
+>>
+fixed_class(v) ::= <<
+<declared(v, {Fixed["<v.bindingElementType.qualified>"]})>
 >>
 matrix_class(v) ::= <<
-<declared(v, {Sequence[typing.Any]})>
+<declared(v, {Matrix["<v.bindingElementType.qualified>"]})>
 >>
 tuple_class(v) ::= <<
-<declared(v, {Sequence["<v.members:{t|<t.bindingType.qualified>};separator=" | ">"]})>
+<declared(v, {Fixed["<v.members:{t|<t.bindingType.qualified>};separator=" | ">"]})>
+
+<v.members:{t|<tuple_getter(t, i0)>};separator="\n\n">
+>>
+
+tuple_getter(t, index) ::= <<
+    def get_<index>(self) -> <t.bindingType.qualified>:
+        return typing.cast("<t.bindingType.qualified>", self[<index>])
 >>
 optional_class(v) ::= <<
 <declared(v, {Optional["<v.bindingElementType.qualified>"]})>

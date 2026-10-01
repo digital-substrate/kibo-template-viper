@@ -101,7 +101,7 @@ def wrap(value) -> typing.Any:
             return AnyConceptKey(value)
         return _named(type_key.element_type())(value)
 
-    from .container import AnyValue, Mapping, Optional, Ordered, Sequence, Variant, declared
+    from .container import AnyValue, Fixed, Mapping, Matrix, Optional, Ordered, SetView, Variant, Vector, declared
 
     if code == "any":
         return AnyValue(value)
@@ -118,8 +118,14 @@ def wrap(value) -> typing.Any:
         return Optional(value)
     if code == "variant":
         return Variant(value)
-    if code in ("vector", "set", "vec", "mat", "tuple"):
-        return Sequence(value)
+    if code == "vector":
+        return Vector(value)
+    if code == "set":
+        return SetView(value)
+    if code in ("vec", "tuple"):
+        return Fixed(value)
+    if code == "mat":
+        return Matrix(value)
 
     return value
 
