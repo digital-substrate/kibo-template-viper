@@ -2,7 +2,7 @@
 # generated package. Do not edit by hand.
 
 from .attachment import AttachmentProxy
-from .container import (Mapping, Optional, Ordered, Sequence, Variant, View,
+from .container import (AnyValue, Mapping, Optional, Ordered, Sequence, Variant, View,
                         Declared, declare)
 from .proxy import (NOT_GIVEN, AnyConceptKey, Key, NotGiven, Proxy, is_known, register,
                     set_definitions, unwrap, wrap)
@@ -11,6 +11,7 @@ __all__ = [
     "NOT_GIVEN",
     "NotGiven",
     "AnyConceptKey",
+    "AnyValue",
     "AttachmentProxy",
     "Declared",
     "Key",

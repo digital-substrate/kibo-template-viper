@@ -10,7 +10,7 @@ import dsviper from "@digitalsubstrate/dsviper";
 
 import { AttachmentProxy, type Mutating } from "../_codegen/attachment.js";
 import type * as containers from "../containers.js";
-import { AnyConceptKey } from "../_codegen/registry.js";
+import { AnyConceptKey, type AnyValue } from "../_codegen/registry.js";
 import { definitions } from "../index.js";
 <u.dependencies.attachments:{d|import * as <d.name;format="lsc"> from "../<d.name;format="lsc">/data.js";};separator="\n">
 import * as <u.name;format="lsc"> from "./data.js";

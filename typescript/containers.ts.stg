@@ -8,9 +8,9 @@ model(m) ::= <<
 
 import dsviper from "@digitalsubstrate/dsviper";
 
-import { mappingOf, optionalOf, orderedOf, sequenceOf, variantOf } from "./_codegen/container.js";
+import { declare, mappingOf, optionalOf, orderedOf, sequenceOf, variantOf } from "./_codegen/container.js";
 import type * as containers from "./containers.js";
-import type { AnyConceptKey } from "./_codegen/registry.js";
+import type { AnyConceptKey, AnyValue } from "./_codegen/registry.js";
 <m.nameSpaces:{u|import * as <u.name;format="lsc"> from "./<u.name;format="lsc">/data.js";};separator="\n">
 
 <primitives()>
@@ -34,7 +34,7 @@ import type { AnyConceptKey } from "./_codegen/registry.js";
 <m.setFunctions:{v|<bound(v, {sequenceOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
 <m.mapFunctions:{v|<bound(v, {mappingOf\<<v.bindingKeyType.qualified>, <v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
 <m.xarrayFunctions:{v|<bound(v, {orderedOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
-<m.variantFunctions:{v|<bound(v, {variantOf\<<v.members:{t|<t.bindingType.qualified>};separator=" | ">, <v.bindingType.constructorInput>\>})>};separator="\n">
+<m.variantFunctions:variant_class();separator="\n\n">
 >>
 
 primitives() ::= <<
@@ -76,4 +76,28 @@ member(t) ::= <%type<t.typeSuffix>()%>
 bound(v, factory) ::= <<
 export const <v.bindingType.proxy> = <factory>(type<v.typeSuffix>);
 export type <v.bindingType.proxy> = InstanceType\<typeof <v.bindingType.proxy>\>;
+>>
+
+variant_class(v) ::= <<
+const <v.bindingType.proxy>_base = variantOf\<<v.members:{t|<t.bindingType.qualified>};separator=" | ">, <v.bindingType.constructorInput>\>(type<v.typeSuffix>);
+
+export class <v.bindingType.proxy> extends <v.bindingType.proxy>_base {
+    <v.members:alternative();separator="\n\n">
+}
+
+declare(type<v.typeSuffix>, <v.bindingType.proxy>);
+>>
+
+alternative(t) ::= <<
+is<t.bindingType.proxy;format="uf">(): boolean {
+    return this.holds(type<t.typeSuffix>());
+}
+
+get<t.bindingType.proxy;format="uf">(): <t.bindingType.qualified> {
+    return this.as\<<t.bindingType.qualified>\>(type<t.typeSuffix>());
+}
+
+set<t.bindingType.proxy;format="uf">(value: <t.bindingType.inputQualified>): void {
+    this.wrap(value as never, type<t.typeSuffix>());
+}
 >>

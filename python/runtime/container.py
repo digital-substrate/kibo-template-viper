@@ -384,30 +384,37 @@ class Variant(View, typing.Generic[E]):
         self._value.wrap(unwrap(element), type) if type is not None \
             else self._value.wrap(unwrap(element))
 
-    def __getattr__(self, name: str):
-        for prefix in ("set_", "get_", "is_"):
-            if not name.startswith(prefix):
-                continue
-            wanted = name[len(prefix):]
-            for alternative in self._value.type().types():
-                if _alternative_name(alternative) != wanted:
-                    continue
-                if prefix == "set_":
-                    return lambda value, _t=alternative: self._value.wrap(unwrap(value), _t)
-                if prefix == "get_":
-                    def taken(_t=alternative):
-                        held = self._value.unwrap(encoded=False)
-                        if held.type() != _t:
-                            raise ValueError(
-                                f"the variant holds a {held.type().representation()}, "
-                                f"not a {_t.representation()}")
-                        return wrap(held)
+    def _holds(self, alternative: dsviper.Type) -> bool:
+        return self._value.unwrap(encoded=False).type() == alternative
 
-                    return taken
-                return lambda _t=alternative: self._value.unwrap(encoded=False).type() == _t
+    def _get(self, alternative: dsviper.Type) -> typing.Any:
+        if not self._holds(alternative):
+            held = self._value.unwrap(encoded=False).type()
+            raise ValueError(f"the variant holds a {held.representation()}, "
+                             f"not a {alternative.representation()}")
+        return wrap(self._value.unwrap())
 
-        known = ", ".join(_alternative_name(t) for t in self._value.type().types())
-        raise AttributeError(f"'{name}' designates no alternative: {known}")
+    def _set(self, alternative: dsviper.Type, element) -> None:
+        self._value.wrap(unwrap(element), alternative)
+
+
+class AnyValue(View):
+    __slots__ = ()
+
+    def __bool__(self) -> bool:
+        return not self._value.is_nil()
+
+    def is_nil(self) -> bool:
+        return self._value.is_nil()
+
+    def unwrap(self) -> typing.Any:
+        return wrap(self._value.unwrap())
+
+    def wrap(self, element: typing.Any) -> None:
+        self._value.wrap(unwrap(element))
+
+    def clear(self) -> None:
+        self._value.clear()
 
 
 _CASTS: dict[type, typing.Callable[[typing.Any], typing.Any]] = {
@@ -466,10 +473,6 @@ def declare(*classes: typing.Any) -> None:
 
 def declared(value: typing.Any) -> typing.Any:
     return _DECLARED.get(value.type().representation())
-
-
-def _alternative_name(type_) -> str:
-    return type_.representation().replace("::", "_")
 
 
 def _forward(view: View, name: str) -> typing.Any:

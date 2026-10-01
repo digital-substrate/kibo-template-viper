@@ -92,6 +92,12 @@ migrating.
   a nil document is told apart from no document. A write still takes what the runtime
   decodes: an optional field accepts its declared class, its element, or `None`
   (`undefined`).
+  A variant reads as its declared class (`containers.Variant_of_A_or_B`), which tells, reads
+  and writes each alternative by a generated method named after it — `is_Demo_ConceptAKey()`,
+  `get_…`, `set_…` in Python, `isDemo_ConceptAKey()`, … in TypeScript — and changes in place;
+  the dynamic attribute lookup that served them is gone. An any reads as `AnyValue`, a view
+  whose content comes back as the generated class, and takes any value, a generated one
+  included.
 - **The host's own collections enter where the runtime decodes them.** A container field
   takes its declared class, and also the host's collection when nothing in it is generated
   (`u.coeffs = [1.0, 2.0]`, `{"a", "b"}`, a `dict`; an array, a `Set`, a `Map` or pairs in

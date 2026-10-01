@@ -3,10 +3,11 @@
 
 import dsviper from "@digitalsubstrate/dsviper";
 
-import { Mapping, Optional, Ordered, Sequence, Variant, View, declaredFor } from "./container.js";
+import { AnyValue, Mapping, Optional, Ordered, Sequence, Variant, View, declaredFor } from "./container.js";
 import { AnyConceptKey, Proxy } from "./proxy.js";
 
 export { AnyConceptKey } from "./proxy.js";
+export { AnyValue } from "./container.js";
 
 export interface Wrapping {
     wrap(value: dsviper.Value): unknown;
@@ -47,12 +48,9 @@ export function wrap(value: dsviper.OutputValue | dsviper.Value): any {
             const typeKey = key.typeKey();
             return typeKey.isAnyConcept() ? new AnyConceptKey(key) : named(typeKey.elementType()).wrap(key);
         }
-        case "any": {
-            const held = value as dsviper.ValueOptional;
-            return held.isNil() ? undefined : wrap(held.unwrap());
-        }
+        case "any":
+            return new AnyValue(value);
         case "variant":
-            return wrap((value as dsviper.ValueVariant).unwrap());
         case "optional":
         case "map":
         case "xarray":
@@ -72,6 +70,8 @@ export function wrap(value: dsviper.OutputValue | dsviper.Value): any {
     switch (value.typeCode()) {
         case "optional":
             return new Optional(dsviper.ValueOptional.cast(value));
+        case "variant":
+            return new Variant(value);
         case "map":
             return new Mapping(dsviper.ValueMap.cast(value));
         case "xarray":

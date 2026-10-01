@@ -14,7 +14,7 @@ import typing
 import dsviper
 
 from . import definitions
-from ._codegen import Declared, Mapping, Optional, Ordered, Sequence, Variant, declare
+from ._codegen import AnyValue, Declared, Mapping, Optional, Ordered, Sequence, Variant, declare
 
 if typing.TYPE_CHECKING:
     from . import containers
@@ -103,6 +103,19 @@ ordered_class(v) ::= <<
 >>
 variant_class(v) ::= <<
 <declared(v, {Variant["<v.members:{t|<t.bindingType.qualified>};separator=" | ">"]})>
+
+<v.members:alternative();separator="\n\n">
+>>
+
+alternative(t) ::= <<
+    def is_<t.bindingType.proxy>(self) -> bool:
+        return self._holds(type<t.typeSuffix>())
+
+    def get_<t.bindingType.proxy>(self) -> <t.bindingType.qualified>:
+        return self._get(type<t.typeSuffix>())
+
+    def set_<t.bindingType.proxy>(self, value: <t.bindingType.inputQualified>) -> None:
+        self._set(type<t.typeSuffix>(), value)
 >>
 
 declared(v, base) ::= <<

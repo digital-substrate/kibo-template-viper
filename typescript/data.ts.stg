@@ -10,7 +10,7 @@ import dsviper from "@digitalsubstrate/dsviper";
 
 import type * as containers from "../containers.js";
 import { Key, Proxy } from "../_codegen/proxy.js";
-import { AnyConceptKey, isKnown, register, setField, wrap } from "../_codegen/registry.js";
+import { AnyConceptKey, type AnyValue, isKnown, register, setField, wrap } from "../_codegen/registry.js";
 import { definitions } from "../index.js";
 <u.dependencies.types:{d|import * as <d.name;format="lsc"> from "../<d.name;format="lsc">/data.js";};separator="\n">
 

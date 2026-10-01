@@ -16,12 +16,6 @@ export class View {
                 if (name in view || typeof name === "symbol") {
                     return Reflect.get(view, name, receiver);
                 }
-                if (view instanceof Variant) {
-                    const arm = view.arm(name);
-                    if (arm !== undefined) {
-                        return arm;
-                    }
-                }
                 const inner = (view.vprValue as unknown as Record<string, unknown>)[name];
                 if (typeof inner !== "function") {
                     return inner === undefined ? undefined : wrap(inner as dsviper.OutputValue);
@@ -344,6 +338,28 @@ export class Optional<E> extends View {
     }
 }
 
+export class AnyValue extends View {
+    private get any(): dsviper.ValueAny {
+        return this.vprValue as dsviper.ValueAny;
+    }
+
+    isNil(): boolean {
+        return this.any.isNil();
+    }
+
+    unwrap(): unknown {
+        return wrap(this.any.unwrap(false) as dsviper.Value);
+    }
+
+    wrap(element: unknown): void {
+        this.any.wrap(unwrap(element));
+    }
+
+    clear(): void {
+        this.any.clear();
+    }
+}
+
 export class Variant<E> extends View {
     private get variant(): dsviper.ValueVariant {
         return this.vprValue as dsviper.ValueVariant;
@@ -373,33 +389,6 @@ export class Variant<E> extends View {
     holds(type: dsviper.Type): boolean {
         return (this.variant.unwrap(false) as dsviper.Value).type().equals(type);
     }
-
-    arm(name: string): ((...args: unknown[]) => unknown) | undefined {
-        for (const prefix of ["set", "get", "is"]) {
-            if (!name.startsWith(prefix)) {
-                continue;
-            }
-            const wanted = name.slice(prefix.length);
-            for (const alternative of (this.variant.type() as dsviper.TypeVariant).types()) {
-                if (armName(alternative) !== wanted) {
-                    continue;
-                }
-                if (prefix === "set") {
-                    return (...args) => this.variant.wrap(unwrap(args[0]), alternative);
-                }
-                if (prefix === "get") {
-                    return () => this.as(alternative);
-                }
-                return () => this.holds(alternative);
-            }
-        }
-        return undefined;
-    }
-}
-
-function armName(type: dsviper.Type): string {
-    const raw = type.representation().replace("::", "_");
-    return raw.charAt(0).toUpperCase() + raw.slice(1);
 }
 
 function forward(view: View, name: string, args: unknown[]): unknown {
@@ -473,12 +462,17 @@ function bind<V extends View, I>(view: new (value: dsviper.Value) => V,
         }
 
         static decode(blob: dsviper.ValueBlob): View {
-            return new BoundView(dsviper.Value.decode(blob, typeOf(), definitionsOf()));
+            return new this(dsviper.Value.decode(blob, typeOf(), definitionsOf()));
         }
     }
 
     bound.set(typeOf, BoundView);
     return BoundView as unknown as Bound<V, I>;
+}
+
+export function declare<C>(typeOf: () => dsviper.Type, declared: C): C {
+    bound.set(typeOf, declared);
+    return declared;
 }
 
 export const sequenceOf = <E, I = never>(typeOf: () => dsviper.Type) =>
