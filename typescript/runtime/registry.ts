@@ -3,7 +3,7 @@
 
 import dsviper from "@digitalsubstrate/dsviper";
 
-import { AnyValue, Mapping, Optional, Ordered, Sequence, Variant, View, declaredFor } from "./container.js";
+import { AnyValue, Fixed, Mapping, Matrix, Optional, Ordered, SetView, Variant, Vector, View, declaredFor } from "./container.js";
 import { AnyConceptKey, Proxy } from "./proxy.js";
 
 export { AnyConceptKey } from "./proxy.js";
@@ -77,11 +77,14 @@ export function wrap(value: dsviper.OutputValue | dsviper.Value): any {
         case "xarray":
             return new Ordered(dsviper.ValueXArray.cast(value));
         case "vector":
+            return new Vector(value);
         case "set":
+            return new SetView(value);
         case "vec":
-        case "mat":
         case "tuple":
-            return new Sequence(value);
+            return new Fixed(value);
+        case "mat":
+            return new Matrix(value);
 
         case "bool":
         case "uint8": case "uint16": case "uint32": case "uint64":

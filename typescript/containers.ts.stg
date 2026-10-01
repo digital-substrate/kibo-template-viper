@@ -8,7 +8,7 @@ model(m) ::= <<
 
 import dsviper from "@digitalsubstrate/dsviper";
 
-import { declare, mappingOf, optionalOf, orderedOf, sequenceOf, variantOf } from "./_codegen/container.js";
+import { declare, fixedOf, mappingOf, matrixOf, optionalOf, orderedOf, setOf, variantOf, vectorOf } from "./_codegen/container.js";
 import type * as containers from "./containers.js";
 import type { AnyConceptKey, AnyValue } from "./_codegen/registry.js";
 <m.nameSpaces:{u|import * as <u.name;format="lsc"> from "./<u.name;format="lsc">/data.js";};separator="\n">
@@ -26,12 +26,12 @@ import type { AnyConceptKey, AnyValue } from "./_codegen/registry.js";
 <m.xarrayFunctions:element();separator="\n">
 <m.variantFunctions:variant();separator="\n">
 
-<m.vecFunctions:{v|<bound(v, {sequenceOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
-<m.matFunctions:{v|<bound(v, {sequenceOf\<unknown, <v.bindingType.constructorInput>\>})>};separator="\n">
-<m.tupleFunctions:{v|<bound(v, {sequenceOf\<<v.members:{t|<t.bindingType.qualified>};separator=" | ">, <v.bindingType.constructorInput>\>})>};separator="\n">
+<m.vecFunctions:{v|<bound(v, {fixedOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
+<m.matFunctions:{v|<bound(v, {matrixOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
+<m.tupleFunctions:{v|<bound(v, {fixedOf\<<v.members:{t|<t.bindingType.qualified>};separator=" | ">, <v.bindingType.constructorInput>\>})>};separator="\n">
 <m.optionalFunctions:{v|<bound(v, {optionalOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
-<m.vectorFunctions:{v|<bound(v, {sequenceOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
-<m.setFunctions:{v|<bound(v, {sequenceOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
+<m.vectorFunctions:{v|<bound(v, {vectorOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
+<m.setFunctions:{v|<bound(v, {setOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
 <m.mapFunctions:{v|<bound(v, {mappingOf\<<v.bindingKeyType.qualified>, <v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
 <m.xarrayFunctions:{v|<bound(v, {orderedOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
 <m.variantFunctions:variant_class();separator="\n\n">

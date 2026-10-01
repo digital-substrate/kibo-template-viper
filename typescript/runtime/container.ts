@@ -10,23 +10,6 @@ export class View {
 
     constructor(value: dsviper.Value) {
         this.vprValue = value;
-
-        return new globalThis.Proxy(this, {
-            get(view, name, receiver) {
-                if (name in view || typeof name === "symbol") {
-                    return Reflect.get(view, name, receiver);
-                }
-                const inner = (view.vprValue as unknown as Record<string, unknown>)[name];
-                if (typeof inner !== "function") {
-                    return inner === undefined ? undefined : wrap(inner as dsviper.OutputValue);
-                }
-                return (...args: unknown[]) => {
-                    const result = (inner as (...a: unknown[]) => unknown)
-                        .apply(view.vprValue, args.map(unwrap));
-                    return result instanceof dsviper.Value ? wrap(result) : result;
-                };
-            },
-        });
     }
 
     type(): dsviper.Type {
@@ -84,7 +67,7 @@ interface Suite extends Iterable<dsviper.OutputValue> {
 }
 
 export class Sequence<E> extends View {
-    private get suite(): Suite {
+    protected get suite(): Suite {
         return this.vprValue as unknown as Suite;
     }
 
@@ -96,26 +79,19 @@ export class Sequence<E> extends View {
         return this.suite.size();
     }
 
-    at(...position: number[]): E {
-        return wrap(this.suite.at(...position));
+    at(index: number): E {
+        return wrap(this.suite.at(index));
     }
 
     has(element: E): boolean {
         return this.suite.contains(unwrap(element));
     }
 
+    contains(element: E): boolean {
+        return this.has(element);
+    }
+
     *[Symbol.iterator](): Iterator<E> {
-        const type = this.vprValue.type() as unknown as { columns?(): number; rows?(): number };
-        if (typeof type.columns === "function" && typeof type.rows === "function") {
-            for (let column = 0; column < type.columns(); column += 1) {
-                const held: unknown[] = [];
-                for (let row = 0; row < type.rows(); row += 1) {
-                    held.push(wrap(this.suite.at(column, row)));
-                }
-                yield held as E;
-            }
-            return;
-        }
         for (const element of this.suite) {
             yield wrap(element);
         }
@@ -124,23 +100,202 @@ export class Sequence<E> extends View {
     toArray(): E[] {
         return [...this];
     }
+}
 
-    row(index: number): unknown[] {
-        const type = this.vprValue.type() as unknown as { rows(): number };
-        const held: unknown[] = [];
-        for (let position = 0; position < type.rows(); position += 1) {
+export class Vector<E> extends Sequence<E> {
+    private get vector(): dsviper.ValueVector {
+        return this.vprValue as dsviper.ValueVector;
+    }
+
+    set(index: number, element: E): void {
+        this.vector.set(index, unwrap(element));
+    }
+
+    append(element: E): void {
+        this.vector.append(unwrap(element));
+    }
+
+    insert(index: number, element: E): void {
+        this.vector.insert(index, unwrap(element));
+    }
+
+    extend(elements: Iterable<E>): void {
+        this.vector.extend([...elements].map(unwrap));
+    }
+
+    concat(elements: Iterable<E>): this {
+        return wrap(this.vector.concat(elements instanceof Vector
+            ? elements.vprValue as dsviper.ValueVector : [...elements].map(unwrap)));
+    }
+
+    pop(index?: number): E {
+        return wrap(this.vector.pop(index ?? null, false));
+    }
+
+    remove(element: E): void {
+        this.vector.remove(unwrap(element));
+    }
+
+    clear(): void {
+        this.vector.clear();
+    }
+
+    count(element: E): number {
+        return this.vector.count(unwrap(element));
+    }
+
+    index(element: E): number {
+        return this.vector.index(unwrap(element));
+    }
+
+    exchange(first: number, second: number): void {
+        this.vector.exchange(first, second);
+    }
+
+    front(): E {
+        return wrap(this.vector.front(false));
+    }
+
+    back(): E {
+        return wrap(this.vector.back(false));
+    }
+}
+
+type SetOperand<E> = SetView<E> | readonly E[] | ReadonlySet<E>;
+
+function setOperand<E>(other: SetOperand<E>): dsviper.InputValue[] | dsviper.ValueSet {
+    return other instanceof SetView ? other.vprValue as dsviper.ValueSet : [...other].map(unwrap);
+}
+
+export class SetView<E> extends Sequence<E> {
+    private get set(): dsviper.ValueSet {
+        return this.vprValue as dsviper.ValueSet;
+    }
+
+    add(element: E): void {
+        this.set.add(unwrap(element));
+    }
+
+    remove(element: E): void {
+        this.set.remove(unwrap(element));
+    }
+
+    discard(element: E): void {
+        this.set.discard(unwrap(element));
+    }
+
+    pop(): E {
+        return wrap(this.set.pop(false));
+    }
+
+    clear(): void {
+        this.set.clear();
+    }
+
+    min(): E {
+        return wrap(this.set.min(false));
+    }
+
+    max(): E {
+        return wrap(this.set.max(false));
+    }
+
+    union(other: SetOperand<E>): this {
+        return wrap(this.set.union(setOperand(other)));
+    }
+
+    intersection(other: SetOperand<E>): this {
+        return wrap(this.set.intersection(setOperand(other)));
+    }
+
+    difference(other: SetOperand<E>): this {
+        return wrap(this.set.difference(setOperand(other)));
+    }
+
+    symmetricDifference(other: SetOperand<E>): this {
+        return wrap(this.set.symmetricDifference(setOperand(other)));
+    }
+
+    update(other: SetOperand<E>): void {
+        this.set.update(setOperand(other));
+    }
+
+    intersectionUpdate(other: SetOperand<E>): void {
+        this.set.intersectionUpdate(setOperand(other));
+    }
+
+    differenceUpdate(other: SetOperand<E>): void {
+        this.set.differenceUpdate(setOperand(other));
+    }
+
+    symmetricDifferenceUpdate(other: SetOperand<E>): void {
+        this.set.symmetricDifferenceUpdate(setOperand(other));
+    }
+
+    issubset(other: SetOperand<E>): boolean {
+        return this.set.issubset(setOperand(other));
+    }
+
+    issuperset(other: SetOperand<E>): boolean {
+        return this.set.issuperset(setOperand(other));
+    }
+
+    isdisjoint(other: SetOperand<E>): boolean {
+        return this.set.isdisjoint(setOperand(other));
+    }
+}
+
+export class Fixed<E> extends Sequence<E> {
+    set(index: number, element: E): void {
+        (this.vprValue as unknown as { set(i: number, v: unknown): void }).set(index, unwrap(element));
+    }
+}
+
+export class Matrix<E> extends View {
+    private get mat(): dsviper.ValueMat {
+        return this.vprValue as dsviper.ValueMat;
+    }
+
+    get size(): number {
+        return this.mat.size();
+    }
+
+    get columns(): number {
+        return this.mat.columns();
+    }
+
+    get rows(): number {
+        return this.mat.rows();
+    }
+
+    at(column: number, row: number): E {
+        return wrap(this.mat.at(column, row));
+    }
+
+    set(column: number, row: number, element: E): void {
+        this.mat.set(column, row, unwrap(element) as number);
+    }
+
+    row(index: number): E[] {
+        const held: E[] = [];
+        for (let position = 0; position < this.rows; position += 1) {
             held.push(this.at(index, position));
         }
         return held;
     }
 
-    setRow(index: number, elements: unknown[]): void {
-        const inner = this.vprValue as unknown as { set(c: number, r: number, v: unknown): void };
-        elements.forEach((element, position) => inner.set(index, position, unwrap(element)));
+    setRow(index: number, elements: readonly E[]): void {
+        elements.forEach((element, position) => this.set(index, position, element));
     }
 
-    call(name: string, ...args: unknown[]): unknown {
-        return forward(this, name, args);
+    *[Symbol.iterator](): Iterator<E[]> {
+        for (let index = 0; index < this.columns; index += 1) {
+            yield this.row(index);
+        }
+    }
+
+    toArray(): E[][] {
+        return [...this];
     }
 }
 
@@ -190,6 +345,10 @@ export class Mapping<K, V> extends View {
         return [...this.pairs()];
     }
 
+    items(): [K, V][] {
+        return this.entries();
+    }
+
     *[Symbol.iterator](): Iterator<K> {
         for (const pair of this.map as unknown as Iterable<dsviper.OutputValue>) {
             const [key] = pair as unknown as [dsviper.OutputValue, dsviper.OutputValue];
@@ -204,8 +363,39 @@ export class Mapping<K, V> extends View {
         }
     }
 
-    call(name: string, ...args: unknown[]): unknown {
-        return forward(this, name, args);
+    contains(key: K): boolean {
+        return this.has(key);
+    }
+
+    discard(key: K): void {
+        this.map.discard(unwrap(key));
+    }
+
+    pop(key: K, fallback?: V): V {
+        return fallback === undefined
+            ? wrap(this.map.pop(unwrap(key), null, false))
+            : wrap(this.map.pop(unwrap(key), unwrap(fallback), false));
+    }
+
+    popitem(): [K, V] {
+        const [key, element] = this.map.popitem(false);
+        return [wrap(key), wrap(element)];
+    }
+
+    setdefault(key: K, element: V): V {
+        return wrap(this.map.setdefault(unwrap(key), unwrap(element), false));
+    }
+
+    update(other: Mapping<K, V> | ReadonlyMap<K, V> | readonly (readonly [K, V])[]): void {
+        this.map.update(unwrapDeep(other));
+    }
+
+    min(): K {
+        return wrap(this.map.min(false));
+    }
+
+    max(): K {
+        return wrap(this.map.max(false));
     }
 }
 
@@ -286,12 +476,36 @@ export class Ordered<E> extends View {
         this.ordered.remove(position);
     }
 
-    toVector(): Sequence<E> {
+    toVector(): Vector<E> {
         const flat = this.ordered.toVector();
-        const known = boundFor(Sequence, flat.type());
+        const known = boundFor(Vector, flat.type());
         return known === undefined
-            ? new Sequence<E>(flat)
-            : new (known as new (v: unknown) => Sequence<E>)(flat);
+            ? new Vector<E>(flat)
+            : new (known as new (v: unknown) => Vector<E>)(flat);
+    }
+
+    contains(element: E): boolean {
+        return this.ordered.contains(unwrap(element));
+    }
+
+    index(position: dsviper.ValueUUId): number | undefined {
+        return this.ordered.index(position);
+    }
+
+    positionOf(element: E): dsviper.ValueUUId | undefined {
+        return this.ordered.positionOf(unwrap(element));
+    }
+
+    extend(elements: Iterable<E>): dsviper.ValueUUId {
+        return this.ordered.extend([...elements].map(unwrap));
+    }
+
+    insertPosition(beforePosition: dsviper.ValueUUId, newPosition: dsviper.ValueUUId): void {
+        this.ordered.insertPosition(beforePosition, newPosition);
+    }
+
+    disablePosition(position: dsviper.ValueUUId): void {
+        this.ordered.disablePosition(position);
     }
 
     items(): [dsviper.ValueUUId, E][] {
@@ -302,10 +516,6 @@ export class Ordered<E> extends View {
         for (const element of this.ordered as unknown as Iterable<dsviper.OutputValue>) {
             yield wrap(element);
         }
-    }
-
-    call(name: string, ...args: unknown[]): unknown {
-        return forward(this, name, args);
     }
 }
 
@@ -391,15 +601,6 @@ export class Variant<E> extends View {
     }
 }
 
-function forward(view: View, name: string, args: unknown[]): unknown {
-    const inner = (view.vprValue as unknown as Record<string, unknown>)[name];
-    if (typeof inner !== "function") {
-        throw new TypeError(`neither the view nor ${view.vprValue.type().representation()} has '${name}'`);
-    }
-    const result = (inner as (...a: unknown[]) => unknown).apply(view.vprValue, args.map(unwrap));
-    return result instanceof dsviper.Value ? wrap(result) : result;
-}
-
 type Bound<V, I> = {
     new (value?: V | I | null): V;
     type(): dsviper.Type;
@@ -475,18 +676,34 @@ export function declare<C>(typeOf: () => dsviper.Type, declared: C): C {
     return declared;
 }
 
-export const sequenceOf = <E, I = never>(typeOf: () => dsviper.Type) =>
-    bind<Sequence<E>, I>(Sequence as never, typeOf,
+type OrderedStatics = {
+    readonly END: dsviper.ValueUUId;
+    end(): dsviper.ValueUUId;
+    createPosition(): dsviper.ValueUUId;
+};
+
+export const vectorOf = <E, I = never>(typeOf: () => dsviper.Type) =>
+    bind<Vector<E>, I>(Vector as never, typeOf,
+                       (t, v) => dsviper.Value.create(t, v as dsviper.InputValue));
+export const setOf = <E, I = never>(typeOf: () => dsviper.Type) =>
+    bind<SetView<E>, I>(SetView as never, typeOf,
+                        (t, v) => dsviper.Value.create(t, v as dsviper.InputValue));
+export const fixedOf = <E, I = never>(typeOf: () => dsviper.Type) =>
+    bind<Fixed<E>, I>(Fixed as never, typeOf,
                       (t, v) => dsviper.Value.create(t, v as dsviper.InputValue));
+export const matrixOf = <E, I = never>(typeOf: () => dsviper.Type) =>
+    bind<Matrix<E>, I>(Matrix as never, typeOf,
+                       (t, v) => dsviper.Value.create(t, v as dsviper.InputValue));
 export const mappingOf = <K, V, I = never>(typeOf: () => dsviper.Type) =>
     bind<Mapping<K, V>, I>(Mapping as never, typeOf,
-                        (t, v) => new dsviper.ValueMap(t as dsviper.TypeMap, v as dsviper.InputValue));
+                           (t, v) => new dsviper.ValueMap(t as dsviper.TypeMap, v as dsviper.InputValue));
 export const orderedOf = <E, I = never>(typeOf: () => dsviper.Type) =>
     bind<Ordered<E>, I>(Ordered as never, typeOf,
-                     (t, v) => new dsviper.ValueXArray(t as dsviper.TypeXArray, v as dsviper.InputValue));
+                        (t, v) => new dsviper.ValueXArray(t as dsviper.TypeXArray, v as dsviper.InputValue)) as
+        Bound<Ordered<E>, I> & OrderedStatics;
 export const optionalOf = <E, I = never>(typeOf: () => dsviper.Type) =>
     bind<Optional<E>, I>(Optional as never, typeOf,
-                      (t, v) => new dsviper.ValueOptional(t as dsviper.TypeOptional, v as dsviper.InputValue));
+                         (t, v) => new dsviper.ValueOptional(t as dsviper.TypeOptional, v as dsviper.InputValue));
 export const variantOf = <E, I = never>(typeOf: () => dsviper.Type) =>
     bind<Variant<E>, I>(Variant as never, typeOf,
-                     (t, v) => new dsviper.ValueVariant(t as dsviper.TypeVariant, v as dsviper.InputValue));
+                        (t, v) => new dsviper.ValueVariant(t as dsviper.TypeVariant, v as dsviper.InputValue));

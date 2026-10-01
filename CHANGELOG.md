@@ -98,6 +98,19 @@ migrating.
   the dynamic attribute lookup that served them is gone. An any reads as `AnyValue`, a view
   whose content comes back as the generated class, and takes any value, a generated one
   included.
+- **TypeScript containers declare what each kind does.** A vector is a `Vector` (`append`,
+  `insert`, `set`, `extend`, `concat`, `pop`, `remove`, `clear`, `count`, `index`,
+  `exchange`, `front`, `back`), a set a `SetView` (`add`, `remove`, `discard`, `pop`,
+  `min`, `max`, `union`, `intersection`, `difference`, `symmetricDifference` and their
+  `…Update` forms, `issubset`, `issuperset`, `isdisjoint`), a vec or a tuple a `Fixed`
+  (`set`), a mat a `Matrix` (`at`/`set` by column and row, `row`, `setRow`); a map adds
+  `discard`, `pop`, `popitem`, `setdefault`, `update`, `items`, `min`, `max`, and an xarray
+  `contains`, `index`, `positionOf`, `extend`, `insertPosition`, `disablePosition`, with
+  `END` and `createPosition()` on its declared class. Each is typed by the element, so `tsc`
+  refuses a method the kind does not have, a misspelt one and a wrong element. The views no
+  longer forward an undeclared name to the runtime value, and `call()` is gone. An xarray
+  field does not announce a native array: the Node binding the templates require decodes a
+  written xarray from its projection; its declared class's constructor takes one.
 - **The host's own collections enter where the runtime decodes them.** A container field
   takes its declared class, and also the host's collection when nothing in it is generated
   (`u.coeffs = [1.0, 2.0]`, `{"a", "b"}`, a `dict`; an array, a `Set`, a `Map` or pairs in

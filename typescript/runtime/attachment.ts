@@ -3,7 +3,7 @@
 
 import dsviper from "@digitalsubstrate/dsviper";
 
-import { Optional, Sequence } from "./container.js";
+import { Optional, SetView } from "./container.js";
 import { wrap, unwrap, type Wrapping } from "./registry.js";
 
 export interface Getting {
@@ -40,7 +40,7 @@ export interface Mutating extends Setting {
                    position: dsviper.ValueUUId): void;
 }
 
-export class AttachmentProxy<K, D, KS = Sequence<K>> {
+export class AttachmentProxy<K, D, KS = SetView<K>> {
     private readonly runtimeId: dsviper.ValueUUId;
     private readonly definitions: () => dsviper.DefinitionsConst;
     private resolved?: dsviper.Attachment;
