@@ -83,11 +83,6 @@ export class <c.name>Key extends Key {
         return new <c.name>Key(dsviper.ValueKey.cast(value));
     }
 
-    static decode(blob: dsviper.ValueBlob): <c.name>Key {
-        return new <c.name>Key(dsviper.ValueKey.cast(
-            dsviper.Value.decode(blob, <c.name>Key.type(), definitions())));
-    }
-
     instanceId(): dsviper.ValueUUId {
         return this.vprValue.instanceId();
     }
@@ -173,11 +168,6 @@ export class <c.name>Key extends Key {
         return new <c.name>Key(dsviper.ValueKey.cast(value));
     }
 
-    static decode(blob: dsviper.ValueBlob): <c.name>Key {
-        return new <c.name>Key(dsviper.ValueKey.cast(
-            dsviper.Value.decode(blob, <c.name>Key.type(), definitions())));
-    }
-
     instanceId(): dsviper.ValueUUId {
         return this.vprValue.instanceId();
     }
@@ -254,18 +244,6 @@ export const <e.name> = {
     value(held: <e.name>): dsviper.ValueEnumeration {
         return new dsviper.ValueEnumeration(<e.name>.type(), held);
     },
-
-    encode(held: <e.name>): dsviper.ValueBlob {
-        return dsviper.Value.encode(<e.name>.value(held));
-    },
-
-    decode(blob: dsviper.ValueBlob): <e.name> {
-        return <e.name>.wrap(dsviper.Value.decode(blob, <e.name>.type(), definitions()));
-    },
-
-    hexdigest(held: <e.name>): string {
-        return dsviper.Value.hexdigest(<e.name>.value(held));
-    },
 };
 >>
 
@@ -315,11 +293,6 @@ export class <s.name> extends Proxy\<dsviper.ValueStructure> {
         return new <s.name>(dsviper.ValueStructure.cast(value));
     }
 
-    static decode(blob: dsviper.ValueBlob): <s.name> {
-        return new <s.name>(dsviper.ValueStructure.cast(
-            dsviper.Value.decode(blob, <s.name>.type(), definitions())));
-    }
-
 <s.fields:field(s);separator="\n\n">
 }
 >>
@@ -357,10 +330,6 @@ club_from(cm, c) ::= <<
 
 club_to(cm, c) ::= <<
     to<cm.asNameInNamespace>Key(): <cm.bindingInNamespace> | undefined {
-        return this.as(<cm.bindingInNamespace>);
-    }
-
-    as<cm.asNameInNamespace>Key(): <cm.bindingInNamespace> | undefined {
         return this.as(<cm.bindingInNamespace>);
     }
 >>

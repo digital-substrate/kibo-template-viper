@@ -3,7 +3,7 @@
 
 import dsviper from "@digitalsubstrate/dsviper";
 
-import { definitionsOf, isKnown } from "./registry.js";
+import { isKnown } from "./registry.js";
 
 export abstract class Proxy<V extends dsviper.Value> {
     readonly vprValue: V;
@@ -22,14 +22,6 @@ export abstract class Proxy<V extends dsviper.Value> {
 
     toJSON(): dsviper.NativeValue {
         return this.vprValue.toJSON();
-    }
-
-    encode(streamCodecInstancing?: dsviper.StreamCodecInstancing): dsviper.ValueBlob {
-        return dsviper.Value.encode(this.vprValue, streamCodecInstancing);
-    }
-
-    hexdigest(): string {
-        return dsviper.Value.hexdigest(this.vprValue);
     }
 
     copy(): this {
@@ -79,6 +71,10 @@ export class AnyConceptKey extends Key {
         super((key instanceof Proxy ? key.vprValue : key).toAnyConceptKey());
     }
 
+    static type(): dsviper.TypeKey {
+        return new dsviper.TypeKey(dsviper.Type.ANY_CONCEPT);
+    }
+
     static fromAnyConceptKey(key: Proxy<dsviper.ValueKey> | dsviper.ValueKey): AnyConceptKey {
         return new AnyConceptKey(key);
     }
@@ -101,11 +97,6 @@ export class AnyConceptKey extends Key {
 
     isKnown(): boolean {
         return isKnown(this.vprValue);
-    }
-
-    static decode(blob: dsviper.ValueBlob): AnyConceptKey {
-        return new AnyConceptKey(dsviper.ValueKey.cast(dsviper.Value.decode(
-            blob, new dsviper.TypeKey(dsviper.Type.ANY_CONCEPT), definitionsOf())));
     }
 
     description(): string {

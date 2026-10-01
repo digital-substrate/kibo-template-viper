@@ -159,11 +159,6 @@ class <c.name>Key(Key):
             raise TypeError(f"{identifier!r} is not an instance identifier")
 
     @classmethod
-    def decode(cls, blob, **kwargs) -> <c.name>Key:
-        return cls(dsviper.ValueKey.cast(
-            dsviper.Value.decode(blob, cls.type(), definitions(), **kwargs)))
-
-    @classmethod
     def create(cls) -> <c.name>Key:
         return cls(dsviper.ValueUUId.create())
 
@@ -231,13 +226,6 @@ class <e.name>(enum.Enum):
     def index(self) -> int:
         return list(type(self)).index(self)
 
-    def encode(self, **kwargs) -> dsviper.ValueBlob:
-        return dsviper.Value.encode(dsviper.ValueEnumeration(type(self).type(), self.value), **kwargs)
-
-    @classmethod
-    def decode(cls, blob, **kwargs) -> <e.name>:
-        return cls._wrap(dsviper.Value.decode(blob, cls.type(), definitions(), **kwargs))
-
     @classmethod
     def _wrap(cls, value) -> <e.name>:
         return cls(dsviper.ValueEnumeration.cast(value).name())
@@ -257,11 +245,6 @@ class <s.name>(Proxy):
     @functools.cache
     def type(cls) -> dsviper.TypeStructure:
         return definitions().check_structure(<s.name;format="usc">)
-
-    @classmethod
-    def decode(cls, blob, **kwargs) -> <s.name>:
-        return cls(dsviper.ValueStructure.cast(
-            dsviper.Value.decode(blob, cls.type(), definitions(), **kwargs)))
 
     def __init__(self, source: dsviper.ValueStructure | dict | None = None, /, *,
                  <s.fields:{f|<f.name;format="snake">: <input_hint(f)> | NotGiven = NOT_GIVEN};separator=",\n">) -> None:

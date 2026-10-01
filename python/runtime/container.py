@@ -7,7 +7,7 @@ import typing
 
 import dsviper
 
-from .proxy import definitions_of as _definitions, unwrap, wrap
+from .proxy import unwrap, wrap
 
 E = typing.TypeVar("E")
 K = typing.TypeVar("K")
@@ -33,12 +33,6 @@ class View:
 
     def copy(self):
         return type(self)(self._value.copy())
-
-    def encode(self, **kwargs):
-        return dsviper.Value.encode(self._value, **kwargs)
-
-    def hexdigest(self) -> str:
-        return dsviper.Value.hexdigest(self._value)
 
     def __eq__(self, other) -> bool:
         other_value = other.vpr_value if isinstance(other, View) else other
@@ -570,10 +564,6 @@ class Declared:
     @classmethod
     def type(cls) -> typing.Any:
         raise NotImplementedError
-
-    @classmethod
-    def decode(cls, blob, **kwargs):
-        return cls(dsviper.Value.decode(blob, cls.type(), _definitions(), **kwargs))
 
     def __init__(self, value: typing.Any = None) -> None:
         if isinstance(value, View):

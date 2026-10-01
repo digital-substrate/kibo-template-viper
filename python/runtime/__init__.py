@@ -5,7 +5,7 @@ from .attachment import AttachmentProxy
 from .container import (AnyValue, Fixed, Mapping, Matrix, Optional, Ordered, Sequence, SetView, Variant, Vector, View,
                         Declared, declare)
 from .proxy import (NOT_GIVEN, AnyConceptKey, Key, NotGiven, Proxy, is_known, register,
-                    set_definitions, unwrap, wrap)
+                    unwrap, wrap)
 
 __all__ = [
     "NOT_GIVEN",
@@ -29,7 +29,6 @@ __all__ = [
     "declare",
     "View",
                         "register",
-    "set_definitions",
     "unwrap",
     "wrap",
 ]

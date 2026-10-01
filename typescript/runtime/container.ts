@@ -3,7 +3,7 @@
 
 import dsviper from "@digitalsubstrate/dsviper";
 
-import { definitionsOf, unwrap, unwrapDeep, wrap } from "./registry.js";
+import { unwrap, unwrapDeep, wrap } from "./registry.js";
 
 export class View {
     readonly vprValue: dsviper.Value;
@@ -35,14 +35,6 @@ export class View {
         } catch {
             return false;
         }
-    }
-
-    encode(streamCodecInstancing?: dsviper.StreamCodecInstancing): dsviper.ValueBlob {
-        return dsviper.Value.encode(this.vprValue, streamCodecInstancing);
-    }
-
-    hexdigest(): string {
-        return dsviper.Value.hexdigest(this.vprValue);
     }
 
     copy(): this {
@@ -276,21 +268,21 @@ export class Matrix<E> extends View {
         this.mat.set(column, row, unwrap(element) as number);
     }
 
-    row(index: number): E[] {
+    column(index: number): E[] {
         const held: E[] = [];
-        for (let position = 0; position < this.rows; position += 1) {
-            held.push(this.at(index, position));
+        for (let row = 0; row < this.rows; row += 1) {
+            held.push(this.at(index, row));
         }
         return held;
     }
 
-    setRow(index: number, elements: readonly E[]): void {
-        elements.forEach((element, position) => this.set(index, position, element));
+    setColumn(index: number, elements: readonly E[]): void {
+        elements.forEach((element, row) => this.set(index, row, element));
     }
 
     *[Symbol.iterator](): Iterator<E[]> {
         for (let index = 0; index < this.columns; index += 1) {
-            yield this.row(index);
+            yield this.column(index);
         }
     }
 
@@ -604,7 +596,6 @@ export class Variant<E> extends View {
 type Bound<V, I> = {
     new (value?: V | I | null): V;
     type(): dsviper.Type;
-    decode(blob: dsviper.ValueBlob): V;
 };
 
 const bound = new Map<() => dsviper.Type, unknown>();
@@ -660,10 +651,6 @@ function bind<V extends View, I>(view: new (value: dsviper.Value) => V,
 
         static type(): dsviper.Type {
             return typeOf();
-        }
-
-        static decode(blob: dsviper.ValueBlob): View {
-            return new this(dsviper.Value.decode(blob, typeOf(), definitionsOf()));
         }
     }
 

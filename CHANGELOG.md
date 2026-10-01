@@ -98,6 +98,13 @@ migrating.
   the dynamic attribute lookup that served them is gone. An any reads as `AnyValue`, a view
   whose content comes back as the generated class, and takes any value, a generated one
   included.
+- **A proxy carries its type and the bridge to the runtime, nothing more.** `type()`, the
+  runtime value (`vpr_value` / `vprValue`), a constructor from a runtime value (`wrap` in
+  TypeScript), the equality, hash and display its language expects, and `copy()`. A runtime
+  feature is called through the bridge: `Value.encode(p.vpr_value)`,
+  `Cls(Value.decode(blob, Cls.type(), definitions()))`, and the same for JSON, XML or a
+  hexdigest. The per-proxy `encode`, `decode` and `hexdigest` are gone; `AnyConceptKey` gains
+  `type()` so a key crosses back too.
 - **Containers declare what each kind does, in both languages.** Python: a vector is a `Vector`
   (`append`, `insert`, `extend`, `pop`, `remove`, `count`, `index`, `exchange`, `front`,
   `back`, `[i] =`, `del`, `+`, `+=`), a set a `SetView` (`add`, `remove`, `discard`, `pop`,
@@ -110,7 +117,7 @@ migrating.
   `exchange`, `front`, `back`), a set a `SetView` (`add`, `remove`, `discard`, `pop`,
   `min`, `max`, `union`, `intersection`, `difference`, `symmetricDifference` and their
   `…Update` forms, `issubset`, `issuperset`, `isdisjoint`), a vec or a tuple a `Fixed`
-  (`set`), a mat a `Matrix` (`at`/`set` by column and row, `row`, `setRow`); a map adds
+  (`set`), a mat a `Matrix` (`at`/`set` by column and row, `column`, `setColumn`); a map adds
   `discard`, `pop`, `popitem`, `setdefault`, `update`, `items`, `min`, `max`, and an xarray
   `contains`, `index`, `positionOf`, `extend`, `insertPosition`, `disablePosition`, with
   `END` and `createPosition()` on its declared class. Each is typed by the element, so `tsc`

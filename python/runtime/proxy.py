@@ -26,9 +26,6 @@ class Proxy:
     def __hash__(self) -> int:
         return self._value.hash()
 
-    def encode(self, **kwargs) -> dsviper.ValueBlob:
-        return dsviper.Value.encode(self._value, **kwargs)
-
     def copy(self):
         return type(self)(self._value.copy())
 
@@ -43,10 +40,6 @@ class Proxy:
 
     def __ge__(self, other) -> bool:
         return self._value >= unwrap(other)
-
-    def hexdigest(self) -> str:
-        return dsviper.Value.hexdigest(self._value)
-
 
     @classmethod
     def _wrap(cls, value) -> typing.Self:
@@ -66,20 +59,6 @@ class NotGiven:
 NOT_GIVEN = NotGiven()
 
 _CLASSES: dict[str, type] = {}
-
-_DEFINITIONS = None
-
-
-def set_definitions(definitions) -> None:
-    global _DEFINITIONS
-    _DEFINITIONS = definitions
-
-
-def definitions_of():
-    if _DEFINITIONS is None:
-        raise RuntimeError("the package has not declared its definitions")
-    return _DEFINITIONS()
-
 
 def register(classes: dict) -> None:
     for runtime_id, cls in classes.items():
@@ -190,6 +169,10 @@ class AnyConceptKey(Key):
         super().__init__(value.to_any_concept_key())
 
     @classmethod
+    def type(cls) -> dsviper.Type:
+        return dsviper.TypeKey(dsviper.TypeAnyConcept())
+
+    @classmethod
     def from_any_concept_key(cls, key: Proxy | dsviper.ValueKey) -> AnyConceptKey:
         return cls(key)
 
@@ -208,12 +191,6 @@ class AnyConceptKey(Key):
 
     def is_known(self) -> bool:
         return is_known(self._value)
-
-    @classmethod
-    def decode(cls, blob, definitions=None, **kwargs) -> "AnyConceptKey":
-        return cls(dsviper.ValueKey.cast(dsviper.Value.decode(
-            blob, dsviper.TypeKey(dsviper.TypeAnyConcept()),
-            definitions if definitions is not None else definitions_of(), **kwargs)))
 
     def __repr__(self) -> str:
         return self.description()

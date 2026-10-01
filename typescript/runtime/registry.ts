@@ -15,19 +15,6 @@ export interface Wrapping {
 
 const classes = new Map<string, Wrapping>();
 
-let definitions: (() => dsviper.DefinitionsConst) | undefined;
-
-export function setDefinitions(accessor: () => dsviper.DefinitionsConst): void {
-    definitions = accessor;
-}
-
-export function definitionsOf(): dsviper.DefinitionsConst {
-    if (definitions === undefined) {
-        throw new Error("the package has not declared its definitions");
-    }
-    return definitions();
-}
-
 export function register(...entries: (readonly [dsviper.ValueUUId, Wrapping])[]): void {
     for (const [runtimeId, wrapping] of entries) {
         classes.set(runtimeId.encoded(), wrapping);
