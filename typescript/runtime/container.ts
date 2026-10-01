@@ -548,6 +548,10 @@ export class Optional<E> extends View {
 }
 
 export class AnyValue extends View {
+    constructor(value?: unknown) {
+        super(value instanceof dsviper.ValueAny ? value : new dsviper.ValueAny(unwrapDeep(value)));
+    }
+
     private get any(): dsviper.ValueAny {
         return this.vprValue as dsviper.ValueAny;
     }

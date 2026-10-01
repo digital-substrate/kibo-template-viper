@@ -42,7 +42,7 @@ own(a, s) ::= <<
         <arguments(a, s)>)
 >>
 
-generics(a, s) ::= <%<s.keyType.bindingType.qualified>, <a.documentType.bindingType.qualified>, <s.keyType.bindingKeySetType.qualified>%>
+generics(a, s) ::= <%<s.keyType.bindingType.qualified>, <a.documentType.bindingType.qualified>, <s.keyType.bindingKeySetType.qualified>, <a.documentType.bindingType.inputQualified>%>
 arguments(a, s) ::= <%dsviper.ValueUUId.create("<a.runtimeId>"), definitions, <s.keyType.bindingType.qualified>, <documentClass(a)>%>
 
 documentClass(a) ::= <%<if(a.documentType.bindingType.isNamed)><a.documentType.bindingType.qualified><else>None<endif>%>

@@ -152,6 +152,9 @@ class Key(Proxy):
     def as_(self, cls: type[KeyT]) -> KeyT | None:
         return cls.from_any_concept_key(self)
 
+    def to_concept_key(self) -> Key:
+        return wrap(self._value.to_concept_key())
+
     def _held(self) -> str:
         concept = self._value.type_concept()
         if concept.runtime_id() == self._value.type_key().element_type().runtime_id():

@@ -16,9 +16,10 @@ from .proxy import Proxy, unwrap as _unwrap, wrap as _wrap
 K = typing.TypeVar("K", bound=Proxy)
 D = typing.TypeVar("D")
 KS = typing.TypeVar("KS")
+DI = typing.TypeVar("DI")
 
 
-class AttachmentProxy(typing.Generic[K, D, KS]):
+class AttachmentProxy(typing.Generic[K, D, KS, DI]):
 
     def __init__(self, runtime_id: dsviper.ValueUUId,
                  definitions: Callable[[], dsviper.DefinitionsConst],
@@ -56,13 +57,13 @@ class AttachmentProxy(typing.Generic[K, D, KS]):
         return wrapped[0], wrapped[1], wrapped[2], wrapped[3]
 
 
-    def set(self, mutating: dsviper.AttachmentMutating | dsviper.Database, key: K, value: D):
+    def set(self, mutating: dsviper.AttachmentMutating | dsviper.Database, key: K, value: DI):
         return mutating.set(self.descriptor, key.vpr_value, _unwrap(value))
 
     def delete(self, database: dsviper.Database, key: K) -> bool:
         return database.delete(self.descriptor, key.vpr_value)
 
-    def diff(self, mutating: dsviper.AttachmentMutating, key: K, value: D, *, recursive: bool = False) -> None:
+    def diff(self, mutating: dsviper.AttachmentMutating, key: K, value: DI, *, recursive: bool = False) -> None:
         mutating.diff(self.descriptor, key.vpr_value, _unwrap(value), recursive=recursive)
 
 

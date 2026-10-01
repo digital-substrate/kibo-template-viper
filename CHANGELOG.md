@@ -100,6 +100,11 @@ migrating.
   (`features.demo.StructureU`), each unit its attachments (`demo.attachments.ConceptA`), and
   `AnyConceptKey` and `AnyValue`; every top-level directory is a subpath export
   (`features/demo`, `features/tools`). Python: a unit imports its `attachments` module.
+- **A key gives back its instance's own key**: `to_concept_key()` (`toConceptKey()`), the
+  runtime's name, returns the generated class of the instance's concept from any view.
+- **A document is written as a field is**: `set` and `diff` take the document's input — its
+  class, or what the runtime decodes into it (`{1, 2}` for a `set<int8>`, any value for an
+  `any`). `AnyValue` is built from a value. A club key's constructor takes its members' keys.
 - **Membership always answers.** `in` (Python) and `has` (TypeScript) find a key through any
   view of its instance, and answer false for an element of another type instead of raising.
 - **A variant takes a native the runtime decodes into one of its alternatives**: in

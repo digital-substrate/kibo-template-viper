@@ -3,7 +3,7 @@
 
 import dsviper from "@digitalsubstrate/dsviper";
 
-import { isKnown } from "./registry.js";
+import { isKnown, wrap } from "./registry.js";
 
 export abstract class Proxy<V extends dsviper.Value> {
     readonly vprValue: V;
@@ -53,6 +53,10 @@ export abstract class Key extends Proxy<dsviper.ValueKey> {
 
     as<K>(target: KeyClass<K>): K | undefined {
         return target.fromAnyConceptKey(this);
+    }
+
+    toConceptKey(): Key {
+        return wrap(this.vprValue.toConceptKey()) as Key;
     }
 
     protected held(): string {

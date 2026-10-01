@@ -40,7 +40,7 @@ export interface Mutating extends Setting {
                    position: dsviper.ValueUUId): void;
 }
 
-export class AttachmentProxy<K, D, KS = SetView<K>> {
+export class AttachmentProxy<K, D, KS = SetView<K>, DI = D> {
     private readonly runtimeId: dsviper.ValueUUId;
     private readonly definitions: () => dsviper.DefinitionsConst;
     private resolved?: dsviper.Attachment;
@@ -85,7 +85,7 @@ export class AttachmentProxy<K, D, KS = SetView<K>> {
         return wrap(getting.get(this.descriptor, unwrap(key) as dsviper.ValueKey));
     }
 
-    set(setting: Setting, key: K, value: D): unknown {
+    set(setting: Setting, key: K, value: DI): unknown {
         const document = unwrap(value);
         if (document instanceof dsviper.Value
             && !document.type().equals(this.descriptor.documentType())) {
@@ -97,7 +97,7 @@ export class AttachmentProxy<K, D, KS = SetView<K>> {
         return setting.set(this.descriptor, unwrap(key) as dsviper.ValueKey, document);
     }
 
-    diff(mutating: Mutating, key: K, value: D, recursive = false): void {
+    diff(mutating: Mutating, key: K, value: DI, recursive = false): void {
         mutating.diff(this.descriptor, unwrap(key) as dsviper.ValueKey, unwrap(value), recursive);
     }
 

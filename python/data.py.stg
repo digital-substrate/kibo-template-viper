@@ -89,7 +89,7 @@ class <c.name>Key(Key):
     def type(cls) -> dsviper.Type:
         return dsviper.TypeKey(cls.club())
 
-    def __init__(self, key):
+    def __init__(self, key: <c.membersInNamespace:{m|<m.bindingInNamespace> | }>dsviper.ValueKey) -> None:
         value = key._value if isinstance(key, Proxy) else key
         if not isinstance(value, dsviper.ValueKey):
             raise TypeError("this value is not a key")

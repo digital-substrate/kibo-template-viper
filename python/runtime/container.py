@@ -516,6 +516,9 @@ class Variant(View, typing.Generic[E]):
 class AnyValue(View):
     __slots__ = ()
 
+    def __init__(self, value: typing.Any = None) -> None:
+        super().__init__(value if isinstance(value, dsviper.ValueAny) else dsviper.ValueAny(_unwrap_deep(value)))
+
     def __bool__(self) -> bool:
         return not self._value.is_nil()
 

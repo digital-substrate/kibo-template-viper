@@ -152,7 +152,7 @@ export class <c.name>Key extends Key {
         return (<c.name;format="lsc">Type ??= new dsviper.TypeKey(<c.name>Key.club()));
     }
 
-    constructor(key: Proxy\<dsviper.ValueKey> | dsviper.ValueKey) {
+    constructor(key: <c.membersInNamespace:{m|<m.bindingInNamespace> | }>dsviper.ValueKey) {
         const value = key instanceof Proxy ? key.vprValue : key;
         if (!<c.name>Key.club().isMember(value.typeConcept())) {
             throw new TypeError("this key does not designate a member of <u.name>::<c.name>");
