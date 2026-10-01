@@ -147,10 +147,5 @@ function holdsGenerated(value: unknown): boolean {
 }
 
 export function setField(structure: dsviper.ValueStructure, name: string, value: unknown): void {
-    const field = structure.typeStructure().check(name).type();
-    if (field.typeCode() === "variant") {
-        structure.set(name, new dsviper.ValueVariant(field as dsviper.TypeVariant, unwrap(value)));
-        return;
-    }
     structure.set(name, unwrap(value));
 }

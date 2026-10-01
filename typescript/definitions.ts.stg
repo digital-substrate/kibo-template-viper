@@ -1,15 +1,17 @@
 model(m) ::= <<
 <preamble(m)>
-export { definitions } from "./definitions.js";
-export * from "./containers.js";
-export { AnyConceptKey, AnyValue } from "./_codegen/registry.js";
-<m.nameSpaces:{u|export * as <u.name;format="lsc"> from "./<u.name;format="lsc">/index.js";};separator="\n">
->>
+import dsviper from "@digitalsubstrate/dsviper";
 
-unit(u) ::= <<
-<preamble(u.model)>
-export * from "./data.js";
-export * as attachments from "./attachments.js";
+import { B64_DEFINITIONS } from "./resources.js";
+
+let cached: dsviper.DefinitionsConst | undefined;
+
+export function definitions(): dsviper.DefinitionsConst {
+    if (cached === undefined) {
+        cached = dsviper.Definitions.decode(dsviper.ValueBlob.base64Decode(B64_DEFINITIONS)).const();
+    }
+    return cached;
+}
 >>
 
 preamble(m) ::= <<

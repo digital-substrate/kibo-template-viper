@@ -64,13 +64,13 @@ class Sequence(View, typing.Generic[E]):
         return wrap(self._value[index])
 
     def __contains__(self, element: object) -> bool:
-        return _unwrap_deep(element) in self._value
+        return _holds(self._value, element)
 
     def at(self, index: int) -> E:
         return wrap(self._value.at(index))
 
     def contains(self, element: E) -> bool:
-        return _unwrap_deep(element) in self._value
+        return _holds(self._value, element)
 
     def empty(self) -> bool:
         return len(self._value) == 0
@@ -315,8 +315,8 @@ class Mapping(View, typing.Generic[K, E]):
     def __delitem__(self, key: K) -> None:
         del self._value[unwrap(key)]
 
-    def __contains__(self, key: K) -> bool:
-        return unwrap(key) in self._value
+    def __contains__(self, key: object) -> bool:
+        return _holds(self._value, key)
 
     def at(self, key: K) -> E:
         return wrap(self._value.at(unwrap(key)))
@@ -341,7 +341,7 @@ class Mapping(View, typing.Generic[K, E]):
         self._value.discard(unwrap(key))
 
     def contains(self, key: K) -> bool:
-        return self._value.contains(unwrap(key))
+        return _holds(self._value, key)
 
     def update(self, other: Mapping[K, E] | dict[K, E]) -> None:
         self._value.update(_unwrap_deep(other))
@@ -399,8 +399,8 @@ class Ordered(View, typing.Generic[E]):
     def __delitem__(self, key) -> None:
         del self._value[key]
 
-    def __contains__(self, element) -> bool:
-        return unwrap(element) in self._value
+    def __contains__(self, element: object) -> bool:
+        return _holds(self._value, element)
 
     @staticmethod
     def create_position() -> dsviper.ValueUUId:
@@ -438,7 +438,7 @@ class Ordered(View, typing.Generic[E]):
     def insert_position(self, before_position, new_position) -> None:
         self._value.insert_position(before_position, new_position)
 
-    def append(self, element: E):
+    def append(self, element: E) -> dsviper.ValueUUId:
         return self._value.append(unwrap(element))
 
     def remove(self, position: dsviper.ValueUUId) -> None:
@@ -455,7 +455,7 @@ class Ordered(View, typing.Generic[E]):
             self._value.append(unwrap(element))
 
     def contains(self, element: E) -> bool:
-        return _unwrap_deep(element) in self._value
+        return _holds(self._value, element)
 
     def to_vector(self) -> Vector[E]:
         return wrap(self._value.to_vector())
@@ -544,6 +544,22 @@ _CASTS: dict[type, typing.Callable[[typing.Any], typing.Any]] = {
 }
 
 _DECLARED: dict[str, type] = {}
+
+
+def _holds(container: typing.Any, element: object) -> bool:
+    probe = _unwrap_deep(element)
+    container_type = container.type()
+    element_type = (container_type.key_type() if hasattr(container_type, "key_type")
+                    else container_type.element_type() if hasattr(container_type, "element_type") else None)
+    if isinstance(probe, dsviper.ValueKey) and element_type is not None and element_type.type_code() == "key":
+        try:
+            probe = probe.to_key(dsviper.TypeKey.cast(element_type))
+        except dsviper.ViperError:
+            return False
+    try:
+        return probe in container
+    except dsviper.ViperError:
+        return False
 
 
 def _unwrap_deep(value):

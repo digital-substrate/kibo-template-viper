@@ -96,6 +96,15 @@ migrating.
   the dynamic attribute lookup that served them is gone. An any reads as `AnyValue`, a view
   whose content comes back as the generated class, and takes any value, a generated one
   included.
+- **The package leads to every unit.** TypeScript: the entry exports each unit as a namespace
+  (`features.demo.StructureU`), each unit its attachments (`demo.attachments.ConceptA`), and
+  `AnyConceptKey` and `AnyValue`; every top-level directory is a subpath export
+  (`features/demo`, `features/tools`). Python: a unit imports its `attachments` module.
+- **Membership always answers.** `in` (Python) and `has` (TypeScript) find a key through any
+  view of its instance, and answer false for an element of another type instead of raising.
+- **A variant takes a native the runtime decodes into one of its alternatives**: in
+  TypeScript, `u.f_variant = 7` picks `uint8` as `Value.create` does, instead of being refused
+  as a `double`.
 - **A proxy carries its type and the bridge to the runtime, nothing more.** `type()`, the
   runtime value (`vpr_value` / `vprValue`), a constructor from a runtime value (`wrap` in
   TypeScript), the equality, hash and display its language expects, and `copy()`. A runtime

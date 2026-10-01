@@ -19,7 +19,6 @@ from ._codegen import AnyValue, Declared, Fixed, Mapping, Matrix, Optional, Orde
 if typing.TYPE_CHECKING:
     from . import containers
     from ._codegen import AnyConceptKey
-<m.nameSpaces:{u|from . import <u.name;format="lsc">};separator="\n">
 
 <primitives()>
 <m.nameSpaces:named(m);separator="\n">
@@ -43,6 +42,8 @@ if typing.TYPE_CHECKING:
 <m.mapFunctions:mapping_class();separator="\n\n">
 <m.xarrayFunctions:ordered_class();separator="\n\n">
 <m.variantFunctions:variant_class();separator="\n\n">
+
+<m.nameSpaces:{u|from . import <u.name;format="lsc">  # noqa: E402};separator="\n">
 
 declare(<[m.vecFunctions, m.matFunctions, m.tupleFunctions, m.optionalFunctions, m.vectorFunctions, m.setFunctions, m.mapFunctions, m.xarrayFunctions, m.variantFunctions]:{v|<v.bindingType.proxy>};separator=", ">)
 >>

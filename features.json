@@ -122,6 +122,7 @@
       "doc": "The package: its entry point, the types each namespace declares, the attachments, and the container bindings the model mentions.",
       "templates": [
         "index.ts.stg",
+        "definitions.ts.stg",
         "data.ts.stg",
         "attachments.ts.stg",
         "containers.ts.stg"

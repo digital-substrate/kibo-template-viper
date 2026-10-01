@@ -27,6 +27,7 @@ unit(u) ::= <<
 <preamble(u.model)>
 
 from .data import *
+from . import attachments
 >>
 
 preamble(m) ::= <<

@@ -5,6 +5,24 @@ import dsviper from "@digitalsubstrate/dsviper";
 
 import { unwrap, unwrapDeep, wrap } from "./registry.js";
 
+function holds(container: dsviper.Value, element: unknown): boolean {
+    let probe = unwrapDeep(element);
+    const type = container.type() as unknown as { keyType?(): dsviper.Type; elementType?(): dsviper.Type };
+    const elementType = type.keyType?.() ?? type.elementType?.();
+    if (probe instanceof dsviper.ValueKey && elementType !== undefined && elementType.typeCode() === "key") {
+        try {
+            probe = probe.toKey(dsviper.TypeKey.cast(elementType));
+        } catch {
+            return false;
+        }
+    }
+    try {
+        return (container as unknown as { contains(value: dsviper.InputValue): boolean }).contains(probe);
+    } catch {
+        return false;
+    }
+}
+
 export class View {
     readonly vprValue: dsviper.Value;
 
@@ -76,7 +94,7 @@ export class Sequence<E> extends View {
     }
 
     has(element: E): boolean {
-        return this.suite.contains(unwrap(element));
+        return holds(this.vprValue, element);
     }
 
     *[Symbol.iterator](): Iterator<E> {
@@ -318,7 +336,7 @@ export class Mapping<K, V> extends View {
     }
 
     has(key: K): boolean {
-        return this.map.contains(unwrap(key));
+        return holds(this.vprValue, key);
     }
 
     remove(key: K): void {
@@ -466,7 +484,7 @@ export class Ordered<E> extends View {
     }
 
     has(element: E): boolean {
-        return this.ordered.contains(unwrap(element));
+        return holds(this.vprValue, element);
     }
 
     index(position: dsviper.ValueUUId): number | undefined {
@@ -682,4 +700,4 @@ export const optionalOf = <E, I = never>(typeOf: () => dsviper.Type) =>
                          (t, v) => new dsviper.ValueOptional(t as dsviper.TypeOptional, v as dsviper.InputValue));
 export const variantOf = <E, I = never>(typeOf: () => dsviper.Type) =>
     bind<Variant<E>, I>(Variant as never, typeOf,
-                        (t, v) => new dsviper.ValueVariant(t as dsviper.TypeVariant, v as dsviper.InputValue));
+                        (t, v) => dsviper.Value.create(t, v as dsviper.InputValue));
