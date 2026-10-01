@@ -44,7 +44,8 @@ export function wrap(value: dsviper.OutputValue | dsviper.Value): any {
             return named(value.type()).wrap(value);
         case "key": {
             const key = dsviper.ValueKey.cast(value);
-            return named(key.typeConcept()).wrap(key);
+            const typeKey = key.typeKey();
+            return typeKey.isAnyConcept() ? new AnyConceptKey(key) : named(typeKey.elementType()).wrap(key);
         }
         case "optional":
         case "any": {

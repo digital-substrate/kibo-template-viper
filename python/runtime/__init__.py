@@ -4,14 +4,16 @@
 from .attachment import AttachmentProxy
 from .container import (Mapping, Optional, Ordered, Sequence, Variant, View,
                         Declared, declare)
-from .proxy import (NEUF, AnyConceptKey, Proxy, is_known, register,
+from .proxy import (NOT_GIVEN, AnyConceptKey, Key, NotGiven, Proxy, is_known, register,
                     set_definitions, unwrap, wrap)
 
 __all__ = [
-    "NEUF",
+    "NOT_GIVEN",
+    "NotGiven",
     "AnyConceptKey",
     "AttachmentProxy",
     "Declared",
+    "Key",
     "Mapping",
     "Ordered",
     "Proxy",

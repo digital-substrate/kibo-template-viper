@@ -83,6 +83,23 @@ migrating.
   (`undefined`), with no optional to unwrap; the field-level operations are typed methods.
 - **Python follows its own idiom**: fields and operations in snake_case, enumerations as
   `enum.Enum`, the wrapped value as `vpr_value`.
+- **Keys follow the runtime's model: one instance, many views.** A key is a static type
+  (`key<Concept>`, `key<Club>`, `key<any_concept>`), the concept of its instance and an
+  instance id. A key class's constructor takes a key of exactly its static type; every
+  conversion is named and goes through the runtime, which keeps the instance:
+  `to_parent_key()`, `from_any_concept_key()` (a descendant's key included, `None` when the
+  instance is not one), `from_key()` (raises instead), `as_(cls)`, and, for the descendants
+  declared in the same namespace, `to_<descendant>_key()` and `from_<descendant>_key()`; a
+  club converts to and from its members the same way. A field or a document reads back the
+  key class of its static type. Keys of one instance compare equal and hash alike whatever
+  the view, in both languages; in TypeScript, key classes are nominal, so a key of one concept
+  is not accepted where another is announced.
+- **A structure is constructed by naming its fields**, each typed:
+  `graph.Position(x=1.0, y=2.0)` in Python (keyword-only, after an optional positional
+  value or dict), `new graph.Position({ x: 1.0, y: 2.0 })` in TypeScript (a generated
+  `<Structure>Init` interface). An omitted field keeps the model's default. The checker
+  flags an unknown name or a wrong type; at run time an unknown name raises `TypeError`, and
+  a wrong type is refused by the runtime.
 - **The generated C++ crosses to a `Value`, and hashes, through the runtime's static layer**
   (`Viper_StaticType`, `Viper_StaticWriter`, `Viper_StaticReader`, `Viper_StaticHash`), found
   by argument-dependent lookup. A key hashes through `std::hash`; a child key widens

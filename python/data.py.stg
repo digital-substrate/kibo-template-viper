@@ -15,7 +15,7 @@ import typing
 import dsviper
 
 from .. import definitions
-from .._codegen import NEUF as _NEUF, AnyConceptKey, Proxy, is_known, register, unwrap, wrap
+from .._codegen import NOT_GIVEN, AnyConceptKey, Key, NotGiven, Proxy, is_known, register, unwrap, wrap
 
 if typing.TYPE_CHECKING:
     from .. import containers
@@ -52,13 +52,29 @@ concept(c, u) ::= <<
 <key(c, u, "concept")>
 <if(c.parent)>
 
-    def to_parent_key(self):
-        return <c.parentBindingInNamespace>(self._value)
+    def to_parent_key(self) -> <c.parentBindingInNamespace>:
+        return <c.parentBindingInNamespace>(self._value.to_parent_key())
 <endif>
+<c.strictDescendantsInNamespace:{d|<if(d.isLocal)>
+
+<descendant_to(d, c)>
+
+<descendant_from(d, c)><endif>}>
+>>
+
+descendant_to(d, c) ::= <<
+    def to_<d.asNameInNamespace;format="lsc">_key(self) -> <d.bindingInNamespace> | None:
+        return self.as_(<d.bindingInNamespace>)
+>>
+
+descendant_from(d, c) ::= <<
+    @classmethod
+    def from_<d.asNameInNamespace;format="lsc">_key(cls, key: <d.bindingInNamespace>) -> <c.name>Key:
+        return cls.from_key(key)
 >>
 
 club(c, u) ::= <<
-class <c.name>Key(Proxy):
+class <c.name>Key(Key):
 <if(c.hasDocumentation)>    """<c.documentation;format="docstring">"""
 <endif>
     __slots__ = ()
@@ -94,9 +110,9 @@ class <c.name>Key(Proxy):
         return AnyConceptKey(self._value.to_any_concept_key())
 
     @classmethod
-    def from_any_concept_key(cls, key) -> <c.name>Key | None:
+    def from_any_concept_key(cls, key: AnyConceptKey | Proxy | dsviper.ValueKey) -> <c.name>Key | None:
         value = key._value if isinstance(key, Proxy) else key
-        return cls(value) if value.type_concept().runtime_id() == <c.name;format="usc"> else None
+        return cls(value) if cls.club().is_member(value.type_concept()) else None
 
     def description(self) -> str:
         return f"{self._value.instance_id().encoded()}:<u.name>::<c.name>Key"
@@ -108,16 +124,12 @@ class <c.name>Key(Proxy):
 
 <c.membersInNamespace:club_to(c);separator="\n\n">
 
-    def as_(self, cls):
-        concept = cls.concept()
-        return cls(self._value.to_member_key(concept)) if self._value.is_member(concept) else None
-
     def __repr__(self) -> str:
         return self.description()
 >>
 
 key(c, u, kind) ::= <<
-class <c.name>Key(Proxy):
+class <c.name>Key(Key):
 <if(c.hasDocumentation)>    """<c.documentation;format="docstring">"""
 <endif>    __slots__ = ()
 
@@ -131,15 +143,15 @@ class <c.name>Key(Proxy):
     def type(cls) -> dsviper.Type:
         return dsviper.TypeKey(cls.concept())
 
-    def __init__(self, identifier: typing.Any = _NEUF):
-        if identifier is _NEUF:
+    def __init__(self, identifier: typing.Any = NOT_GIVEN):
+        if identifier is NOT_GIVEN:
             identifier = None
         elif identifier is None:
             raise TypeError("None is not an instance identifier")
 
         if isinstance(identifier, dsviper.ValueKey):
-            if not identifier.is_member(self.concept()):
-                raise TypeError("this value is not a <u.name>::<c.name>Key")
+            if identifier.type() != self.type():
+                raise TypeError(f"this value is not a <u.name>::<c.name>Key: {identifier.detail_type_representation()}")
             super().__init__(identifier)
         elif identifier is None or isinstance(identifier, (dsviper.ValueUUId, str)):
             super().__init__(dsviper.ValueKey.create(self.concept(), identifier))
@@ -168,9 +180,16 @@ class <c.name>Key(Proxy):
         return AnyConceptKey(self._value.to_any_concept_key())
 
     @classmethod
-    def from_any_concept_key(cls, key) -> <c.name>Key | None:
+    def from_any_concept_key(cls, key: AnyConceptKey | Proxy | dsviper.ValueKey) -> <c.name>Key | None:
         value = key._value if isinstance(key, Proxy) else key
-        return cls(value) if value.type_concept().runtime_id() == <c.name;format="usc"> else None
+        return cls(value.to_member_key(cls.concept())) if value.is_member(cls.concept()) else None
+
+    @classmethod
+    def from_key(cls, key: Proxy | dsviper.ValueKey) -> <c.name>Key:
+        value = key._value if isinstance(key, Proxy) else key
+        if not value.is_member(cls.concept()):
+            raise TypeError(f"{value.detail_type_representation()} does not designate a <u.name>::<c.name>")
+        return cls(value.to_member_key(cls.concept()))
 
     def description(self) -> str:
         return f"{self._value.instance_id().encoded()}:<u.name>::<c.name>Key"
@@ -244,17 +263,17 @@ class <s.name>(Proxy):
         return cls(dsviper.ValueStructure.cast(
             dsviper.Value.decode(blob, cls.type(), definitions(), **kwargs)))
 
-    def __init__(self, value: dsviper.ValueStructure | dict | None = None, /, **fields):
-        if value is None:
-            value = dsviper.ValueStructure(self.type())
-        elif isinstance(value, dict):
-            value = dsviper.ValueStructure(self.type(), value)
-        elif value.type() != self.type():
+    def __init__(self, source: dsviper.ValueStructure | dict | None = None, /, *,
+                 <s.fields:{f|<f.name;format="snake">: <hint(f)> | NotGiven = NOT_GIVEN};separator=",\n">) -> None:
+        if source is None:
+            source = dsviper.ValueStructure(self.type())
+        elif isinstance(source, dict):
+            source = dsviper.ValueStructure(self.type(), source)
+        elif source.type() != self.type():
             raise TypeError("this value is not a <u.name>::<s.name>")
-        super().__init__(value)
-
-        for name, field in fields.items():
-            setattr(self, name, field)
+        super().__init__(source)
+        <s.fields:{f|if not isinstance(<f.name;format="snake">, NotGiven):
+    self.<f.name;format="snake"> = <f.name;format="snake">};separator="\n">
 
 <s.fields:field(s);separator="\n\n">
 
@@ -284,12 +303,12 @@ registered(v) ::= <%<v.name;format="usc">: <v.name>%>
 registered_key(v) ::= <%<v.name;format="usc">: <v.name>Key%>
 
 club_to(cm, c) ::= <<
-    def to_<cm.asNameInNamespace;format="lsc">_key(self):
+    def to_<cm.asNameInNamespace;format="lsc">_key(self) -> <cm.bindingInNamespace> | None:
         return self.as_(<cm.bindingInNamespace>)
 >>
 
 club_from(cm, c) ::= <<
     @classmethod
-    def from_<cm.asNameInNamespace;format="lsc">_key(cls, key) -> <c.name>Key:
-        return cls(key._value if isinstance(key, Proxy) else key)
+    def from_<cm.asNameInNamespace;format="lsc">_key(cls, key: <cm.bindingInNamespace>) -> <c.name>Key:
+        return cls(key)
 >>

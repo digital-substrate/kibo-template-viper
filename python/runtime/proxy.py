@@ -19,7 +19,9 @@ class Proxy:
         return self._value
 
     def __eq__(self, other) -> bool:
-        return type(self) is type(other) and self._value == other._value
+        if not isinstance(other, Proxy):
+            return NotImplemented
+        return bool(self._value == other._value)
 
     def __hash__(self) -> int:
         return self._value.hash()
@@ -54,12 +56,14 @@ class Proxy:
         return self._value
 
 
-class _Neuf:
+class NotGiven:
+    __slots__ = ()
+
     def __repr__(self) -> str:
-        return "<neuf>"
+        return "NOT_GIVEN"
 
 
-NEUF = _Neuf()
+NOT_GIVEN = NotGiven()
 
 _CLASSES: dict[str, type] = {}
 
@@ -92,7 +96,10 @@ def wrap(value) -> typing.Any:
         return _named(value.type())._wrap(value)
 
     if code == "key":
-        return _named(value.type_concept())(value)
+        type_key = value.type_key()
+        if type_key.is_any_concept():
+            return AnyConceptKey(value)
+        return _named(type_key.element_type())(value)
 
     if code in ("optional", "any"):
         return None if value.is_nil() else wrap(value.unwrap())
@@ -146,13 +153,32 @@ def _holds_generated(value) -> bool:
     return hasattr(value, "_unwrap")
 
 
-class AnyConceptKey(Proxy):
+KeyT = typing.TypeVar("KeyT", bound="Key")
+
+
+class Key(Proxy):
     __slots__ = ()
 
-    def __init__(self, value: dsviper.ValueKey):
+    @classmethod
+    def from_any_concept_key(cls: type[KeyT], key: Proxy | dsviper.ValueKey) -> KeyT | None:
+        raise NotImplementedError
+
+    def as_(self, cls: type[KeyT]) -> KeyT | None:
+        return cls.from_any_concept_key(self)
+
+
+class AnyConceptKey(Key):
+    __slots__ = ()
+
+    def __init__(self, key: Proxy | dsviper.ValueKey):
+        value = key._value if isinstance(key, Proxy) else key
         if not isinstance(value, dsviper.ValueKey):
-            raise TypeError("this value is not a key")
-        super().__init__(value)
+            raise TypeError(f"{key!r} is not a key")
+        super().__init__(value.to_any_concept_key())
+
+    @classmethod
+    def from_any_concept_key(cls, key: Proxy | dsviper.ValueKey) -> AnyConceptKey:
+        return cls(key)
 
     def instance_id(self) -> dsviper.ValueUUId:
         return self._value.instance_id()
@@ -175,9 +201,6 @@ class AnyConceptKey(Proxy):
         return cls(dsviper.ValueKey.cast(dsviper.Value.decode(
             blob, dsviper.TypeKey(dsviper.TypeAnyConcept()),
             definitions if definitions is not None else definitions_of(), **kwargs)))
-
-    def as_(self, cls):
-        return cls(self._value) if self._value.type() == cls.type() else None
 
     def __repr__(self) -> str:
         return self.description()

@@ -9,7 +9,7 @@ unit(u) ::= <<
 import dsviper from "@digitalsubstrate/dsviper";
 
 import type * as containers from "../containers.js";
-import { Proxy } from "../_codegen/proxy.js";
+import { Key, Proxy } from "../_codegen/proxy.js";
 import { AnyConceptKey, isKnown, register, setField, wrap } from "../_codegen/registry.js";
 import { definitions } from "../index.js";
 <u.dependencies.types:{d|import * as <d.name;format="lsc"> from "../<d.name;format="lsc">/data.js";};separator="\n">
@@ -49,7 +49,9 @@ let <c.name;format="lsc">Type: dsviper.TypeKey | undefined;
 <if(c.hasDocumentation)>
 /** <c.documentation;format="comment"> */
 <endif>
-export class <c.name>Key extends Proxy\<dsviper.ValueKey> {
+export class <c.name>Key extends Key {
+    declare private readonly <c.name;format="lsc">KeyBrand: never;
+
     static concept(): dsviper.TypeConcept {
         return (<c.name;format="lsc">Concept ??= definitions().checkConcept(<c.name;format="usc">));
     }
@@ -63,8 +65,9 @@ export class <c.name>Key extends Proxy\<dsviper.ValueKey> {
             throw new TypeError("null is not an instance identifier");
         }
         if (identifier instanceof dsviper.ValueKey) {
-            if (!identifier.isMember(<c.name>Key.concept())) {
-                throw new TypeError("this value is not a <u.name>::<c.name>Key");
+            if (!identifier.type().equals(<c.name>Key.type())) {
+                throw new TypeError(
+                    `this value is not a <u.name>::<c.name>Key: ${identifier.detailTypeRepresentation()}`);
             }
             super(identifier);
         } else {
@@ -111,18 +114,30 @@ export class <c.name>Key extends Proxy\<dsviper.ValueKey> {
 
 <if(c.parent)>
     toParentKey(): <c.parentBindingInNamespace> {
-        return new <c.parentBindingInNamespace>(this.vprValue);
+        return new <c.parentBindingInNamespace>(this.vprValue.toParentKey());
     }
 
 <endif>
+<c.strictDescendantsInNamespace:{d|<if(d.isLocal)><descendant(d, c)>
+
+<endif>}>
     toAnyConceptKey(): AnyConceptKey {
         return new AnyConceptKey(this.vprValue.toAnyConceptKey());
     }
 
-    static fromAnyConceptKey(key: AnyConceptKey | dsviper.ValueKey): <c.name>Key | undefined {
-        const value = key instanceof AnyConceptKey ? key.vprValue : key;
-        return value.typeConcept().runtimeId().equals(<c.name;format="usc">)
-            ? new <c.name>Key(value) : undefined;
+    static fromAnyConceptKey(key: Proxy\<dsviper.ValueKey> | dsviper.ValueKey): <c.name>Key | undefined {
+        const value = key instanceof Proxy ? key.vprValue : key;
+        return value.isMember(<c.name>Key.concept())
+            ? new <c.name>Key(value.toMemberKey(<c.name>Key.concept())) : undefined;
+    }
+
+    static fromKey(key: Proxy\<dsviper.ValueKey> | dsviper.ValueKey): <c.name>Key {
+        const found = <c.name>Key.fromAnyConceptKey(key);
+        if (found === undefined) {
+            const value = key instanceof Proxy ? key.vprValue : key;
+            throw new TypeError(`${value.detailTypeRepresentation()} does not designate a <u.name>::<c.name>`);
+        }
+        return found;
     }
 
     override toString(): string {
@@ -135,7 +150,9 @@ club(c, u) ::= <<
 let <c.name;format="lsc">Club: dsviper.TypeClub | undefined;
 let <c.name;format="lsc">Type: dsviper.TypeKey | undefined;
 
-export class <c.name>Key extends Proxy\<dsviper.ValueKey> {
+export class <c.name>Key extends Key {
+    declare private readonly <c.name;format="lsc">KeyBrand: never;
+
     static club(): dsviper.TypeClub {
         return (<c.name;format="lsc">Club ??= definitions().checkClub(<c.name;format="usc">));
     }
@@ -181,14 +198,18 @@ export class <c.name>Key extends Proxy\<dsviper.ValueKey> {
         return isKnown(this.vprValue);
     }
 
+    toAnyConceptKey(): AnyConceptKey {
+        return new AnyConceptKey(this.vprValue);
+    }
+
+    static fromAnyConceptKey(key: Proxy\<dsviper.ValueKey> | dsviper.ValueKey): <c.name>Key | undefined {
+        const value = key instanceof Proxy ? key.vprValue : key;
+        return <c.name>Key.club().isMember(value.typeConcept()) ? new <c.name>Key(value) : undefined;
+    }
+
 <c.membersInNamespace:club_from(c);separator="\n\n">
 
 <c.membersInNamespace:club_to(c);separator="\n\n">
-
-    as\<K>(member: { concept(): dsviper.TypeConcept; wrap(value: dsviper.Value): K }): K | undefined {
-        const concept = member.concept();
-        return this.vprValue.isMember(concept) ? member.wrap(this.vprValue.toMemberKey(concept)) : undefined;
-    }
 
     override toString(): string {
         return this.description();
@@ -257,20 +278,37 @@ let <s.name;format="lsc">Type: dsviper.TypeStructure | undefined;
 <if(s.hasDocumentation)>
 /** <s.documentation;format="comment"> */
 <endif>
+export interface <s.name>Init {
+    <s.fields:{f|<f.name;format="lf">?: <f.bindingType.annotation>;};separator="\n">
+}
+
+const <s.name;format="lsc">Fields: readonly string[] = [<s.fields:{f|"<f.name;format="lf">"};separator=", ">];
+
 export class <s.name> extends Proxy\<dsviper.ValueStructure> {
     static type(): dsviper.TypeStructure {
         return (<s.name;format="lsc">Type ??= definitions().checkStructure(<s.name;format="usc">));
     }
 
-    constructor(value?: dsviper.ValueStructure | Record\<string, dsviper.InputValue>) {
+    constructor(value?: dsviper.ValueStructure | <s.name>Init) {
         if (value instanceof dsviper.ValueStructure) {
             if (!value.type().equals(<s.name>.type())) {
                 throw new TypeError("this value is not a <u.name>::<s.name>");
             }
             super(value);
-        } else {
-            super(new dsviper.ValueStructure(<s.name>.type(), value));
+            return;
         }
+        super(new dsviper.ValueStructure(<s.name>.type()));
+        if (value === undefined) {
+            return;
+        }
+        for (const name of Object.keys(value)) {
+            if (!<s.name;format="lsc">Fields.includes(name)) {
+                throw new TypeError(`<u.name>::<s.name> has no field ${name}`);
+            }
+        }
+        <s.fields:{f|if (value.<f.name;format="lf"> !== undefined) {
+    this.<f.name;format="lf"> = value.<f.name;format="lf">;
+\}};separator="\n">
     }
 
     static wrap(value: dsviper.Value): <s.name> {
@@ -301,8 +339,18 @@ field(f, s) ::= <<
 read(f) ::= <%<if(f.bindingType.useProxy)>return wrap(this.vprValue.at("<f.name>", false));<else>return this.vprValue.at("<f.name>") as <f.bindingType.annotation>;<endif>%>
 write(f) ::= <%setField(this.vprValue, "<f.name>", value);%>
 
+descendant(d, c) ::= <<
+    to<d.asNameInNamespace>Key(): <d.bindingInNamespace> | undefined {
+        return this.as(<d.bindingInNamespace>);
+    }
+
+    static from<d.asNameInNamespace>Key(key: <d.bindingInNamespace>): <c.name>Key {
+        return <c.name>Key.fromKey(key);
+    }
+>>
+
 club_from(cm, c) ::= <<
-    static from<cm.asNameInNamespace>Key(key: Proxy\<dsviper.ValueKey> | dsviper.ValueKey): <c.name>Key {
+    static from<cm.asNameInNamespace>Key(key: <cm.bindingInNamespace>): <c.name>Key {
         return new <c.name>Key(key);
     }
 >>

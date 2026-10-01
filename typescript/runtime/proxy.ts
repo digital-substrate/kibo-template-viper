@@ -13,9 +13,7 @@ export abstract class Proxy<V extends dsviper.Value> {
     }
 
     equals(other: unknown): boolean {
-        return other instanceof Proxy
-            && other.constructor === this.constructor
-            && this.vprValue.equals(other.vprValue);
+        return other instanceof Proxy && this.vprValue.equals(other.vprValue);
     }
 
     hashKey(): bigint {
@@ -52,9 +50,29 @@ export abstract class Proxy<V extends dsviper.Value> {
     }
 }
 
-export class AnyConceptKey extends Proxy<dsviper.ValueKey> {
-    constructor(value: dsviper.ValueKey) {
-        super(value);
+export interface KeyClass<K> {
+    fromAnyConceptKey(key: Key | dsviper.ValueKey): K | undefined;
+}
+
+export abstract class Key extends Proxy<dsviper.ValueKey> {
+    override hashKey(): bigint {
+        return this.vprValue.toAnyConceptKey().hashKey();
+    }
+
+    as<K>(target: KeyClass<K>): K | undefined {
+        return target.fromAnyConceptKey(this);
+    }
+}
+
+export class AnyConceptKey extends Key {
+    declare private readonly anyConceptKeyBrand: never;
+
+    constructor(key: Proxy<dsviper.ValueKey> | dsviper.ValueKey) {
+        super((key instanceof Proxy ? key.vprValue : key).toAnyConceptKey());
+    }
+
+    static fromAnyConceptKey(key: Proxy<dsviper.ValueKey> | dsviper.ValueKey): AnyConceptKey {
+        return new AnyConceptKey(key);
     }
 
     static wrap(value: dsviper.Value): AnyConceptKey {
@@ -85,10 +103,6 @@ export class AnyConceptKey extends Proxy<dsviper.ValueKey> {
     description(): string {
         return `${this.vprValue.instanceId().encoded()}:AnyConceptKey`
              + `(${this.vprValue.typeConcept().representation()}Key)`;
-    }
-
-    as<K>(concept: { type(): dsviper.TypeKey; wrap(value: dsviper.Value): K }): K | undefined {
-        return this.vprValue.type().equals(concept.type()) ? concept.wrap(this.vprValue) : undefined;
     }
 
     override toString(): string {
