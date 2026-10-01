@@ -92,6 +92,14 @@ migrating.
   a nil document is told apart from no document. A write still takes what the runtime
   decodes: an optional field accepts its declared class, its element, or `None`
   (`undefined`).
+- **The host's own collections enter where the runtime decodes them.** A container field
+  takes its declared class, and also the host's collection when nothing in it is generated
+  (`u.coeffs = [1.0, 2.0]`, `{"a", "b"}`, a `dict`; an array, a `Set`, a `Map` or pairs in
+  TypeScript): the runtime decodes it at the line that writes it, and the checker sees the
+  element type. A host collection of generated values is still refused by a field. A declared
+  container's constructor is typed by its shape and takes one
+  (`containers.Set_of_Demo_StructureS([s1, s2])`): its generated elements are unwrapped and
+  every one is checked where the container is built.
 - **Keys follow the runtime's model: one instance, many views.** A key is a static type
   (`key<Concept>`, `key<Club>`, `key<any_concept>`), the concept of its instance and an
   instance id. A key class's constructor takes a key of exactly its static type; every

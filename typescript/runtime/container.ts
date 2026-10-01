@@ -3,7 +3,7 @@
 
 import dsviper from "@digitalsubstrate/dsviper";
 
-import { definitionsOf, unwrap, wrap } from "./registry.js";
+import { definitionsOf, unwrap, unwrapDeep, wrap } from "./registry.js";
 
 export class View {
     readonly vprValue: dsviper.Value;
@@ -300,8 +300,8 @@ export class Ordered<E> extends View {
             : new (known as new (v: unknown) => Sequence<E>)(flat);
     }
 
-    items(): [dsviper.ValueUUId, E | undefined][] {
-        return this.elementPositions().map((position) => [position, this.at(position)]);
+    items(): [dsviper.ValueUUId, E][] {
+        return this.elementPositions().map((position) => [position, this.at(position) as E]);
     }
 
     *[Symbol.iterator](): Iterator<E> {
@@ -411,8 +411,8 @@ function forward(view: View, name: string, args: unknown[]): unknown {
     return result instanceof dsviper.Value ? wrap(result) : result;
 }
 
-type Bound<V> = {
-    new (value?: unknown): V;
+type Bound<V, I> = {
+    new (value?: V | I | null): V;
     type(): dsviper.Type;
     decode(blob: dsviper.ValueBlob): V;
 };
@@ -437,17 +437,17 @@ function boundFor(view: unknown, type: dsviper.Type): unknown {
     return undefined;
 }
 
-function bind<V extends View>(view: new (value: dsviper.Value) => V,
-                              typeOf: () => dsviper.Type,
-                              build: (type: dsviper.Type, value: unknown) => dsviper.Value): Bound<V> {
+function bind<V extends View, I>(view: new (value: dsviper.Value) => V,
+                                 typeOf: () => dsviper.Type,
+                                 build: (type: dsviper.Type, value: unknown) => dsviper.Value): Bound<V, I> {
     const cached = bound.get(typeOf);
     if (cached !== undefined) {
-        return cached as Bound<V>;
+        return cached as Bound<V, I>;
     }
 
     class BoundView extends (view as new (value: dsviper.Value) => View) {
         constructor(value?: unknown) {
-            const given = unwrap(value);
+            const given = unwrapDeep(value);
             if (given instanceof dsviper.Value && given.type().equals(typeOf())) {
                 super(given);
                 return;
@@ -478,21 +478,21 @@ function bind<V extends View>(view: new (value: dsviper.Value) => V,
     }
 
     bound.set(typeOf, BoundView);
-    return BoundView as unknown as Bound<V>;
+    return BoundView as unknown as Bound<V, I>;
 }
 
-export const sequenceOf = <E>(typeOf: () => dsviper.Type) =>
-    bind<Sequence<E>>(Sequence as never, typeOf,
+export const sequenceOf = <E, I = never>(typeOf: () => dsviper.Type) =>
+    bind<Sequence<E>, I>(Sequence as never, typeOf,
                       (t, v) => dsviper.Value.create(t, v as dsviper.InputValue));
-export const mappingOf = <K, V>(typeOf: () => dsviper.Type) =>
-    bind<Mapping<K, V>>(Mapping as never, typeOf,
+export const mappingOf = <K, V, I = never>(typeOf: () => dsviper.Type) =>
+    bind<Mapping<K, V>, I>(Mapping as never, typeOf,
                         (t, v) => new dsviper.ValueMap(t as dsviper.TypeMap, v as dsviper.InputValue));
-export const orderedOf = <E>(typeOf: () => dsviper.Type) =>
-    bind<Ordered<E>>(Ordered as never, typeOf,
+export const orderedOf = <E, I = never>(typeOf: () => dsviper.Type) =>
+    bind<Ordered<E>, I>(Ordered as never, typeOf,
                      (t, v) => new dsviper.ValueXArray(t as dsviper.TypeXArray, v as dsviper.InputValue));
-export const optionalOf = <E>(typeOf: () => dsviper.Type) =>
-    bind<Optional<E>>(Optional as never, typeOf,
+export const optionalOf = <E, I = never>(typeOf: () => dsviper.Type) =>
+    bind<Optional<E>, I>(Optional as never, typeOf,
                       (t, v) => new dsviper.ValueOptional(t as dsviper.TypeOptional, v as dsviper.InputValue));
-export const variantOf = <E>(typeOf: () => dsviper.Type) =>
-    bind<Variant<E>>(Variant as never, typeOf,
+export const variantOf = <E, I = never>(typeOf: () => dsviper.Type) =>
+    bind<Variant<E>, I>(Variant as never, typeOf,
                      (t, v) => new dsviper.ValueVariant(t as dsviper.TypeVariant, v as dsviper.InputValue));

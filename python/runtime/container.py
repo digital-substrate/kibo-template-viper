@@ -336,9 +336,8 @@ class Ordered(View, typing.Generic[E]):
     def remove(self, position: dsviper.ValueUUId) -> None:
         self._value.remove(position)
 
-    def items(self) -> list[tuple[dsviper.ValueUUId, E | None]]:
-        return [(position, self.at(position)) for position in self.positions()
-                if position != dsviper.ValueXArray.END]
+    def items(self) -> list[tuple[dsviper.ValueUUId, E]]:
+        return [(position, wrap(element)) for position, element in self._value.items()]
 
     def __getattr__(self, name: str):
         return _forward(self, name)
@@ -422,6 +421,18 @@ _CASTS: dict[type, typing.Callable[[typing.Any], typing.Any]] = {
 _DECLARED: dict[str, type] = {}
 
 
+def _unwrap_deep(value):
+    if hasattr(value, "_unwrap"):
+        return value._unwrap()
+    if isinstance(value, dict):
+        return {_unwrap_deep(k): _unwrap_deep(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_unwrap_deep(element) for element in value]
+    if isinstance(value, (set, frozenset)):
+        return [_unwrap_deep(element) for element in value]
+    return value
+
+
 class Declared:
     __slots__ = ()
 
@@ -442,7 +453,7 @@ class Declared:
             return
         view = next(base for base in type(self).__mro__ if base in _CASTS)
         try:
-            built = _CASTS[view](dsviper.Value.create(expected, unwrap(value)))
+            built = _CASTS[view](dsviper.Value.create(expected, _unwrap_deep(value)))
         except dsviper.ViperError as refusal:
             raise TypeError(f"this value is not a {expected.representation()}") from refusal
         View.__init__(typing.cast(View, self), built)

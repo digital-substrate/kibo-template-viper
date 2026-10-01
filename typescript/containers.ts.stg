@@ -26,15 +26,15 @@ import type { AnyConceptKey } from "./_codegen/registry.js";
 <m.xarrayFunctions:element();separator="\n">
 <m.variantFunctions:variant();separator="\n">
 
-<m.vecFunctions:{v|<bound(v, {sequenceOf\<<v.bindingElementType.qualified>\>})>};separator="\n">
-<m.matFunctions:{v|<bound(v, "sequenceOf")>};separator="\n">
-<m.tupleFunctions:{v|<bound(v, {sequenceOf\<<v.members:{t|<t.bindingType.qualified>};separator=" | ">\>})>};separator="\n">
-<m.optionalFunctions:{v|<bound(v, {optionalOf\<<v.bindingElementType.qualified>\>})>};separator="\n">
-<m.vectorFunctions:{v|<bound(v, {sequenceOf\<<v.bindingElementType.qualified>\>})>};separator="\n">
-<m.setFunctions:{v|<bound(v, {sequenceOf\<<v.bindingElementType.qualified>\>})>};separator="\n">
-<m.mapFunctions:{v|<bound(v, {mappingOf\<<v.bindingKeyType.qualified>, <v.bindingElementType.qualified>\>})>};separator="\n">
-<m.xarrayFunctions:{v|<bound(v, {orderedOf\<<v.bindingElementType.qualified>\>})>};separator="\n">
-<m.variantFunctions:{v|<bound(v, {variantOf\<<v.members:{t|<t.bindingType.qualified>};separator=" | ">\>})>};separator="\n">
+<m.vecFunctions:{v|<bound(v, {sequenceOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
+<m.matFunctions:{v|<bound(v, {sequenceOf\<unknown, <v.bindingType.constructorInput>\>})>};separator="\n">
+<m.tupleFunctions:{v|<bound(v, {sequenceOf\<<v.members:{t|<t.bindingType.qualified>};separator=" | ">, <v.bindingType.constructorInput>\>})>};separator="\n">
+<m.optionalFunctions:{v|<bound(v, {optionalOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
+<m.vectorFunctions:{v|<bound(v, {sequenceOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
+<m.setFunctions:{v|<bound(v, {sequenceOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
+<m.mapFunctions:{v|<bound(v, {mappingOf\<<v.bindingKeyType.qualified>, <v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
+<m.xarrayFunctions:{v|<bound(v, {orderedOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
+<m.variantFunctions:{v|<bound(v, {variantOf\<<v.members:{t|<t.bindingType.qualified>};separator=" | ">, <v.bindingType.constructorInput>\>})>};separator="\n">
 >>
 
 primitives() ::= <<

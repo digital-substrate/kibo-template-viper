@@ -118,6 +118,22 @@ export function unwrap(value: unknown): dsviper.InputValue {
     return value as dsviper.InputValue;
 }
 
+export function unwrapDeep(value: unknown): dsviper.InputValue {
+    if (value instanceof Proxy || value instanceof View) {
+        return value.vprValue;
+    }
+    if (Array.isArray(value)) {
+        return value.map(unwrapDeep) as dsviper.InputValue;
+    }
+    if (value instanceof Set) {
+        return [...value].map(unwrapDeep) as dsviper.InputValue;
+    }
+    if (value instanceof Map) {
+        return [...value].map(([k, v]) => [unwrapDeep(k), unwrapDeep(v)]) as dsviper.InputValue;
+    }
+    return value as dsviper.InputValue;
+}
+
 function holdsGenerated(value: unknown): boolean {
     if (value instanceof Proxy || value instanceof View) {
         return true;

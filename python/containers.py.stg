@@ -109,6 +109,9 @@ declared(v, base) ::= <<
 class <v.bindingType.proxy>(Declared, <base>):
     __slots__ = ()
 
+    def __init__(self, value: <v.bindingType.proxy><if(v.bindingType.constructorInput)> | <v.bindingType.constructorInput><endif> | None = None) -> None:
+        super().__init__(value)
+
     @classmethod
     def type(cls) -> dsviper.Type:
         return type<v.typeSuffix>()
