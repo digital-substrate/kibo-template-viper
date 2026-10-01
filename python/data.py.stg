@@ -115,7 +115,7 @@ class <c.name>Key(Key):
         return cls(value) if cls.club().is_member(value.type_concept()) else None
 
     def description(self) -> str:
-        return f"{self._value.instance_id().encoded()}:<u.name>::<c.name>Key"
+        return f"{self._value.instance_id().encoded()}:<u.name>::<c.name>Key{self._held()}"
 
     def is_known(self) -> bool:
         return is_known(self._value)
@@ -192,7 +192,7 @@ class <c.name>Key(Key):
         return cls(value.to_member_key(cls.concept()))
 
     def description(self) -> str:
-        return f"{self._value.instance_id().encoded()}:<u.name>::<c.name>Key"
+        return f"{self._value.instance_id().encoded()}:<u.name>::<c.name>Key{self._held()}"
 
     def is_known(self) -> bool:
         return is_known(self._value)

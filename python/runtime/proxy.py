@@ -173,6 +173,12 @@ class Key(Proxy):
     def as_(self, cls: type[KeyT]) -> KeyT | None:
         return cls.from_any_concept_key(self)
 
+    def _held(self) -> str:
+        concept = self._value.type_concept()
+        if concept.runtime_id() == self._value.type_key().element_type().runtime_id():
+            return ""
+        return f"({concept.representation()}Key)"
+
 
 class AnyConceptKey(Key):
     __slots__ = ()

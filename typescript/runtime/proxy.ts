@@ -62,6 +62,14 @@ export abstract class Key extends Proxy<dsviper.ValueKey> {
     as<K>(target: KeyClass<K>): K | undefined {
         return target.fromAnyConceptKey(this);
     }
+
+    protected held(): string {
+        const concept = this.vprValue.typeConcept();
+        if (concept.runtimeId().equals(this.vprValue.typeKey().elementType().runtimeId())) {
+            return "";
+        }
+        return `(${concept.representation()}Key)`;
+    }
 }
 
 export class AnyConceptKey extends Key {
