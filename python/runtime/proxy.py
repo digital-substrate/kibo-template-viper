@@ -126,8 +126,8 @@ def unwrap(value: typing.Any) -> typing.Any:
     if hasattr(value, "_unwrap"):
         return value._unwrap()
     if _holds_generated(value):
-        raise TypeError("a native container of generated values: build the generated container "
-                        "of this shape instead, so that a wrong element is refused where it is added")
+        raise TypeError("a native container of generated values: build its declared class instead, "
+                        "containers.<Kind>_of_<Element>(values), which checks each element where it is built")
     return value
 
 

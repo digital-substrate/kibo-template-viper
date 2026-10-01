@@ -100,6 +100,11 @@ migrating.
   (`features.demo.StructureU`), each unit its attachments (`demo.attachments.ConceptA`), and
   `AnyConceptKey` and `AnyValue`; every top-level directory is a subpath export
   (`features/demo`, `features/tools`). Python: a unit imports its `attachments` module.
+- **What the annotations allow, the runtime takes**: a tuple keys a map of vectors, a
+  structure's `dict` source holds generated values, a default club key reads back, and a
+  removed xarray position reads `None`. `Key` is exported; a concept key built from another
+  view's key points to `from_key()`. A TypeScript `Mapping` iterates its `[key, value]`
+  entries, as a `Map` does.
 - **The generated Python is fully annotated**, its runtime included: it passes mypy with
   `--disallow-untyped-defs`, and an attachment's `get`, `has` and `keys` take a `Database` as
   well as an `AttachmentGetting`. A TypeScript proxy or view is not extensible, so assigning a

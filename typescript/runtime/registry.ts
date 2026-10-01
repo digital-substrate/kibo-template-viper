@@ -102,8 +102,8 @@ export function unwrap(value: unknown): dsviper.InputValue {
         return value.vprValue;
     }
     if (holdsGenerated(value)) {
-        throw new TypeError("a native container of generated values: build the generated container "
-                            + "of this shape instead, so that a wrong element is refused where it is added");
+        throw new TypeError("a native container of generated values: build its declared class instead, "
+                            + "new containers.<Kind>_of_<Element>(values), which checks each element where it is built");
     }
     return value as dsviper.InputValue;
 }

@@ -390,7 +390,7 @@ class Ordered(View, typing.Generic[E]):
     def __iter__(self) -> typing.Iterator[E]:
         return (wrap(element) for element in self._value)
 
-    def __getitem__(self, key: int | dsviper.ValueUUId) -> E:
+    def __getitem__(self, key: int | dsviper.ValueUUId) -> E | None:
         return wrap(self._value[key])
 
     def __setitem__(self, key: int | dsviper.ValueUUId, element: E) -> None:
@@ -571,7 +571,9 @@ def _unwrap_deep(value: typing.Any) -> typing.Any:
         return value._unwrap()
     if isinstance(value, dict):
         return {_unwrap_deep(k): _unwrap_deep(v) for k, v in value.items()}
-    if isinstance(value, (list, tuple)):
+    if isinstance(value, tuple):
+        return tuple(_unwrap_deep(element) for element in value)
+    if isinstance(value, list):
         return [_unwrap_deep(element) for element in value]
     if isinstance(value, (set, frozenset)):
         return [_unwrap_deep(element) for element in value]

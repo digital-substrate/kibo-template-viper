@@ -154,6 +154,10 @@ export class <c.name>Key extends Key {
 
     constructor(key: <c.membersInNamespace:{m|<m.bindingInNamespace> | }>dsviper.ValueKey) {
         const value = key instanceof Proxy ? key.vprValue : key;
+        if (value.type().equals(<c.name>Key.type())) {
+            super(value);
+            return;
+        }
         if (!<c.name>Key.club().isMember(value.typeConcept())) {
             throw new TypeError("this key does not designate a member of <u.name>::<c.name>");
         }

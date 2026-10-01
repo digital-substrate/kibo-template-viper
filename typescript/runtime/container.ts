@@ -349,7 +349,7 @@ export class Mapping<K, V> extends View {
     }
 
     keys(): K[] {
-        return [...this];
+        return this.entries().map(([key]) => key);
     }
 
     values(): V[] {
@@ -361,11 +361,8 @@ export class Mapping<K, V> extends View {
     }
 
 
-    *[Symbol.iterator](): Iterator<K> {
-        for (const pair of this.map as unknown as Iterable<dsviper.OutputValue>) {
-            const [key] = pair as unknown as [dsviper.OutputValue, dsviper.OutputValue];
-            yield wrap(key);
-        }
+    *[Symbol.iterator](): Iterator<[K, V]> {
+        yield* this.pairs();
     }
 
     private *pairs(): Generator<[K, V]> {
