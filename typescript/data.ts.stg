@@ -279,7 +279,7 @@ let <s.name;format="lsc">Type: dsviper.TypeStructure | undefined;
 /** <s.documentation;format="comment"> */
 <endif>
 export interface <s.name>Init {
-    <s.fields:{f|<f.name;format="lf">?: <f.bindingType.annotation>;};separator="\n">
+    <s.fields:{f|<f.name;format="lf">?: <f.bindingType.input>;};separator="\n">
 }
 
 const <s.name;format="lsc">Fields: readonly string[] = [<s.fields:{f|"<f.name;format="lf">"};separator=", ">];
@@ -331,7 +331,7 @@ field(f, s) ::= <<
         <read(f)>
     }
 
-    set <f.name;format="lf">(value: <f.bindingType.annotation>) {
+    set <f.name;format="lf">(value: <f.bindingType.input>) {
         <write(f)>
     }
 >>

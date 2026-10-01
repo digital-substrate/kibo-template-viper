@@ -368,10 +368,8 @@ class Optional(View, typing.Generic[E]):
     def wrap(self, element: E) -> None:
         self._value.wrap(unwrap(element))
 
-    def get(self, default=None):
-        if self.is_nil():
-            return wrap(default) if default is not None else None
-        return self.unwrap()
+    def get(self, default: E | None = None) -> E | None:
+        return default if self.is_nil() else self.unwrap()
 
     def clear(self) -> None:
         self._value.clear()

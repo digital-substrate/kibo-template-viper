@@ -9,6 +9,7 @@ from typing import Callable
 
 import dsviper
 
+from .container import Optional
 from .proxy import Proxy, unwrap as _unwrap, wrap as _wrap
 
 
@@ -39,9 +40,8 @@ class AttachmentProxy(typing.Generic[K, D, KS]):
     def has(self, getting: dsviper.AttachmentGetting, key: K) -> bool:
         return getting.has(self.descriptor, key.vpr_value)
 
-    def get(self, getting: dsviper.AttachmentGetting, key: K) -> D | None:
-        document = getting.get(self.descriptor, key.vpr_value)
-        return None if document.is_nil() else _wrap(document.unwrap())
+    def get(self, getting: dsviper.AttachmentGetting, key: K) -> Optional[D]:
+        return _wrap(getting.get(self.descriptor, key.vpr_value))
 
     def enumerate(self, getting, *, encoded: bool = True) -> list[tuple[K, D]]:
         source = getting if hasattr(getting, "enumerate") else getting.attachment_getting()

@@ -47,13 +47,13 @@ export function wrap(value: dsviper.OutputValue | dsviper.Value): any {
             const typeKey = key.typeKey();
             return typeKey.isAnyConcept() ? new AnyConceptKey(key) : named(typeKey.elementType()).wrap(key);
         }
-        case "optional":
         case "any": {
             const held = value as dsviper.ValueOptional;
             return held.isNil() ? undefined : wrap(held.unwrap());
         }
         case "variant":
             return wrap((value as dsviper.ValueVariant).unwrap());
+        case "optional":
         case "map":
         case "xarray":
         case "vector":
@@ -70,6 +70,8 @@ export function wrap(value: dsviper.OutputValue | dsviper.Value): any {
     }
 
     switch (value.typeCode()) {
+        case "optional":
+            return new Optional(dsviper.ValueOptional.cast(value));
         case "map":
             return new Mapping(dsviper.ValueMap.cast(value));
         case "xarray":

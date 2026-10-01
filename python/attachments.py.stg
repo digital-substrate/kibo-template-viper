@@ -48,7 +48,7 @@ arguments(a, s) ::= <%dsviper.ValueUUId.create("<a.runtimeId>"), definitions, <s
 documentClass(a) ::= <%<if(a.documentType.bindingType.isNamed)><a.documentType.bindingType.qualified><else>None<endif>%>
 
 field(sf, a, s) ::= <<
-def set_<sf.name;format="snake">(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, value: <sf.bindingType.qualified>) -> None:
+def set_<sf.name;format="snake">(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, value: <sf.bindingType.inputQualified>) -> None:
     self._update(mutating, key, "<sf.name>", value)<if(sf.field.isSet)>
 
 <set_ops(sf.field, s, {"<sf.name>"}, {_<sf.name;format="snake">}, sf.name)><elseif(sf.field.isMap)>

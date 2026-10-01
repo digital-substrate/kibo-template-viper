@@ -83,6 +83,15 @@ migrating.
   (`undefined`), with no optional to unwrap; the field-level operations are typed methods.
 - **Python follows its own idiom**: fields and operations in snake_case, enumerations as
   `enum.Enum`, the wrapped value as `vpr_value`.
+- **A read leaves the Viper world only at the primitive leaves.** bool, integers, floats,
+  string and blob read as the host's own values; every other type reads as a view, and an
+  optional is one of them: an `optional<T>` field reads as its declared class
+  (`containers.Optional_of_T`), and an attachment's `get` returns `Optional[D]` (Python) /
+  `Optional<D>` (TypeScript) — the runtime's own answer — rather than the document or
+  `None`. The optional's truth is presence: an empty document, `0` or `""` is present, and
+  a nil document is told apart from no document. A write still takes what the runtime
+  decodes: an optional field accepts its declared class, its element, or `None`
+  (`undefined`).
 - **Keys follow the runtime's model: one instance, many views.** A key is a static type
   (`key<Concept>`, `key<Club>`, `key<any_concept>`), the concept of its instance and an
   instance id. A key class's constructor takes a key of exactly its static type; every

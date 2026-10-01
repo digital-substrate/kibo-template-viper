@@ -101,13 +101,13 @@ def wrap(value) -> typing.Any:
             return AnyConceptKey(value)
         return _named(type_key.element_type())(value)
 
-    if code in ("optional", "any"):
+    if code == "any":
         return None if value.is_nil() else wrap(value.unwrap())
 
     if code == "variant":
         return wrap(value.unwrap())
 
-    from .container import Mapping, Ordered, Sequence, declared
+    from .container import Mapping, Optional, Ordered, Sequence, declared
 
     cls = declared(value)
     if cls is not None:
@@ -117,6 +117,8 @@ def wrap(value) -> typing.Any:
         return Mapping(value)
     if code == "xarray":
         return Ordered(value)
+    if code == "optional":
+        return Optional(value)
     if code in ("vector", "set", "vec", "mat", "tuple"):
         return Sequence(value)
 

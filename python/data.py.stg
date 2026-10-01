@@ -264,7 +264,7 @@ class <s.name>(Proxy):
             dsviper.Value.decode(blob, cls.type(), definitions(), **kwargs)))
 
     def __init__(self, source: dsviper.ValueStructure | dict | None = None, /, *,
-                 <s.fields:{f|<f.name;format="snake">: <hint(f)> | NotGiven = NOT_GIVEN};separator=",\n">) -> None:
+                 <s.fields:{f|<f.name;format="snake">: <input_hint(f)> | NotGiven = NOT_GIVEN};separator=",\n">) -> None:
         if source is None:
             source = dsviper.ValueStructure(self.type())
         elif isinstance(source, dict):
@@ -289,7 +289,7 @@ field(f, s) ::= <<
         <read(f)>
 
     @<f.name;format="snake">.setter
-    def <f.name;format="snake">(self, value: <hint(f)>) -> None:
+    def <f.name;format="snake">(self, value: <input_hint(f)>) -> None:
         <write(f)>
 >>
 
@@ -298,6 +298,7 @@ write(f) ::= <%self._value.set("<f.name>", <if(f.bindingType.useProxy)>unwrap(va
 repr_field(f) ::= <%<f.name;format="snake">={self.<f.name;format="snake">}%>
 
 hint(f) ::= <%<f.bindingType.annotation>%>
+input_hint(f) ::= <%<f.bindingType.input>%>
 
 registered(v) ::= <%<v.name;format="usc">: <v.name>%>
 registered_key(v) ::= <%<v.name;format="usc">: <v.name>Key%>

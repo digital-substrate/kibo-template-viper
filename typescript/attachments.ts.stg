@@ -43,7 +43,7 @@ export class <opsClass(a, s)> extends AttachmentProxy\<<generics(a, s)>\> {
 >>
 
 field(sf, s) ::= <<
-set<sf.name;format="uf">(mutating: Mutating, key: <key(s)>, value: <sf.bindingType.qualified>): void {
+set<sf.name;format="uf">(mutating: Mutating, key: <key(s)>, value: <sf.bindingType.inputQualified>): void {
     this.updateField(mutating, key, "<sf.name>", value);
 }<if(sf.field.isSet)>
 

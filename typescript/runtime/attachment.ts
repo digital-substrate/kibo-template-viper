@@ -3,7 +3,7 @@
 
 import dsviper from "@digitalsubstrate/dsviper";
 
-import { Sequence } from "./container.js";
+import { Optional, Sequence } from "./container.js";
 import { wrap, unwrap, type Wrapping } from "./registry.js";
 
 export interface Getting {
@@ -81,9 +81,8 @@ export class AttachmentProxy<K, D, KS = Sequence<K>> {
         return getting.has(this.descriptor, unwrap(key) as dsviper.ValueKey);
     }
 
-    get(getting: Getting, key: K): D | undefined {
-        const document = getting.get(this.descriptor, unwrap(key) as dsviper.ValueKey);
-        return document.isNil() ? undefined : wrap(document.unwrap());
+    get(getting: Getting, key: K): Optional<D> {
+        return wrap(getting.get(this.descriptor, unwrap(key) as dsviper.ValueKey));
     }
 
     set(setting: Setting, key: K, value: D): unknown {
