@@ -75,12 +75,10 @@ migrating.
   proxy base, the registry that wraps and unwraps values, the container views
   (`Sequence`, `Mapping`, `Ordered`, `Optional`, `Variant`) and the attachment accessor are
   written once, in `python/runtime/` and `typescript/runtime/`, and copied into every
-  generated package as `_codegen`. A container field is a live view over the value, and
-  accepts the host's own list, set or dict when written.
+  generated package as `_codegen`. A container field is a live view over the value.
 - **Attachments are grouped by concept in every target**:
   `<package>.<unit>.attachments.<Concept>.<attachment>.<operation>` in Python, the same path
-  as nested scopes in C++ and TypeScript. `get` returns the document or `None`
-  (`undefined`), with no optional to unwrap; the field-level operations are typed methods.
+  as nested scopes in C++ and TypeScript; the field-level operations are typed methods.
 - **Python follows its own idiom**: fields and operations in snake_case, enumerations as
   `enum.Enum`, the wrapped value as `vpr_value`.
 - **A read leaves the Viper world only at the primitive leaves.** bool, integers, floats,
@@ -103,8 +101,10 @@ migrating.
   TypeScript), the equality, hash and display its language expects, and `copy()`. A runtime
   feature is called through the bridge: `Value.encode(p.vpr_value)`,
   `Cls(Value.decode(blob, Cls.type(), definitions()))`, and the same for JSON, XML or a
-  hexdigest. The per-proxy `encode`, `decode` and `hexdigest` are gone; `AnyConceptKey` gains
-  `type()` so a key crosses back too.
+  hexdigest, or an order (`a.vprValue.compare(b.vprValue)`). The per-proxy `encode`,
+  `decode`, `hexdigest` and the TypeScript keys' `compareTo` are gone; `AnyConceptKey` gains
+  `type()` so a key crosses back too, and a TypeScript key is also made from its instance id
+  as a string, as the runtime allows.
 - **Containers declare what each kind does, in both languages.** Python: a vector is a `Vector`
   (`append`, `insert`, `extend`, `pop`, `remove`, `count`, `index`, `exchange`, `front`,
   `back`, `[i] =`, `del`, `+`, `+=`), a set a `SetView` (`add`, `remove`, `discard`, `pop`,
@@ -115,12 +115,14 @@ migrating.
   `__getattr__`, so mypy refuses a method the kind does not have. TypeScript: A vector is a `Vector` (`append`,
   `insert`, `set`, `extend`, `concat`, `pop`, `remove`, `clear`, `count`, `index`,
   `exchange`, `front`, `back`), a set a `SetView` (`add`, `remove`, `discard`, `pop`,
-  `min`, `max`, `union`, `intersection`, `difference`, `symmetricDifference` and their
+  `popMax`, `extend`, `min`, `max`, `union`, `intersection`, `difference`, `symmetricDifference` and their
   `…Update` forms, `issubset`, `issuperset`, `isdisjoint`), a vec or a tuple a `Fixed`
   (`set`), a mat a `Matrix` (`at`/`set` by column and row, `column`, `setColumn`); a map adds
-  `discard`, `pop`, `popitem`, `setdefault`, `update`, `items`, `min`, `max`, and an xarray
-  `contains`, `index`, `positionOf`, `extend`, `insertPosition`, `disablePosition`, with
-  `END` and `createPosition()` on its declared class. Each is typed by the element, so `tsc`
+  `discard`, `pop`, `popitem`, `setdefault`, `update`, `min`, `max`, and an xarray
+  `has`, `index`, `positionOf`, `extend`, `insertPosition`, `disablePosition`, `entries`,
+  with `END` and `createPosition()` on its declared class. One name per operation: `has`
+  (not `contains`), `entries` (not `items`), `at` and `index` on an xarray (not `get` and
+  `indexOf`). Each is typed by the element, so `tsc`
   refuses a method the kind does not have, a misspelt one and a wrong element. The views no
   longer forward an undeclared name to the runtime value, and `call()` is gone. An xarray
   field does not announce a native array: the Node binding the templates require decodes a

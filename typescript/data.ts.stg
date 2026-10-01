@@ -60,7 +60,7 @@ export class <c.name>Key extends Key {
         return (<c.name;format="lsc">Type ??= new dsviper.TypeKey(<c.name>Key.concept()));
     }
 
-    constructor(identifier?: dsviper.ValueKey | dsviper.ValueUUId | null) {
+    constructor(identifier?: dsviper.ValueKey | dsviper.ValueUUId | string | null) {
         if (identifier === null) {
             throw new TypeError("null is not an instance identifier");
         }
@@ -93,10 +93,6 @@ export class <c.name>Key extends Key {
 
     isValid(): boolean {
         return this.vprValue.instanceId().isValid();
-    }
-
-    compareTo(other: <c.name>Key | dsviper.ValueKey): number {
-        return this.vprValue.compare(other instanceof Proxy ? other.vprValue : other);
     }
 
     description(): string {

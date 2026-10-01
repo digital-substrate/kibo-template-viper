@@ -79,10 +79,6 @@ export class Sequence<E> extends View {
         return this.suite.contains(unwrap(element));
     }
 
-    contains(element: E): boolean {
-        return this.has(element);
-    }
-
     *[Symbol.iterator](): Iterator<E> {
         for (const element of this.suite) {
             yield wrap(element);
@@ -178,6 +174,14 @@ export class SetView<E> extends Sequence<E> {
 
     pop(): E {
         return wrap(this.set.pop(false));
+    }
+
+    popMax(): E {
+        return wrap(this.set.popMax(false));
+    }
+
+    extend(elements: Iterable<E>): void {
+        this.set.extend([...elements].map(unwrap));
     }
 
     clear(): void {
@@ -337,9 +341,6 @@ export class Mapping<K, V> extends View {
         return [...this.pairs()];
     }
 
-    items(): [K, V][] {
-        return this.entries();
-    }
 
     *[Symbol.iterator](): Iterator<K> {
         for (const pair of this.map as unknown as Iterable<dsviper.OutputValue>) {
@@ -348,15 +349,11 @@ export class Mapping<K, V> extends View {
         }
     }
 
-    *pairs(): Generator<[K, V]> {
+    private *pairs(): Generator<[K, V]> {
         for (const pair of this.map as unknown as Iterable<dsviper.OutputValue>) {
             const [key, element] = pair as unknown as [dsviper.OutputValue, dsviper.OutputValue];
             yield [wrap(key), wrap(element)];
         }
-    }
-
-    contains(key: K): boolean {
-        return this.has(key);
     }
 
     discard(key: K): void {
@@ -424,10 +421,6 @@ export class Ordered<E> extends View {
         return i < 0 ? undefined : this.ordered.position(i);
     }
 
-    indexOf(position: dsviper.ValueUUId): number | undefined {
-        return this.ordered.index(position);
-    }
-
     hasPosition(position: dsviper.ValueUUId): boolean {
         return this.ordered.hasPosition(position);
     }
@@ -439,10 +432,6 @@ export class Ordered<E> extends View {
         }
         const element = this.ordered.at(position);
         return element === undefined ? undefined : wrap(element);
-    }
-
-    get(where: dsviper.ValueUUId | number): E | undefined {
-        return this.at(where);
     }
 
     set(where: dsviper.ValueUUId | number, element: E): void {
@@ -476,7 +465,7 @@ export class Ordered<E> extends View {
             : new (known as new (v: unknown) => Vector<E>)(flat);
     }
 
-    contains(element: E): boolean {
+    has(element: E): boolean {
         return this.ordered.contains(unwrap(element));
     }
 
@@ -500,7 +489,7 @@ export class Ordered<E> extends View {
         this.ordered.disablePosition(position);
     }
 
-    items(): [dsviper.ValueUUId, E][] {
+    entries(): [dsviper.ValueUUId, E][] {
         return this.elementPositions().map((position) => [position, this.at(position) as E]);
     }
 
