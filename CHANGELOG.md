@@ -100,6 +100,10 @@ migrating.
   (`features.demo.StructureU`), each unit its attachments (`demo.attachments.ConceptA`), and
   `AnyConceptKey` and `AnyValue`; every top-level directory is a subpath export
   (`features/demo`, `features/tools`). Python: a unit imports its `attachments` module.
+- **The generated Python is fully annotated**, its runtime included: it passes mypy with
+  `--disallow-untyped-defs`, and an attachment's `get`, `has` and `keys` take a `Database` as
+  well as an `AttachmentGetting`. A TypeScript proxy or view is not extensible, so assigning a
+  misspelt field throws at the line, in plain JavaScript too.
 - **A key gives back its instance's own key**: `to_concept_key()` (`toConceptKey()`), the
   runtime's name, returns the generated class of the instance's concept from any view.
 - **A document is written as a field is**: `set` and `diff` take the document's input — its

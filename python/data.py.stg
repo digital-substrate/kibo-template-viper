@@ -135,7 +135,7 @@ class <c.name>Key(Key):
 
     @classmethod
     @functools.cache
-    def concept(cls):
+    def concept(cls) -> dsviper.TypeConcept:
         return definitions().check_<kind>(<c.name;format="usc">)
 
     @classmethod
@@ -213,7 +213,7 @@ class <e.name>(enum.Enum):
         return cls(name)
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: object) -> typing.Any:
         if isinstance(value, int) and not isinstance(value, bool):
             cases = list(cls)
             if value in range(len(cases)):
@@ -227,7 +227,7 @@ class <e.name>(enum.Enum):
         return list(type(self)).index(self)
 
     @classmethod
-    def _wrap(cls, value) -> <e.name>:
+    def _wrap(cls, value: typing.Any) -> <e.name>:
         return cls(dsviper.ValueEnumeration.cast(value).name())
 
     def _unwrap(self) -> str:

@@ -11,14 +11,14 @@ import dsviper
 class Proxy:
     __slots__ = ("_value",)
 
-    def __init__(self, value):
+    def __init__(self, value: typing.Any) -> None:
         self._value = value
 
     @property
-    def vpr_value(self):
+    def vpr_value(self) -> typing.Any:
         return self._value
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, Proxy):
             return NotImplemented
         return bool(self._value == other._value)
@@ -26,26 +26,26 @@ class Proxy:
     def __hash__(self) -> int:
         return self._value.hash()
 
-    def copy(self):
+    def copy(self) -> typing.Self:
         return type(self)(self._value.copy())
 
-    def __lt__(self, other) -> bool:
+    def __lt__(self, other: Proxy) -> bool:
         return self._value < unwrap(other)
 
-    def __le__(self, other) -> bool:
+    def __le__(self, other: Proxy) -> bool:
         return self._value <= unwrap(other)
 
-    def __gt__(self, other) -> bool:
+    def __gt__(self, other: Proxy) -> bool:
         return self._value > unwrap(other)
 
-    def __ge__(self, other) -> bool:
+    def __ge__(self, other: Proxy) -> bool:
         return self._value >= unwrap(other)
 
     @classmethod
-    def _wrap(cls, value) -> typing.Self:
+    def _wrap(cls, value: typing.Any) -> typing.Self:
         return cls(value)
 
-    def _unwrap(self):
+    def _unwrap(self) -> typing.Any:
         return self._value
 
 
@@ -65,7 +65,7 @@ def register(classes: dict) -> None:
         _CLASSES[runtime_id.encoded()] = cls
 
 
-def wrap(value) -> typing.Any:
+def wrap(value: typing.Any) -> typing.Any:
     code = getattr(value, "type_code", None)
     if code is None:
         return value
@@ -109,7 +109,7 @@ def wrap(value) -> typing.Any:
     return value
 
 
-def _named(type_):
+def _named(type_: typing.Any) -> typing.Any:
     cls = _CLASSES.get(type_.runtime_id().encoded())
     if cls is None:
         raise TypeError(
@@ -118,11 +118,11 @@ def _named(type_):
     return cls
 
 
-def is_known(value) -> bool:
+def is_known(value: typing.Any) -> bool:
     return value.type_concept().runtime_id().encoded() in _CLASSES
 
 
-def unwrap(value) -> typing.Any:
+def unwrap(value: typing.Any) -> typing.Any:
     if hasattr(value, "_unwrap"):
         return value._unwrap()
     if _holds_generated(value):
@@ -131,7 +131,7 @@ def unwrap(value) -> typing.Any:
     return value
 
 
-def _holds_generated(value) -> bool:
+def _holds_generated(value: object) -> bool:
     if isinstance(value, dict):
         return any(_holds_generated(k) or _holds_generated(v) for k, v in value.items())
     if isinstance(value, (list, tuple, set, frozenset)):

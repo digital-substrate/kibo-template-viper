@@ -76,12 +76,12 @@ named(u, m) ::= <<
 <u.structures:{s|def type_<u.name>_<s.name>() -> dsviper.Type: return definitions().check_structure(<u.name;format="lsc">.data.<s.name;format="usc">)};separator="\n">
 >>
 
-vec(v) ::= <%@functools.cache<\n>def type<v.typeSuffix>(): return dsviper.<v.viperType>(type<v.elementTypeSuffix>(), <v.size>)%>
-mat(v) ::= <%@functools.cache<\n>def type<v.typeSuffix>(): return dsviper.<v.viperType>(type<v.elementTypeSuffix>(), <v.columns>, <v.rows>)%>
-element(v) ::= <%@functools.cache<\n>def type<v.typeSuffix>(): return dsviper.<v.viperType>(type<v.elementTypeSuffix>())%>
-map(v) ::= <%@functools.cache<\n>def type<v.typeSuffix>(): return dsviper.<v.viperType>(type<v.keyTypeSuffix>(), type<v.elementTypeSuffix>())%>
-tuple(v) ::= <%@functools.cache<\n>def type<v.typeSuffix>(): return dsviper.<v.viperType>([<v.members:member();separator=", ">])%>
-variant(v) ::= <%@functools.cache<\n>def type<v.typeSuffix>(): return dsviper.<v.viperType>([<v.members:member();separator=", ">])%>
+vec(v) ::= <%@functools.cache<\n>def type<v.typeSuffix>() -> dsviper.Type: return dsviper.<v.viperType>(type<v.elementTypeSuffix>(), <v.size>)%>
+mat(v) ::= <%@functools.cache<\n>def type<v.typeSuffix>() -> dsviper.Type: return dsviper.<v.viperType>(type<v.elementTypeSuffix>(), <v.columns>, <v.rows>)%>
+element(v) ::= <%@functools.cache<\n>def type<v.typeSuffix>() -> dsviper.Type: return dsviper.<v.viperType>(type<v.elementTypeSuffix>())%>
+map(v) ::= <%@functools.cache<\n>def type<v.typeSuffix>() -> dsviper.Type: return dsviper.<v.viperType>(type<v.keyTypeSuffix>(), type<v.elementTypeSuffix>())%>
+tuple(v) ::= <%@functools.cache<\n>def type<v.typeSuffix>() -> dsviper.Type: return dsviper.<v.viperType>([<v.members:member();separator=", ">])%>
+variant(v) ::= <%@functools.cache<\n>def type<v.typeSuffix>() -> dsviper.Type: return dsviper.<v.viperType>([<v.members:member();separator=", ">])%>
 member(t) ::= <%type<t.typeSuffix>()%>
 
 vector_class(v) ::= <<
@@ -136,7 +136,7 @@ declared(v, base) ::= <<
 class <v.bindingType.proxy>(Declared, <base>):
     __slots__ = ()
 
-    def __init__(self, value: <v.bindingType.proxy><if(v.bindingType.constructorInput)> | <v.bindingType.constructorInput><endif> | None = None) -> None:
+    def __init__(self, value: <v.bindingType.proxy><if(v.bindingType.constructorInput)> | <v.bindingType.constructorInput><else> | None<endif> = None) -> None:
         super().__init__(value)
 
     @classmethod

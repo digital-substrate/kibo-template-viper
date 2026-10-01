@@ -10,6 +10,7 @@ export abstract class Proxy<V extends dsviper.Value> {
 
     protected constructor(value: V) {
         this.vprValue = value;
+        Object.preventExtensions(this);
     }
 
     equals(other: unknown): boolean {

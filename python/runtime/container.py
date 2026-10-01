@@ -18,23 +18,23 @@ class View:
 
     _value: typing.Any
 
-    def __init__(self, value):
+    def __init__(self, value: typing.Any) -> None:
         self._value = value
 
     @property
-    def vpr_value(self):
+    def vpr_value(self) -> typing.Any:
         return self._value
 
-    def _unwrap(self):
+    def _unwrap(self) -> typing.Any:
         return self._value
 
-    def type(self):
+    def type(self) -> dsviper.Type:
         return self._value.type()
 
-    def copy(self):
+    def copy(self) -> typing.Self:
         return type(self)(self._value.copy())
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: object) -> bool:
         other_value = other.vpr_value if isinstance(other, View) else other
         if not isinstance(other_value, dsviper.Value) and not isinstance(
                 other_value, (list, tuple, set, dict)):
@@ -257,7 +257,7 @@ class Matrix(View, typing.Generic[E]):
     @typing.overload
     def __getitem__(self, position: tuple[int, int]) -> E: ...
 
-    def __getitem__(self, position):
+    def __getitem__(self, position: int | tuple[int, int]) -> typing.Any:
         if isinstance(position, tuple):
             return wrap(self._value.at(*position))
         return self.column(position)
@@ -268,7 +268,7 @@ class Matrix(View, typing.Generic[E]):
     @typing.overload
     def __setitem__(self, position: tuple[int, int], element: E) -> None: ...
 
-    def __setitem__(self, position, element) -> None:
+    def __setitem__(self, position: int | tuple[int, int], element: typing.Any) -> None:
         if isinstance(position, tuple):
             self._value.set(position[0], position[1], unwrap(element))
             return
@@ -324,14 +324,14 @@ class Mapping(View, typing.Generic[K, E]):
     def set(self, key: K, element: E) -> None:
         self._value.set(unwrap(key), unwrap(element))
 
-    def get(self, key: K, default=None):
+    def get(self, key: K, default: E | None = None) -> E | None:
         return wrap(self._value.get(unwrap(key), unwrap(default))) if default is not None \
             else (wrap(self._value.at(unwrap(key))) if unwrap(key) in self._value else None)
 
     def setdefault(self, key: K, element: E) -> E:
         return wrap(self._value.setdefault(unwrap(key), unwrap(element)))
 
-    def pop(self, key: K, *args) -> E:
+    def pop(self, key: K, *args: typing.Any) -> E:
         return wrap(self._value.pop(unwrap(key), *[unwrap(a) for a in args]))
 
     def remove(self, key: K) -> None:
@@ -390,13 +390,13 @@ class Ordered(View, typing.Generic[E]):
     def __iter__(self) -> typing.Iterator[E]:
         return (wrap(element) for element in self._value)
 
-    def __getitem__(self, key) -> E:
+    def __getitem__(self, key: int | dsviper.ValueUUId) -> E:
         return wrap(self._value[key])
 
-    def __setitem__(self, key, element: E) -> None:
+    def __setitem__(self, key: int | dsviper.ValueUUId, element: E) -> None:
         self._value[key] = unwrap(element)
 
-    def __delitem__(self, key) -> None:
+    def __delitem__(self, key: int | dsviper.ValueUUId) -> None:
         del self._value[key]
 
     def __contains__(self, element: object) -> bool:
@@ -409,13 +409,13 @@ class Ordered(View, typing.Generic[E]):
     def positions(self) -> list[dsviper.ValueUUId]:
         return self._value.positions()
 
-    def position(self, index: int):
+    def position(self, index: int) -> dsviper.ValueUUId | None:
         return self._value.position(index)
 
-    def index(self, position: dsviper.ValueUUId):
+    def index(self, position: dsviper.ValueUUId) -> int | None:
         return self._value.index(position)
 
-    def position_of(self, element):
+    def position_of(self, element: E) -> dsviper.ValueUUId | None:
         for position in self.positions():
             if self.at(position) == element:
                 return position
@@ -424,18 +424,19 @@ class Ordered(View, typing.Generic[E]):
     def has_position(self, position: dsviper.ValueUUId) -> bool:
         return self._value.has_position(position)
 
-    def at(self, position: dsviper.ValueUUId):
+    def at(self, position: dsviper.ValueUUId) -> E | None:
         element = self._value.at(position)
         return None if element is None else wrap(element)
 
     def set(self, position: dsviper.ValueUUId, element: E) -> None:
         self._value.set(position, unwrap(element))
 
-    def insert(self, before_position, element: E, new_position=None):
+    def insert(self, before_position: dsviper.ValueUUId, element: E,
+               new_position: dsviper.ValueUUId | None = None) -> dsviper.ValueUUId:
         return self._value.insert(before_position, unwrap(element), new_position) \
             if new_position is not None else self._value.insert(before_position, unwrap(element))
 
-    def insert_position(self, before_position, new_position) -> None:
+    def insert_position(self, before_position: dsviper.ValueUUId, new_position: dsviper.ValueUUId) -> None:
         self._value.insert_position(before_position, new_position)
 
     def append(self, element: E) -> dsviper.ValueUUId:
@@ -495,7 +496,7 @@ class Variant(View, typing.Generic[E]):
     def unwrap(self) -> E:
         return wrap(self._value.unwrap())
 
-    def wrap(self, element, type=None) -> None:
+    def wrap(self, element: E, type: dsviper.Type | None = None) -> None:
         self._value.wrap(unwrap(element), type) if type is not None \
             else self._value.wrap(unwrap(element))
 
@@ -509,7 +510,7 @@ class Variant(View, typing.Generic[E]):
                              f"not a {alternative.representation()}")
         return wrap(self._value.unwrap())
 
-    def _set(self, alternative: dsviper.Type, element) -> None:
+    def _set(self, alternative: dsviper.Type, element: typing.Any) -> None:
         self._value.wrap(unwrap(element), alternative)
 
 
@@ -565,7 +566,7 @@ def _holds(container: typing.Any, element: object) -> bool:
         return False
 
 
-def _unwrap_deep(value):
+def _unwrap_deep(value: typing.Any) -> typing.Any:
     if hasattr(value, "_unwrap"):
         return value._unwrap()
     if isinstance(value, dict):

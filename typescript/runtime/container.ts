@@ -28,6 +28,7 @@ export class View {
 
     constructor(value: dsviper.Value) {
         this.vprValue = value;
+        Object.preventExtensions(this);
     }
 
     type(): dsviper.Type {
