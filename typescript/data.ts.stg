@@ -261,6 +261,8 @@ export interface <s.name>Init {
 const <s.name;format="lsc">Fields: readonly string[] = [<s.fields:{f|"<f.name;format="lf">"};separator=", ">];
 
 export class <s.name> extends Proxy\<dsviper.ValueStructure> {
+    declare private readonly <s.name;format="lsc">Brand: never;
+
     static type(): dsviper.TypeStructure {
         return (<s.name;format="lsc">Type ??= definitions().checkStructure(<s.name;format="usc">));
     }

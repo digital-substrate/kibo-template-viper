@@ -23,14 +23,14 @@ import type { AnyConceptKey, AnyValue } from "./_codegen/registry.js";
 <m.xarrayFunctions:element();separator="\n">
 <m.variantFunctions:variant();separator="\n">
 
-<m.vecFunctions:{v|<bound(v, {fixedOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
-<m.matFunctions:{v|<bound(v, {matrixOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
-<m.tupleFunctions:{v|<bound(v, {fixedOf\<<v.members:{t|<t.bindingType.qualified>};separator=" | ">, <v.bindingType.constructorInput>\>})>};separator="\n">
-<m.optionalFunctions:{v|<bound(v, {optionalOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
-<m.vectorFunctions:{v|<bound(v, {vectorOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
-<m.setFunctions:{v|<bound(v, {setOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
-<m.mapFunctions:{v|<bound(v, {mappingOf\<<v.bindingKeyType.qualified>, <v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
-<m.xarrayFunctions:{v|<bound(v, {orderedOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
+<m.vecFunctions:{v|<bound(v, {fixedOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>, "<v.bindingType.proxy>"\>})>};separator="\n">
+<m.matFunctions:{v|<bound(v, {matrixOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>, "<v.bindingType.proxy>"\>})>};separator="\n">
+<m.tupleFunctions:{v|<bound(v, {fixedOf\<<v.members:{t|<t.bindingType.qualified>};separator=" | ">, <v.bindingType.constructorInput>, "<v.bindingType.proxy>"\>})>};separator="\n">
+<m.optionalFunctions:{v|<bound(v, {optionalOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>, "<v.bindingType.proxy>"\>})>};separator="\n">
+<m.vectorFunctions:{v|<bound(v, {vectorOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>, "<v.bindingType.proxy>"\>})>};separator="\n">
+<m.setFunctions:{v|<bound(v, {setOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>, "<v.bindingType.proxy>"\>})>};separator="\n">
+<m.mapFunctions:{v|<bound(v, {mappingOf\<<v.bindingKeyType.qualified>, <v.bindingElementType.qualified>, <v.bindingType.constructorInput>, "<v.bindingType.proxy>"\>})>};separator="\n">
+<m.xarrayFunctions:{v|<bound(v, {orderedOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>, "<v.bindingType.proxy>"\>})>};separator="\n">
 <m.variantFunctions:variant_class();separator="\n\n">
 
 >>
@@ -77,7 +77,7 @@ export type <v.bindingType.proxy> = InstanceType\<typeof <v.bindingType.proxy>\>
 >>
 
 variant_class(v) ::= <<
-const <v.bindingType.proxy>_base = variantOf\<<v.members:{t|<t.bindingType.qualified>};separator=" | ">, <v.bindingType.constructorInput>\>(type<v.typeSuffix>);
+const <v.bindingType.proxy>_base = variantOf\<<v.members:{t|<t.bindingType.qualified>};separator=" | ">, <v.bindingType.constructorInput>, "<v.bindingType.proxy>"\>(type<v.typeSuffix>);
 
 export class <v.bindingType.proxy> extends <v.bindingType.proxy>_base {
     <v.members:alternative();separator="\n\n">
