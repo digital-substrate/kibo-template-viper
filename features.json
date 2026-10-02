@@ -40,17 +40,6 @@
         "Fields"
       ]
     },
-    "AttachmentPool": {
-      "doc": "The model's attachments exposed to the dynamic world.",
-      "templates": [
-        "attachment_pool.cpp.stg",
-        "attachment_pool.hpp.stg"
-      ],
-      "requires": [
-        "Base",
-        "Attachments"
-      ]
-    },
     "Pool": {
       "doc": "A function pool, server side: the functions the application implements, and the pool that registers them.",
       "templates": [
@@ -70,18 +59,6 @@
       "requires": [
         "Base"
       ]
-    },
-    "PythonDefinitions": {
-      "doc": "The model's types, attachments and field paths as constants of a Python module embedded in a C++ application, for scripts using the dynamic API. What Fields is to C++ code, for that Python.",
-      "templates": [
-        "python_definitions.cpp.stg",
-        "python_definitions.hpp.stg"
-      ],
-      "requires": [
-        "Base",
-        "Attachments"
-      ],
-      "note": "Compiles against Python.h and viper's P_Viper wrappers, which the laboratory does not build: GraphEditor is where it is exercised."
     }
   },
   "python": {

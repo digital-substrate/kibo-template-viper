@@ -156,9 +156,7 @@ TypeScript files go to `<unit>/<template>` or the package root.
 | cpp | `Base` | `data`, `codec`, `model` per unit; the model's `codec` and `any_concept` |
 | cpp | `Fields` | per unit, each field's name and path as constants |
 | cpp | `Attachments` | per unit, the attachments, in memory or in a database |
-| cpp | `AttachmentPool` | the model's attachments exposed to the dynamic world |
 | cpp | `Pool` / `PoolRemote` | a function pool, server side / client side |
-| cpp | `PythonDefinitions` | the model's types, attachments and paths for an embedded Python |
 | python | `Base` | `__init__.py` (root: `definitions()`; unit: re-exports `data`), `<unit>/data.py`, `<unit>/attachments.py`, `containers.py` |
 | python | `Pool` | `<pool>/__init__.py`, `<pool>/pool.py` (`Pool` and `Remote`) |
 | python | `Wheel` | `pyproject.toml` (project root), `py.typed` (package) |

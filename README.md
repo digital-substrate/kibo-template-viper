@@ -35,7 +35,7 @@ directory, so two namespaces of one model may declare the same name.
 
 | target | features |
 |---|---|
-| `cpp` | `Base` (data, codec, model, any concept), `Fields`, `Attachments`, `AttachmentPool`, `Pool`, `PoolRemote`, `PythonDefinitions` |
+| `cpp` | `Base` (data, codec, model, any concept), `Fields`, `Attachments`, `Pool`, `PoolRemote` |
 | `python` | `Base`, `Pool`, `Wheel` |
 | `typescript` | `Base`, `Pool`, `Package` |
 

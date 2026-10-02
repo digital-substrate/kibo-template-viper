@@ -66,9 +66,8 @@ migrating.
   (`Graph_VertexKey` becomes `graph.VertexKey`).
 - **Templates are flat, and a project selects features.** `features.json` maps each feature
   to its templates and to the features it requires; `resolve.py` walks the closure. C++:
-  `Base`, `Fields`, `Attachments`, `AttachmentPool`, `Pool`, `PoolRemote`,
-  `PythonDefinitions`. Python: `Base`, `Pool`, `Wheel`. TypeScript: `Base`, `Pool`,
-  `Package`.
+  `Base`, `Fields`, `Attachments`, `Pool`, `PoolRemote`. Python: `Base`, `Pool`,
+  `Wheel`. TypeScript: `Base`, `Pool`, `Package`.
 - **`-n` names the generated infrastructure** — the C++ namespace, the Python and TypeScript
   package — and the application keeps its own namespace.
 - **Python and TypeScript carry a runtime instead of a class per container shape.** The
@@ -202,6 +201,19 @@ migrating.
   are not exposed — the typed field operations cover them.
 - **`Test` and `TestApp`**: they test the generator, not an application, and stay with the
   laboratory, `devkit-codegen-test`.
+- **The generated attachment pool** (1.2: `AttachmentFunctionPool_Attachments`): every
+  attachment's elementary operations as one function pool for the dynamic world, under
+  composed names (`graph_graph_selection_union_vertex_keys`). Code written ahead uses the
+  generated attachments — `Graph::selection::unionVertexKeys` in C++,
+  `attachments.Graph.selection.union_vertex_keys` in Python; a session without generation uses
+  the runtime directly: the constants `Definitions.inject()` gives
+  (`GRAPH_A_GRAPH_SELECTION`, `GRAPH_P_GRAPH_SELECTION_VERTEX_KEYS`) with `AttachmentMutating`
+  (`union_in_set`, `update`, …).
+- **The generated Python definitions** (1.2: the `Python` directory): the model's types,
+  attachments and field paths as constants of a Python module embedded in a C++ application.
+  `Definitions.inject()` computes the same constants from the definitions at run time —
+  `P_Viper_DefinitionsConst_New(codec::definitions())` then its `inject` method fills an
+  embedded module.
 
 ### Added
 
@@ -209,7 +221,6 @@ migrating.
   structures through the dynamic API.
 - **`Package`** (TypeScript): `package.json` and `tsconfig.json` at the package root, the
   counterpart of Python's `Wheel`.
-- **`PythonDefinitions`** (C++): the constants an embedded Python interpreter needs.
 
 ## [1.2.4] - 2026-09-10
 
