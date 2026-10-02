@@ -42,6 +42,16 @@ version as either one.
   client call each other. The attachment pool generated for each attachment
   keeps its composed names.
 
+### Fixed
+
+- **A pool's or a function's documentation broke the generated C++ when it held
+  a quote or spanned lines.** `FunctionPools` and `AttachmentFunctionPools`
+  wrote it raw into a string literal; a quote ended the literal early and a
+  newline split it, so the file no longer compiled. It is now escaped with
+  kibo's `string` format, and reaches the runtime as the model wrote it. This
+  needs a kibo that has the format (LTS-1.2 after 1.2.12); an earlier kibo
+  renders the documentation raw, as before.
+
 ## [1.2.4] - 2026-09-10
 
 Two C++ template defects, both surfaced by the render diagnostics kibo now prints.

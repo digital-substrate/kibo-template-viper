@@ -80,7 +80,7 @@ static std::shared_ptr\<F_<f:name()>\> make() {
 
     return std::make_shared\<F_<f:name()>\>(
         Viper::FunctionPrototype::make("<f.name>", std::move(parameters), std::move(returnType)),
-        "<f.documentation>");
+        "<f.documentation;format="string">");
 }
 >>
 
@@ -91,7 +91,7 @@ std::shared_ptr\<Viper::<po.type>\> <po.name;format="lf">() {
 
     auto const uuid{Viper::UUId::parse("<po.uuid>")};
     auto const name{"<po.name>"};
-    auto const documentation{"<po.documentation>"};
+    auto const documentation{"<po.documentation;format="string">"};
 
     auto result{Viper::<po.type>::make(uuid, name, documentation)};
 
