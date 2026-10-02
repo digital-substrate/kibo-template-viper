@@ -10,6 +10,7 @@ namespace <p.model.namespace>::<p.name;format="lsc"> {
 } // namespace <p.model.namespace>::<p.name;format="lsc">
 
 #endif
+
 >>
 
 attachment_pool(p) ::= <<
@@ -22,6 +23,7 @@ namespace <p.model.namespace>::<p.name;format="lsc"> {
 } // namespace <p.model.namespace>::<p.name;format="lsc">
 
 #endif
+
 >>
 
 preamble(p, context) ::= <<

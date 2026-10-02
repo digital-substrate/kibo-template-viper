@@ -21,6 +21,7 @@ namespace <u.model.namespace>::<u.name;format="lsc"> {
 <u.structures:structure(u);separator="\n\n">
 
 } // namespace <u.model.namespace>::<u.name;format="lsc">
+
 >>
 
 concept(c, u) ::= <<

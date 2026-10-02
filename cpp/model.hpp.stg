@@ -41,6 +41,7 @@ namespace runtime_ids {
 } // namespace <u.model.namespace>::<u.name;format="lsc">
 
 #endif
+
 >>
 
 runtime_id(e) ::= <<extern Viper::UUId const <e.name>;>>

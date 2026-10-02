@@ -8,6 +8,7 @@ unit(u) ::= <<
 #include "<u.include.fields>"
 
 <u.structures:structure(u);separator="\n\n">
+
 >>
 
 structure(s, u) ::= <<

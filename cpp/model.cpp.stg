@@ -33,6 +33,7 @@ namespace runtime_ids {
 <u.structures:structure_type(u);separator="\n\n">
 
 } // namespace <u.model.namespace>::<u.name;format="lsc">
+
 >>
 
 runtime_id(e) ::= <%Viper::UUId const <e.name>{Viper::UUId::parse("<e.runtimeId>")};%>

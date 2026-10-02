@@ -33,6 +33,7 @@ namespace <u.model.namespace>::<u.name;format="lsc"> {
 } // namespace <u.model.namespace>::<u.name;format="lsc">
 
 #endif
+
 >>
 
 keyed(e) ::= <<

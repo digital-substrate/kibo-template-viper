@@ -21,6 +21,7 @@ unit(u) ::= <<
 #include \<map>
 #include \<set>
 #include \<string>
+#include \<tuple>
 #include \<variant>
 #include \<vector>
 #include \<functional>
@@ -43,6 +44,7 @@ namespace <u.model.namespace>::<u.name;format="lsc"> {
 <u.sortedStructures:std_hash_value(u);separator="\n">
 
 #endif
+
 >>
 
 concept(c) ::= <<
