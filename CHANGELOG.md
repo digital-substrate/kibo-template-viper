@@ -42,6 +42,16 @@ version as either one.
   client call each other. The attachment pool generated for each attachment
   keeps its composed names.
 
+- **A remote attachment function that only reads takes an `AttachmentGetting`**,
+  as the local one does, in C++, Python and TypeScript: a client holding a
+  database or a commit state calls it without building a mutable state. A
+  function that mutates still takes an `AttachmentMutating`. Every existing
+  caller compiles unchanged. The generated C++ needs a runtime whose
+  `ServiceRemote::call` takes an `AttachmentGetting`, and the generated
+  TypeScript pins `@digitalsubstrate/dsviper` `>=1.2.14 <1.3.0` for the same
+  reason; the generated Python runs on any `1.2.x`, where an earlier wheel still
+  asks for an `AttachmentMutating`.
+
 ### Fixed
 
 - **A pool's or a function's documentation broke the generated C++ when it held

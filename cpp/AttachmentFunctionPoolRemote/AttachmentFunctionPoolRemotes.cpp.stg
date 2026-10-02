@@ -10,6 +10,7 @@ main(m) ::= <<
 #include "<m.namespace>_ValueDecoder.hpp"
 #include "<m.namespace>_ValueEncoder.hpp"
 
+#include "Viper_AttachmentMutating.hpp"
 #include "Viper_ServiceRemote.hpp"
 
 namespace <m.namespace>::AttachmentFunctionPoolRemotes {
@@ -27,16 +28,16 @@ function_return(f) ::= <%<if(f.isVoid)>void<else><f.type><endif>%>
 
 fp_parameter_push_back(p) ::= <%parameters.push_back(ValueEncoder::encode<p.typeSuffix>(<p.name>));%>
 fp_function(f, po) ::= <<
-<f:function_return()> <po.name;format="uf">::<f.name;format="lsc">(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating<f:function_parameters()>) const {
+<f:function_return()> <po.name;format="uf">::<f.name;format="lsc">(std::shared_ptr\<Viper::Attachment<f.interfaceType>\> const & attachment<f.interfaceType><f:function_parameters()>) const {
     static std::string funcName("<f.name>");
 
     std::vector\<std::shared_ptr\<Viper::Value\>> parameters;
     <f.parameters:fp_parameter_push_back();separator="\n">
 
     <if(f.isVoid)>
-    serviceRemote->call(attachmentMutating, poolId, funcName, parameters);
+    serviceRemote->call(attachment<f.interfaceType>, poolId, funcName, parameters);
     <else>
-    auto const value{serviceRemote->call(attachmentMutating, poolId, funcName, parameters)};
+    auto const value{serviceRemote->call(attachment<f.interfaceType>, poolId, funcName, parameters)};
     auto const result{Viper::<f.returnViperValue>::cast(value)};
     return ValueDecoder::decode<f.typeSuffix>(result);
     <endif>

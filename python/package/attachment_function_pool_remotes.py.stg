@@ -37,16 +37,16 @@ class <po.name;format="uf">:
 >>
 
 fp_function(f, po) ::= <<
-def <f.name;format="lsc">(self, attachment_mutating: dsviper.AttachmentMutating<if(f.parameters)>, <f.parameters:parameter();separator=", "><endif>) -> <f.returnPythonType.type>:
+def <f.name;format="lsc">(self, attachment_<f.interfaceType;format="l">: dsviper.Attachment<f.interfaceType><if(f.parameters)>, <f.parameters:parameter();separator=", "><endif>) -> <f.returnPythonType.type>:
     <if(f.hasDocumentation)>
     """
     <f.documentation;format="docstring">
     """
     <endif>
     <if(f.isVoid)>
-    self.funcs["<f.name>"](attachment_mutating<if(f.parameters)>, <f.parameters:parameter_call();separator=", "><endif>)
+    self.funcs["<f.name>"](attachment_<f.interfaceType;format="l"><if(f.parameters)>, <f.parameters:parameter_call();separator=", "><endif>)
     <else>
-    result = self.funcs["<f.name>"](attachment_mutating<if(f.parameters)>, <f.parameters:parameter_call();separator=", "><endif>)
+    result = self.funcs["<f.name>"](attachment_<f.interfaceType;format="l"><if(f.parameters)>, <f.parameters:parameter_call();separator=", "><endif>)
     return <f.returnPythonType:wrap("result")>
     <endif>
 >>
