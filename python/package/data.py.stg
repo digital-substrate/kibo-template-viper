@@ -150,7 +150,7 @@ docstring(v, d) ::= <<
 [A proxy class for <v:dsm_type(d)>]
 <if(v.hasDocumentation)>
 
-<v.documentation>
+<v.documentation;format="docstring">
 <endif>
 """
 >>
@@ -160,7 +160,7 @@ docstring_key(v, d) ::= <<
 [A proxy class for a key\<<v.dsmType>\>]
 <if(v.hasDocumentation)>
 
-<v.documentation>
+<v.documentation;format="docstring">
 <endif>
 """
 >>
@@ -168,7 +168,7 @@ docstring_key(v, d) ::= <<
 docstring_field(v) ::= <<
 <if(v.hasDocumentation)>
 """
-<v.documentation>
+<v.documentation;format="docstring">
 """
 <endif>
 >>

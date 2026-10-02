@@ -23,7 +23,7 @@ attachment_pool_make(po,m) ::= <<
 class <po.name;format="uf">:
     <if(po.hasDocumentation)>
     """
-    <po.documentation>
+    <po.documentation;format="docstring">
     """
     <endif>
     def __init__(self, pool: dsviper.AttachmentFunctionPool):
@@ -44,7 +44,7 @@ cfp_function(f, po) ::= <<
 def <f.name;format="lsc">(self, attachment_<f.interfaceType;format="l">: dsviper.Attachment<f.interfaceType><if(f.parameters)>, <f.parameters:parameter();separator=", "><endif>) -> <f.returnPythonType.type>:
     <if(f.hasDocumentation)>
     """
-    <f.documentation>
+    <f.documentation;format="docstring">
     """
     <endif>
     <if(f.isVoid)>

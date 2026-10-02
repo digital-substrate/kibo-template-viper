@@ -52,6 +52,12 @@ version as either one.
   needs a kibo that has the format (LTS-1.2 after 1.2.12); an earlier kibo
   renders the documentation raw, as before.
 
+- **A documentation holding a backslash broke the generated Python.** The
+  Python templates wrote it raw into a docstring, where `C:\users` reads as a
+  truncated `\u` escape and the module no longer imports, and `\d` silently
+  changes. It is now written through kibo's `docstring` format, and reads as
+  the model wrote it. Same requirement: a kibo that has the format.
+
 ## [1.2.4] - 2026-09-10
 
 Two C++ template defects, both surfaced by the render diagnostics kibo now prints.

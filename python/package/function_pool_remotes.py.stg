@@ -35,7 +35,7 @@ fp_function(f, po) ::= <<
 def <f.name;format="lsc">(self<if(f.parameters)>, <f.parameters:parameter();separator=", "><endif>) -> <f.returnPythonType.type>:
     <if(f.hasDocumentation)>
     """
-    <f.documentation>
+    <f.documentation;format="docstring">
     """
     <endif>
     <if(f.isVoid)>
