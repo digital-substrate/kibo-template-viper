@@ -23,11 +23,12 @@ function holds(container: dsviper.Value, element: unknown): boolean {
     }
 }
 
-export class View {
-    readonly vprValue: dsviper.Value;
+/** A live view over the runtime container it wraps, which `vprValue` returns. */
+export class View<V extends dsviper.Value = dsviper.Value> {
+    readonly vprValue: V;
 
     constructor(value: dsviper.Value) {
-        this.vprValue = value;
+        this.vprValue = value as V;
         Object.preventExtensions(this);
     }
 
@@ -77,7 +78,7 @@ interface Suite extends Iterable<dsviper.OutputValue> {
     contains(value: dsviper.InputValue): boolean;
 }
 
-export class Sequence<E> extends View {
+export class Sequence<E, V extends dsviper.Value = dsviper.Value> extends View<V> {
     protected get suite(): Suite {
         return this.vprValue as unknown as Suite;
     }
@@ -109,7 +110,7 @@ export class Sequence<E> extends View {
     }
 }
 
-export class Vector<E> extends Sequence<E> {
+export class Vector<E> extends Sequence<E, dsviper.ValueVector> {
     private get vector(): dsviper.ValueVector {
         return this.vprValue as dsviper.ValueVector;
     }
@@ -174,7 +175,7 @@ function setOperand<E>(other: SetOperand<E>): dsviper.InputValue[] | dsviper.Val
     return other instanceof SetView ? other.vprValue as dsviper.ValueSet : [...other].map(unwrap);
 }
 
-export class SetView<E> extends Sequence<E> {
+export class SetView<E> extends Sequence<E, dsviper.ValueSet> {
     private get set(): dsviper.ValueSet {
         return this.vprValue as dsviper.ValueSet;
     }
@@ -260,13 +261,13 @@ export class SetView<E> extends Sequence<E> {
     }
 }
 
-export class Fixed<E> extends Sequence<E> {
+export class Fixed<E> extends Sequence<E, dsviper.ValueVec | dsviper.ValueTuple> {
     set(index: number, element: E): void {
         (this.vprValue as unknown as { set(i: number, v: unknown): void }).set(index, unwrap(element));
     }
 }
 
-export class Matrix<E> extends View {
+export class Matrix<E> extends View<dsviper.ValueMat> {
     private get mat(): dsviper.ValueMat {
         return this.vprValue as dsviper.ValueMat;
     }
@@ -314,7 +315,7 @@ export class Matrix<E> extends View {
     }
 }
 
-export class Mapping<K, V> extends View {
+export class Mapping<K, V> extends View<dsviper.ValueMap> {
     private get map(): dsviper.ValueMap {
         return this.vprValue as dsviper.ValueMap;
     }
@@ -404,7 +405,7 @@ export class Mapping<K, V> extends View {
     }
 }
 
-export class Ordered<E> extends View {
+export class Ordered<E> extends View<dsviper.ValueXArray> {
     private get ordered(): dsviper.ValueXArray {
         return this.vprValue as dsviper.ValueXArray;
     }
@@ -516,7 +517,7 @@ export class Ordered<E> extends View {
     }
 }
 
-export class Optional<E> extends View {
+export class Optional<E> extends View<dsviper.ValueOptional> {
     private get optional(): dsviper.ValueOptional {
         return this.vprValue as dsviper.ValueOptional;
     }
@@ -545,7 +546,7 @@ export class Optional<E> extends View {
     }
 }
 
-export class AnyValue extends View {
+export class AnyValue extends View<dsviper.ValueAny> {
     constructor(value?: unknown) {
         super(value instanceof dsviper.ValueAny ? value : new dsviper.ValueAny(unwrapDeep(value)));
     }
@@ -571,7 +572,7 @@ export class AnyValue extends View {
     }
 }
 
-export class Variant<E> extends View {
+export class Variant<E> extends View<dsviper.ValueVariant> {
     private get variant(): dsviper.ValueVariant {
         return this.vprValue as dsviper.ValueVariant;
     }
@@ -602,8 +603,9 @@ export class Variant<E> extends View {
     }
 }
 
+// A declared container also takes the runtime value of its own kind, which it checks is of its type.
 type Bound<V, I> = {
-    new (value?: V | I | null): V;
+    new (value?: V | I | (V extends View<infer R> ? R : never) | null): V;
     type(): dsviper.Type;
 };
 

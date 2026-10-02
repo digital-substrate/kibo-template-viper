@@ -11,9 +11,11 @@ from .proxy import unwrap, wrap
 
 E = typing.TypeVar("E")
 K = typing.TypeVar("K")
+V = typing.TypeVar("V", bound=dsviper.Value, covariant=True)
 
 
-class View:
+class View(typing.Generic[V]):
+    """A live view over the runtime container it wraps, which `vpr_value` returns."""
     __slots__ = ("_value",)
 
     _value: typing.Any
@@ -22,8 +24,8 @@ class View:
         self._value = value
 
     @property
-    def vpr_value(self) -> typing.Any:
-        return self._value
+    def vpr_value(self) -> V:
+        return typing.cast(V, self._value)
 
     def _unwrap(self) -> typing.Any:
         return self._value
@@ -48,23 +50,23 @@ class View:
         return self._value.hash()
 
     # The runtime orders every value; a view orders as its value does, as a proxy does.
-    def __lt__(self, other: View) -> bool:
+    def __lt__(self, other: View[dsviper.Value]) -> bool:
         return bool(self._value < unwrap(other))
 
-    def __le__(self, other: View) -> bool:
+    def __le__(self, other: View[dsviper.Value]) -> bool:
         return bool(self._value <= unwrap(other))
 
-    def __gt__(self, other: View) -> bool:
+    def __gt__(self, other: View[dsviper.Value]) -> bool:
         return bool(self._value > unwrap(other))
 
-    def __ge__(self, other: View) -> bool:
+    def __ge__(self, other: View[dsviper.Value]) -> bool:
         return bool(self._value >= unwrap(other))
 
     def __repr__(self) -> str:
         return repr(self._value)
 
 
-class Sequence(View, typing.Generic[E]):
+class Sequence(View[V], typing.Generic[V, E]):
     __slots__ = ()
 
     def __len__(self) -> int:
@@ -98,7 +100,7 @@ class Sequence(View, typing.Generic[E]):
         return tuple(self)
 
 
-class Vector(Sequence[E]):
+class Vector(Sequence[dsviper.ValueVector, E]):
     __slots__ = ()
 
     def __setitem__(self, index: int, element: E) -> None:
@@ -152,7 +154,7 @@ class Vector(Sequence[E]):
         return self
 
 
-class SetView(Sequence[E]):
+class SetView(Sequence[dsviper.ValueSet, E]):
     __slots__ = ()
 
     def add(self, element: E) -> None:
@@ -245,7 +247,7 @@ class SetView(Sequence[E]):
         return self
 
 
-class Fixed(Sequence[E]):
+class Fixed(Sequence[V, E]):
     __slots__ = ()
 
     def __setitem__(self, index: int, element: E) -> None:
@@ -255,7 +257,7 @@ class Fixed(Sequence[E]):
         self._value.set(index, unwrap(element))
 
 
-class Matrix(View, typing.Generic[E]):
+class Matrix(View[dsviper.ValueMat], typing.Generic[E]):
     __slots__ = ()
 
     def __len__(self) -> int:
@@ -310,7 +312,7 @@ class Matrix(View, typing.Generic[E]):
         return tuple(self)
 
 
-class Mapping(View, typing.Generic[K, E]):
+class Mapping(View[dsviper.ValueMap], typing.Generic[K, E]):
     __slots__ = ()
 
     def __len__(self) -> int:
@@ -388,7 +390,7 @@ class Mapping(View, typing.Generic[K, E]):
         return [(key, self[key]) for key in self]
 
 
-class Ordered(View, typing.Generic[E]):
+class Ordered(View[dsviper.ValueXArray], typing.Generic[E]):
     __slots__ = ()
 
     END = dsviper.ValueXArray.END
@@ -481,7 +483,7 @@ class Ordered(View, typing.Generic[E]):
         return len(self._value)
 
 
-class Optional(View, typing.Generic[E]):
+class Optional(View[dsviper.ValueOptional], typing.Generic[E]):
     __slots__ = ()
 
     def __bool__(self) -> bool:
@@ -503,7 +505,7 @@ class Optional(View, typing.Generic[E]):
         self._value.clear()
 
 
-class Variant(View, typing.Generic[E]):
+class Variant(View[dsviper.ValueVariant], typing.Generic[E]):
     __slots__ = ()
 
     def unwrap(self) -> E:
@@ -527,7 +529,7 @@ class Variant(View, typing.Generic[E]):
         self._value.wrap(unwrap(element), alternative)
 
 
-class AnyValue(View):
+class AnyValue(View[dsviper.ValueAny]):
     __slots__ = ()
 
     def __init__(self, value: typing.Any = None) -> None:
@@ -605,14 +607,14 @@ class Declared:
             value = value.vpr_value
         expected = type(self).type()
         if isinstance(value, dsviper.Value) and value.type() == expected:
-            View.__init__(typing.cast(View, self), value)
+            View.__init__(typing.cast(View[typing.Any], self), value)
             return
         view = next(base for base in type(self).__mro__ if base in _CASTS)
         try:
             built = _CASTS[view](dsviper.Value.create(expected, _unwrap_deep(value)))
         except dsviper.ViperError as refusal:
             raise TypeError(f"this value is not a {expected.representation()}") from refusal
-        View.__init__(typing.cast(View, self), built)
+        View.__init__(typing.cast(View[typing.Any], self), built)
 
 
 def declare(*classes: typing.Any) -> None:

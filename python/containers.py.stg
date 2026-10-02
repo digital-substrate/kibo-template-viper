@@ -83,19 +83,19 @@ variant(v) ::= <%@functools.cache<\n>def type<v.typeSuffix>() -> dsviper.Type: r
 member(t) ::= <%type<t.typeSuffix>()%>
 
 vector_class(v) ::= <<
-<declared(v, {Vector["<v.bindingElementType.qualified>"]})>
+<declared(v, {Vector["<v.bindingElementType.qualified>"]}, "ValueVector")>
 >>
 set_class(v) ::= <<
-<declared(v, {SetView["<v.bindingElementType.qualified>"]})>
+<declared(v, {SetView["<v.bindingElementType.qualified>"]}, "ValueSet")>
 >>
 fixed_class(v) ::= <<
-<declared(v, {Fixed["<v.bindingElementType.qualified>"]})>
+<declared(v, {Fixed[dsviper.ValueVec, "<v.bindingElementType.qualified>"]}, "ValueVec")>
 >>
 matrix_class(v) ::= <<
-<declared(v, {Matrix["<v.bindingElementType.qualified>"]})>
+<declared(v, {Matrix["<v.bindingElementType.qualified>"]}, "ValueMat")>
 >>
 tuple_class(v) ::= <<
-<declared(v, {Fixed["<v.members:{t|<t.bindingType.qualified>};separator=" | ">"]})>
+<declared(v, {Fixed[dsviper.ValueTuple, "<v.members:{t|<t.bindingType.qualified>};separator=" | ">"]}, "ValueTuple")>
 
 <v.members:{t|<tuple_getter(t, i0)>};separator="\n\n">
 >>
@@ -105,16 +105,16 @@ tuple_getter(t, index) ::= <<
         return typing.cast("<t.bindingType.qualified>", self[<index>])
 >>
 optional_class(v) ::= <<
-<declared(v, {Optional["<v.bindingElementType.qualified>"]})>
+<declared(v, {Optional["<v.bindingElementType.qualified>"]}, "ValueOptional")>
 >>
 mapping_class(v) ::= <<
-<declared(v, {Mapping["<v.bindingKeyType.qualified>", "<v.bindingElementType.qualified>"]})>
+<declared(v, {Mapping["<v.bindingKeyType.qualified>", "<v.bindingElementType.qualified>"]}, "ValueMap")>
 >>
 ordered_class(v) ::= <<
-<declared(v, {Ordered["<v.bindingElementType.qualified>"]})>
+<declared(v, {Ordered["<v.bindingElementType.qualified>"]}, "ValueXArray")>
 >>
 variant_class(v) ::= <<
-<declared(v, {Variant["<v.members:{t|<t.bindingType.qualified>};separator=" | ">"]})>
+<declared(v, {Variant["<v.members:{t|<t.bindingType.qualified>};separator=" | ">"]}, "ValueVariant")>
 
 <v.members:alternative();separator="\n\n">
 >>
@@ -130,11 +130,11 @@ alternative(t) ::= <<
         self._set(type<t.typeSuffix>(), value)
 >>
 
-declared(v, base) ::= <<
+declared(v, base, value) ::= <<
 class <v.bindingType.proxy>(Declared, <base>):
     __slots__ = ()
 
-    def __init__(self, value: <v.bindingType.proxy><if(v.bindingType.constructorInput)> | <v.bindingType.constructorInput><else> | None<endif> = None) -> None:
+    def __init__(self, value: <v.bindingType.proxy> | dsviper.<value><if(v.bindingType.constructorInput)> | <v.bindingType.constructorInput><else> | None<endif> = None) -> None:
         super().__init__(value)
 
     @classmethod

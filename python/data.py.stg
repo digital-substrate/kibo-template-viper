@@ -112,7 +112,7 @@ class <c.name>Key(Key):
         return AnyConceptKey(self._value.to_any_concept_key())
 
     @classmethod
-    def from_any_concept_key(cls, key: AnyConceptKey | Proxy | dsviper.ValueKey) -> <c.name>Key | None:
+    def from_any_concept_key(cls, key: AnyConceptKey | Proxy[dsviper.ValueKey] | dsviper.ValueKey) -> <c.name>Key | None:
         value = key._value if isinstance(key, Proxy) else key
         return cls(value) if cls.club().is_member(value.type_concept()) else None
 
@@ -176,12 +176,12 @@ class <c.name>Key(Key):
         return AnyConceptKey(self._value.to_any_concept_key())
 
     @classmethod
-    def from_any_concept_key(cls, key: AnyConceptKey | Proxy | dsviper.ValueKey) -> <c.name>Key | None:
+    def from_any_concept_key(cls, key: AnyConceptKey | Proxy[dsviper.ValueKey] | dsviper.ValueKey) -> <c.name>Key | None:
         value = key._value if isinstance(key, Proxy) else key
         return cls(value.to_member_key(cls.concept())) if value.is_member(cls.concept()) else None
 
     @classmethod
-    def from_key(cls, key: Proxy | dsviper.ValueKey) -> <c.name>Key:
+    def from_key(cls, key: Proxy[dsviper.ValueKey] | dsviper.ValueKey) -> <c.name>Key:
         value = key._value if isinstance(key, Proxy) else key
         if not value.is_member(cls.concept()):
             raise TypeError(f"{value.detail_type_representation()} does not designate a <u.name>::<c.name>")
@@ -266,7 +266,7 @@ class <e.name>(enum.Enum):
 enumeration_case(c) ::= <<    <c.name;format="usc"> = "<c.name>">>
 
 structure(s, u) ::= <<
-class <s.name>(Proxy):
+class <s.name>(Proxy[dsviper.ValueStructure]):
 <if(s.hasDocumentation)>    """<s.documentation;format="docstring">"""
 <endif>    __slots__ = ()
 

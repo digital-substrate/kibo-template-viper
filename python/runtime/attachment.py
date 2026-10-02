@@ -13,7 +13,7 @@ from .container import Optional
 from .proxy import Proxy, unwrap as _unwrap, wrap as _wrap
 
 
-K = typing.TypeVar("K", bound=Proxy)
+K = typing.TypeVar("K", bound=Proxy[dsviper.ValueKey])
 D = typing.TypeVar("D")
 KS = typing.TypeVar("KS")
 DI = typing.TypeVar("DI")
@@ -68,35 +68,35 @@ class AttachmentProxy(typing.Generic[K, D, KS, DI]):
         mutating.diff(self.descriptor, key.vpr_value, _unwrap(value), recursive=recursive)
 
 
-    def _update(self, mutating: dsviper.AttachmentMutating, key: Proxy, field: str, value: typing.Any) -> None:
+    def _update(self, mutating: dsviper.AttachmentMutating, key: Proxy[dsviper.ValueKey], field: str, value: typing.Any) -> None:
         mutating.update(self.descriptor, key.vpr_value, _path(field), _unwrap(value))
 
-    def _union_in_set(self, mutating: dsviper.AttachmentMutating, key: Proxy, field: str | None, value: typing.Any) -> None:
+    def _union_in_set(self, mutating: dsviper.AttachmentMutating, key: Proxy[dsviper.ValueKey], field: str | None, value: typing.Any) -> None:
         mutating.union_in_set(self.descriptor, key.vpr_value, _path(field), _unwrap(value))
 
-    def _subtract_in_set(self, mutating: dsviper.AttachmentMutating, key: Proxy, field: str | None, value: typing.Any) -> None:
+    def _subtract_in_set(self, mutating: dsviper.AttachmentMutating, key: Proxy[dsviper.ValueKey], field: str | None, value: typing.Any) -> None:
         mutating.subtract_in_set(self.descriptor, key.vpr_value, _path(field), _unwrap(value))
 
-    def _union_in_map(self, mutating: dsviper.AttachmentMutating, key: Proxy, field: str | None, value: typing.Any) -> None:
+    def _union_in_map(self, mutating: dsviper.AttachmentMutating, key: Proxy[dsviper.ValueKey], field: str | None, value: typing.Any) -> None:
         mutating.union_in_map(self.descriptor, key.vpr_value, _path(field), _unwrap(value))
 
-    def _subtract_in_map(self, mutating: dsviper.AttachmentMutating, key: Proxy, field: str | None, value: typing.Any) -> None:
+    def _subtract_in_map(self, mutating: dsviper.AttachmentMutating, key: Proxy[dsviper.ValueKey], field: str | None, value: typing.Any) -> None:
         mutating.subtract_in_map(self.descriptor, key.vpr_value, _path(field), _unwrap(value))
 
-    def _update_in_map(self, mutating: dsviper.AttachmentMutating, key: Proxy, field: str | None, value: typing.Any) -> None:
+    def _update_in_map(self, mutating: dsviper.AttachmentMutating, key: Proxy[dsviper.ValueKey], field: str | None, value: typing.Any) -> None:
         mutating.update_in_map(self.descriptor, key.vpr_value, _path(field), _unwrap(value))
 
-    def _insert_in_xarray(self, mutating: dsviper.AttachmentMutating, key: Proxy, field: str | None,
+    def _insert_in_xarray(self, mutating: dsviper.AttachmentMutating, key: Proxy[dsviper.ValueKey], field: str | None,
                           before_position: dsviper.ValueUUId, new_position: dsviper.ValueUUId,
                           value: typing.Any) -> None:
         mutating.insert_in_xarray(self.descriptor, key.vpr_value, _path(field),
                                   before_position, new_position, _unwrap(value))
 
-    def _update_in_xarray(self, mutating: dsviper.AttachmentMutating, key: Proxy, field: str | None,
+    def _update_in_xarray(self, mutating: dsviper.AttachmentMutating, key: Proxy[dsviper.ValueKey], field: str | None,
                           position: dsviper.ValueUUId, value: typing.Any) -> None:
         mutating.update_in_xarray(self.descriptor, key.vpr_value, _path(field), position, _unwrap(value))
 
-    def _remove_in_xarray(self, mutating: dsviper.AttachmentMutating, key: Proxy, field: str | None,
+    def _remove_in_xarray(self, mutating: dsviper.AttachmentMutating, key: Proxy[dsviper.ValueKey], field: str | None,
                           position: dsviper.ValueUUId) -> None:
         mutating.remove_in_xarray(self.descriptor, key.vpr_value, _path(field), position)
 

@@ -7,16 +7,19 @@ import typing
 
 import dsviper
 
+V = typing.TypeVar("V", bound=dsviper.Value, covariant=True)
 
-class Proxy:
+
+class Proxy(typing.Generic[V]):
+    """A generated class over the runtime value it wraps, which `vpr_value` returns."""
     __slots__ = ("_value",)
 
     def __init__(self, value: typing.Any) -> None:
         self._value = value
 
     @property
-    def vpr_value(self) -> typing.Any:
-        return self._value
+    def vpr_value(self) -> V:
+        return typing.cast(V, self._value)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Proxy):
@@ -29,24 +32,24 @@ class Proxy:
     def copy(self) -> typing.Self:
         return type(self)(self._value.copy())
 
-    def __lt__(self, other: Proxy) -> bool:
+    def __lt__(self, other: Proxy[dsviper.Value]) -> bool:
         return self._value < unwrap(other)
 
-    def __le__(self, other: Proxy) -> bool:
+    def __le__(self, other: Proxy[dsviper.Value]) -> bool:
         return self._value <= unwrap(other)
 
-    def __gt__(self, other: Proxy) -> bool:
+    def __gt__(self, other: Proxy[dsviper.Value]) -> bool:
         return self._value > unwrap(other)
 
-    def __ge__(self, other: Proxy) -> bool:
+    def __ge__(self, other: Proxy[dsviper.Value]) -> bool:
         return self._value >= unwrap(other)
 
     @classmethod
     def _wrap(cls, value: typing.Any) -> typing.Self:
         return cls(value)
 
-    def _unwrap(self) -> typing.Any:
-        return self._value
+    def _unwrap(self) -> V:
+        return typing.cast(V, self._value)
 
 
 class NotGiven:
@@ -142,11 +145,11 @@ def _holds_generated(value: object) -> bool:
 KeyT = typing.TypeVar("KeyT", bound="Key")
 
 
-class Key(Proxy):
+class Key(Proxy[dsviper.ValueKey]):
     __slots__ = ()
 
     @classmethod
-    def from_any_concept_key(cls: type[KeyT], key: Proxy | dsviper.ValueKey) -> KeyT | None:
+    def from_any_concept_key(cls: type[KeyT], key: Proxy[dsviper.ValueKey] | dsviper.ValueKey) -> KeyT | None:
         raise NotImplementedError
 
     def as_(self, cls: type[KeyT]) -> KeyT | None:
@@ -165,7 +168,7 @@ class Key(Proxy):
 class AnyConceptKey(Key):
     __slots__ = ()
 
-    def __init__(self, key: Proxy | dsviper.ValueKey):
+    def __init__(self, key: Proxy[dsviper.ValueKey] | dsviper.ValueKey):
         value = key._value if isinstance(key, Proxy) else key
         if not isinstance(value, dsviper.ValueKey):
             raise TypeError(f"{key!r} is not a key")
@@ -176,7 +179,7 @@ class AnyConceptKey(Key):
         return dsviper.TypeKey(dsviper.TypeAnyConcept())
 
     @classmethod
-    def from_any_concept_key(cls, key: Proxy | dsviper.ValueKey) -> AnyConceptKey:
+    def from_any_concept_key(cls, key: Proxy[dsviper.ValueKey] | dsviper.ValueKey) -> AnyConceptKey:
         return cls(key)
 
     def instance_id(self) -> dsviper.ValueUUId:
