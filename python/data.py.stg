@@ -209,6 +209,9 @@ class <e.name>(enum.Enum):
 
     @classmethod
     def from_str(cls, name: str) -> <e.name>:
+        """Return the case the model names `name`, spelled as the DSM spells it:
+        `from_str("<first(e.members):{c|<c.name>}>")` is `<e.name>.<first(e.members):{c|<c.name;format="usnake">}>`. The member's own name is
+        Python's, reached by `<e.name>["<first(e.members):{c|<c.name;format="usnake">}>"]`. An unknown name raises ValueError."""
         if not isinstance(name, str):
             raise TypeError(f"{name!r} is not a case name")
         return cls(name)

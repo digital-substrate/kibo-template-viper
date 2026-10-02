@@ -224,6 +224,8 @@ export const <e.name> = {
         return dsviper.ValueEnumeration.cast(value).name() as <e.name>;
     },
 
+    /** Return the case the model names `name`, spelled as the DSM spells it: `fromStr("<first(e.members):{c|<c.name>}>")`
+     *  is `<e.name>.<first(e.members):{c|<c.name;format="usnake">}>`. An unknown name throws ViperError. */
     fromStr(name: string): <e.name> {
         if (typeof name !== "string") {
             throw new TypeError(`${name} is not a case name`);
