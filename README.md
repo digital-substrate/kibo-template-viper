@@ -146,8 +146,8 @@ same declarations in its header:
 |---|---|
 | **consumes** | Template Model 2, exposed by kibo |
 | **cpp target** | the `viper` C++ runtime 1.2, with its static layer |
-| **python target** | `dsviper` 1.2 (floor `>=1.2.27`) |
-| **typescript target** | `@digitalsubstrate/dsviper` 1.2 (floor `>=1.2.13`) |
+| **python target** | `dsviper` 1.2 (floor `>=1.2.29`) |
+| **typescript target** | `@digitalsubstrate/dsviper` 1.2 (floor `>=1.2.14`) |
 
 A release of this pack is driven by its **targets**: a projection appears because a
 binding gained something to project. The Template Model it consumes moves on kibo's
@@ -166,8 +166,8 @@ targets:
 
 | Templates    | Runtime                              | Compatible versions |
 |--------------|--------------------------------------|---------------------|
-| `typescript` | `@digitalsubstrate/dsviper` (npm)    | `>=1.2.13 <1.3.0`   |
-| `python`     | `dsviper` (PyPI wheel)               | `>=1.2.27 <1.3`     |
+| `typescript` | `@digitalsubstrate/dsviper` (npm)    | `>=1.2.14 <1.3.0`   |
+| `python`     | `dsviper` (PyPI wheel)               | `>=1.2.29 <1.3`     |
 | `cpp`        | `viper` (C++ runtime)                | `1.2`, with the static layer |
 
 Every generated file names its runtime and that range in its header, so a
@@ -179,13 +179,16 @@ A floor is set by what a template uses, and it lives in the generated output, wh
 consumer's build reads it:
 
 - **`python`**: the runtime tests `isinstance(value, dsviper.Value)` and reads with
-  `Value.decode(..., encoded=False)`, which the wheel offers from `1.2.27`. The generated
-  `pyproject.toml` declares it.
-- **`typescript`**: the generated `package.json` declares `>=1.2.13 <1.3.0`.
+  `Value.decode(..., encoded=False)`, which the wheel offers from `1.2.27`; a remote
+  attachment function that only reads takes an `AttachmentGetting`, which the wheel
+  accepts from `1.2.29`. The generated `pyproject.toml` declares it.
+- **`typescript`**: the generated `package.json` declares `>=1.2.14 <1.3.0`, the binding
+  whose remote attachment call accepts an `AttachmentGetting`.
 - **`cpp`**: the generated code crosses to a `Value`, and hashes, through the runtime's
   static layer — `Viper_StaticType`, `Viper_StaticWriter`, `Viper_StaticReader`,
-  `Viper_StaticHash` — on viper's `LTS-1.2` branch. A C++ project builds the runtime from
-  source, so it needs a checkout that carries those headers.
+  `Viper_StaticHash` — on viper's `LTS-1.2` branch, and calls a remote attachment function
+  through a `ServiceRemote::call` that takes an `AttachmentGetting`. A C++ project builds
+  the runtime from source, so it needs a checkout that carries both.
 
 The MIT license above governs the **templates as source**. The output
 of `kibo` produced from these templates is a derivative work of MIT

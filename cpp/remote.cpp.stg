@@ -89,12 +89,12 @@ bool Remote::isAvailable() const {
 attachment_remote_call(f, p) ::= <<
 <attachment_remote_head(f)>
 <if(f.isVoid)>
-    _service->call(attachmentMutating, poolId, "<f.name>", {<f.parameters:{a|<p.model.namespace>::codec::encode(<a.name>)};separator=", ">});
+    _service->call(attachment<f.interfaceType>, poolId, "<f.name>", {<f.parameters:{a|<p.model.namespace>::codec::encode(<a.name>)};separator=", ">});
 <else>
     <remote_decode(f, p)>
-        _service->call(attachmentMutating, poolId, "<f.name>", {<f.parameters:{a|<p.model.namespace>::codec::encode(<a.name>)};separator=", ">}));
+        _service->call(attachment<f.interfaceType>, poolId, "<f.name>", {<f.parameters:{a|<p.model.namespace>::codec::encode(<a.name>)};separator=", ">}));
 <endif>
 }
 >>
 
-attachment_remote_head(f) ::= <%<if(f.isVoid)>void<else><f.type><endif> Remote::<f.name>(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating<if(f.parameters)>, <f.parameters:remote_param();separator=", "><endif>) const {%>
+attachment_remote_head(f) ::= <%<if(f.isVoid)>void<else><f.type><endif> Remote::<f.name>(std::shared_ptr\<Viper::Attachment<f.interfaceType>> const & attachment<f.interfaceType><if(f.parameters)>, <f.parameters:remote_param();separator=", "><endif>) const {%>

@@ -57,7 +57,7 @@ remote_call(f) ::= <<
 >>
 
 attachment_remote_call(f) ::= <<
-<doc(f)>    <f.name;format="lf">(state: dsviper.AttachmentMutating<if(f.parameters)>, <f.parameters:parameter();separator=", "><endif>): <ret(f)> {
+<doc(f)>    <f.name;format="lf">(state: dsviper.Attachment<f.interfaceType><if(f.parameters)>, <f.parameters:parameter();separator=", "><endif>): <ret(f)> {
         <attachment_call(f)>
     }
 >>

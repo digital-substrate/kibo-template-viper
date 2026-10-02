@@ -13,4 +13,4 @@ IDE, not as a second line of checking.
 `_codegen/` (the proxy base, the container views, the attachment accessor) is copied into every
 generated package from `runtime/`. It is the template pack's, not `dsviper`'s: a generated
 class is a proxy over a `Value`, which is one exposition among others. The generated package requires
-`dsviper >= 1.2.27, < 1.3`.
+`dsviper >= 1.2.29, < 1.3`.

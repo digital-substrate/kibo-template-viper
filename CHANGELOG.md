@@ -17,8 +17,8 @@ same declarations in its header:
 |---|---|
 | **consumes** | Template Model 2, exposed by kibo |
 | **cpp target** | the `viper` C++ runtime 1.2, with its static layer |
-| **python target** | `dsviper` 1.2 (floor `>=1.2.27`) |
-| **typescript target** | `@digitalsubstrate/dsviper` 1.2 (floor `>=1.2.13`) |
+| **python target** | `dsviper` 1.2 (floor `>=1.2.29`) |
+| **typescript target** | `@digitalsubstrate/dsviper` 1.2 (floor `>=1.2.14`) |
 
 A release of this pack is driven by its **targets**: a projection appears because a
 binding gained something to project. The Template Model it consumes moves on kibo's
@@ -53,7 +53,7 @@ version as either one.
 
 Requires **kibo 2** and its Template Model 2; these templates do not render against an
 earlier generator. The runtimes they target stay on the 1.2 line, with floors:
-`dsviper >= 1.2.27`, `@digitalsubstrate/dsviper >= 1.2.13`, and a `viper` C++ runtime that
+`dsviper >= 1.2.29`, `@digitalsubstrate/dsviper >= 1.2.14`, and a `viper` C++ runtime that
 carries its static layer. Every generated file names its runtime and its range in its
 header. The generated surface changes throughout: code written against 1.2 output needs
 migrating.
@@ -183,6 +183,9 @@ migrating.
 - **Function pools use the DSM spelling** for their functions, in C++ and on the wire; each
   language keeps its idiom for the static names. `Pool` is the server side, `PoolRemote` the
   client side, so a client does not link the functions only a server implements.
+- **A remote attachment function takes the state its local twin takes**: an
+  `AttachmentGetting` for a function that only reads, an `AttachmentMutating` for a
+  mutable one, so a client holding a database calls a read remotely.
 - **The model's documentation reaches the generated code** in all three targets, and nothing
   else does: a generated file carries its header and the documentation the model declares.
 

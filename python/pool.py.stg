@@ -65,7 +65,7 @@ class Remote:
             raise RuntimeError(f"the service does not carry the pool {Pool.NAME}")
         return self._queried
 
-<p.functions:attachment_remote_function();separator="\n\n">
+<p.functions:attachment_function();separator="\n\n">
 >>
 
 preamble(p) ::= <<
@@ -100,11 +100,6 @@ doc(f) ::= <<
 attachment_function(f) ::= <<
     def <f.name;format="snake">(self, attachment_<f.interfaceType;format="lsc">: dsviper.Attachment<f.interfaceType><if(f.parameters)>, <f.parameters:parameter();separator=", "><endif>) -> <ret(f)>:
 <doc(f)>        <attachment_call(f)>
->>
-
-attachment_remote_function(f) ::= <<
-    def <f.name;format="snake">(self, attachment_mutating: dsviper.AttachmentMutating<if(f.parameters)>, <f.parameters:parameter();separator=", "><endif>) -> <ret(f)>:
-<doc(f)>        <attachment_invoke(f, "attachment_mutating")>
 >>
 
 parameter(a) ::= <%<a.name;format="snake">: <hint(a.bindingType)>%>
