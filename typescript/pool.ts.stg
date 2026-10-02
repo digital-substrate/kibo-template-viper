@@ -46,7 +46,7 @@ import dsviper from "@digitalsubstrate/dsviper";
 
 import type * as containers from "../containers.js";
 import { AnyConceptKey, type AnyValue, unwrap, wrap } from "../_codegen/registry.js";
-<p.dependencies.functions:{d|import * as <d.name;format="lsc"> from "../<d.name;format="lsc">/data.js";};separator="\n">
+<p.dependencies.functions:{d|import * as <d.name;format="snake"> from "../<d.name;format="snake">/data.js";};separator="\n">
 
 export const NAME = "<p.name>";
 export const UUID = dsviper.ValueUUId.create("<p.uuid>");

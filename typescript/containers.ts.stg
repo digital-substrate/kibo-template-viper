@@ -8,7 +8,7 @@ import dsviper from "@digitalsubstrate/dsviper";
 import { declare, fixedOf, mappingOf, matrixOf, optionalOf, orderedOf, setOf, variantOf, vectorOf } from "./_codegen/container.js";
 import type * as containers from "./containers.js";
 import type { AnyConceptKey, AnyValue } from "./_codegen/registry.js";
-<m.nameSpaces:{u|import * as <u.name;format="lsc"> from "./<u.name;format="lsc">/data.js";};separator="\n">
+<m.nameSpaces:{u|import * as <u.name;format="snake"> from "./<u.name;format="snake">/data.js";};separator="\n">
 
 <primitives()>
 <m.nameSpaces:named();separator="\n">
@@ -57,10 +57,10 @@ const type_AnyConceptKey = () => new dsviper.TypeKey(dsviper.Type.ANY_CONCEPT);
 >>
 
 named(u) ::= <<
-<u.concepts:{c|const type_<u.name>_<c.name>Key = () => <u.name;format="lsc">.<c.name>Key.type();};separator="\n">
-<u.clubs:{c|const type_<u.name>_<c.name>Key = () => <u.name;format="lsc">.<c.name>Key.type();};separator="\n">
-<u.enumerations:{e|const type_<u.name>_<e.name> = () => <u.name;format="lsc">.<e.name>.type();};separator="\n">
-<u.structures:{s|const type_<u.name>_<s.name> = () => <u.name;format="lsc">.<s.name>.type();};separator="\n">
+<u.concepts:{c|const type_<u.name>_<c.name>Key = () => <u.name;format="snake">.<c.name>Key.type();};separator="\n">
+<u.clubs:{c|const type_<u.name>_<c.name>Key = () => <u.name;format="snake">.<c.name>Key.type();};separator="\n">
+<u.enumerations:{e|const type_<u.name>_<e.name> = () => <u.name;format="snake">.<e.name>.type();};separator="\n">
+<u.structures:{s|const type_<u.name>_<s.name> = () => <u.name;format="snake">.<s.name>.type();};separator="\n">
 >>
 
 vec(v) ::= <%const type<v.typeSuffix> = () => new dsviper.<v.viperType>(type<v.elementTypeSuffix>(), <v.size>);%>

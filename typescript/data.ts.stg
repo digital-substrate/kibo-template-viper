@@ -9,7 +9,7 @@ import type * as containers from "../containers.js";
 import { Key, Proxy } from "../_codegen/proxy.js";
 import { AnyConceptKey, type AnyValue, isKnown, register, setField, wrap } from "../_codegen/registry.js";
 import { definitions } from "../definitions.js";
-<u.dependencies.types:{d|import * as <d.name;format="lsc"> from "../<d.name;format="lsc">/data.js";};separator="\n">
+<u.dependencies.types:{d|import * as <d.name;format="snake"> from "../<d.name;format="snake">/data.js";};separator="\n">
 
 <u.concepts:runtime_id();separator="\n">
 <u.clubs:runtime_id();separator="\n">
@@ -36,26 +36,26 @@ register(<u.concepts:registered_key();separator=", "><if(u.clubs)>, <u.clubs:reg
 
 >>
 
-runtime_id(v) ::= <%export const <v.name;format="usc"> = dsviper.ValueUUId.create("<v.runtimeId>");%>
-registered(v) ::= <%[<v.name;format="usc">, <v.name>]%>
-registered_key(v) ::= <%[<v.name;format="usc">, <v.name>Key]%>
+runtime_id(v) ::= <%export const <v.name;format="usnake"> = dsviper.ValueUUId.create("<v.runtimeId>");%>
+registered(v) ::= <%[<v.name;format="usnake">, <v.name>]%>
+registered_key(v) ::= <%[<v.name;format="usnake">, <v.name>Key]%>
 
 concept(c, u) ::= <<
-let <c.name;format="lsc">Concept: dsviper.TypeConcept | undefined;
-let <c.name;format="lsc">Type: dsviper.TypeKey | undefined;
+let <c.name;format="snake">Concept: dsviper.TypeConcept | undefined;
+let <c.name;format="snake">Type: dsviper.TypeKey | undefined;
 
 <if(c.hasDocumentation)>
 /** <c.documentation;format="comment"> */
 <endif>
 export class <c.name>Key extends Key {
-    declare private readonly <c.name;format="lsc">KeyBrand: never;
+    declare private readonly <c.name;format="snake">KeyBrand: never;
 
     static concept(): dsviper.TypeConcept {
-        return (<c.name;format="lsc">Concept ??= definitions().checkConcept(<c.name;format="usc">));
+        return (<c.name;format="snake">Concept ??= definitions().checkConcept(<c.name;format="usnake">));
     }
 
     static type(): dsviper.TypeKey {
-        return (<c.name;format="lsc">Type ??= new dsviper.TypeKey(<c.name>Key.concept()));
+        return (<c.name;format="snake">Type ??= new dsviper.TypeKey(<c.name>Key.concept()));
     }
 
     constructor(identifier?: dsviper.ValueKey | dsviper.ValueUUId | string | null) {
@@ -136,18 +136,18 @@ export class <c.name>Key extends Key {
 >>
 
 club(c, u) ::= <<
-let <c.name;format="lsc">Club: dsviper.TypeClub | undefined;
-let <c.name;format="lsc">Type: dsviper.TypeKey | undefined;
+let <c.name;format="snake">Club: dsviper.TypeClub | undefined;
+let <c.name;format="snake">Type: dsviper.TypeKey | undefined;
 
 export class <c.name>Key extends Key {
-    declare private readonly <c.name;format="lsc">KeyBrand: never;
+    declare private readonly <c.name;format="snake">KeyBrand: never;
 
     static club(): dsviper.TypeClub {
-        return (<c.name;format="lsc">Club ??= definitions().checkClub(<c.name;format="usc">));
+        return (<c.name;format="snake">Club ??= definitions().checkClub(<c.name;format="usnake">));
     }
 
     static type(): dsviper.TypeKey {
-        return (<c.name;format="lsc">Type ??= new dsviper.TypeKey(<c.name>Key.club()));
+        return (<c.name;format="snake">Type ??= new dsviper.TypeKey(<c.name>Key.club()));
     }
 
     constructor(key: <c.membersInNamespace:{m|<m.bindingInNamespace> | }>dsviper.ValueKey) {
@@ -206,7 +206,7 @@ export class <c.name>Key extends Key {
 >>
 
 enumeration(e, u) ::= <<
-let <e.name;format="lsc">Type: dsviper.TypeEnumeration | undefined;
+let <e.name;format="snake">Type: dsviper.TypeEnumeration | undefined;
 
 <if(e.hasDocumentation)>
 /** <e.documentation;format="comment"> */
@@ -217,7 +217,7 @@ export const <e.name> = {
 <e.members:enumeration_member();separator=",\n">,
 
     type(): dsviper.TypeEnumeration {
-        return (<e.name;format="lsc">Type ??= definitions().checkEnumeration(<e.name;format="usc">));
+        return (<e.name;format="snake">Type ??= definitions().checkEnumeration(<e.name;format="usnake">));
     },
 
     wrap(value: dsviper.Value): <e.name> {
@@ -246,10 +246,10 @@ export const <e.name> = {
 >>
 
 enumeration_case(m) ::= <%"<m.name>"%>
-enumeration_member(m) ::= <<    <m.name;format="usc">: "<m.name>" as const>>
+enumeration_member(m) ::= <<    <m.name;format="usnake">: "<m.name>" as const>>
 
 structure(s, u) ::= <<
-let <s.name;format="lsc">Type: dsviper.TypeStructure | undefined;
+let <s.name;format="snake">Type: dsviper.TypeStructure | undefined;
 
 <if(s.hasDocumentation)>
 /** <s.documentation;format="comment"> */
@@ -258,13 +258,13 @@ export interface <s.name>Init {
     <s.fields:{f|<f.name;format="lf">?: <f.bindingType.input>;};separator="\n">
 }
 
-const <s.name;format="lsc">Fields: readonly string[] = [<s.fields:{f|"<f.name;format="lf">"};separator=", ">];
+const <s.name;format="snake">Fields: readonly string[] = [<s.fields:{f|"<f.name;format="lf">"};separator=", ">];
 
 export class <s.name> extends Proxy\<dsviper.ValueStructure> {
-    declare private readonly <s.name;format="lsc">Brand: never;
+    declare private readonly <s.name;format="snake">Brand: never;
 
     static type(): dsviper.TypeStructure {
-        return (<s.name;format="lsc">Type ??= definitions().checkStructure(<s.name;format="usc">));
+        return (<s.name;format="snake">Type ??= definitions().checkStructure(<s.name;format="usnake">));
     }
 
     constructor(value?: dsviper.ValueStructure | <s.name>Init) {
@@ -280,7 +280,7 @@ export class <s.name> extends Proxy\<dsviper.ValueStructure> {
             return;
         }
         for (const name of Object.keys(value)) {
-            if (!<s.name;format="lsc">Fields.includes(name)) {
+            if (!<s.name;format="snake">Fields.includes(name)) {
                 throw new TypeError(`<u.name>::<s.name> has no field ${name}`);
             }
         }

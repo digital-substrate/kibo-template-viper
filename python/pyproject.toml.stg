@@ -8,7 +8,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "<m.namespace;format="lsc">"
+name = "<m.namespace;format="snake">"
 version = "1.0.0"
 description = "Generated Python bindings for the <m.namespace> model"
 requires-python = ">=3.10"
@@ -16,9 +16,9 @@ license = { text = "Proprietary" }
 dependencies = ["dsviper >= 1.2.29, \< 1.3"]
 
 [tool.setuptools.packages.find]
-include = ["<m.namespace;format="lsc">", "<m.namespace;format="lsc">.*"]
+include = ["<m.namespace;format="snake">", "<m.namespace;format="snake">.*"]
 
 [tool.setuptools.package-data]
-"<m.namespace;format="lsc">" = ["py.typed", "*.pyi"]
+"<m.namespace;format="snake">" = ["py.typed", "*.pyi"]
 
 >>

@@ -11,4 +11,4 @@ export {};
 
 >>
 
-pool_export(p) ::= <%export * as <p.name;format="lsc"> from "./<p.name;format="lsc">/index.js";%>
+pool_export(p) ::= <%export * as <p.name;format="snake"> from "./<p.name;format="snake">/index.js";%>

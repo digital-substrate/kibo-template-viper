@@ -40,7 +40,7 @@ if typing.TYPE_CHECKING:
 <m.xarrayFunctions:ordered_class();separator="\n\n">
 <m.variantFunctions:variant_class();separator="\n\n">
 
-<m.nameSpaces:{u|from . import <u.name;format="lsc">  # noqa: E402};separator="\n">
+<m.nameSpaces:{u|from . import <u.name;format="snake">  # noqa: E402};separator="\n">
 
 declare(<[m.vecFunctions, m.matFunctions, m.tupleFunctions, m.optionalFunctions, m.vectorFunctions, m.setFunctions, m.mapFunctions, m.xarrayFunctions, m.variantFunctions]:{v|<v.bindingType.proxy>};separator=", ">)
 
@@ -68,10 +68,10 @@ type_AnyConceptKey = lambda: dsviper.TypeKey(dsviper.TypeAnyConcept())
 >>
 
 named(u, m) ::= <<
-<u.concepts:{c|def type_<u.name>_<c.name>Key() -> dsviper.Type: return dsviper.TypeKey(definitions().check_concept(<u.name;format="lsc">.data.<c.name;format="usc">))};separator="\n">
-<u.clubs:{c|def type_<u.name>_<c.name>Key() -> dsviper.Type: return dsviper.TypeKey(definitions().check_club(<u.name;format="lsc">.data.<c.name;format="usc">))};separator="\n">
-<u.enumerations:{e|def type_<u.name>_<e.name>() -> dsviper.Type: return definitions().check_enumeration(<u.name;format="lsc">.data.<e.name;format="usc">)};separator="\n">
-<u.structures:{s|def type_<u.name>_<s.name>() -> dsviper.Type: return definitions().check_structure(<u.name;format="lsc">.data.<s.name;format="usc">)};separator="\n">
+<u.concepts:{c|def type_<u.name>_<c.name>Key() -> dsviper.Type: return dsviper.TypeKey(definitions().check_concept(<u.name;format="snake">.data.<c.name;format="usnake">))};separator="\n">
+<u.clubs:{c|def type_<u.name>_<c.name>Key() -> dsviper.Type: return dsviper.TypeKey(definitions().check_club(<u.name;format="snake">.data.<c.name;format="usnake">))};separator="\n">
+<u.enumerations:{e|def type_<u.name>_<e.name>() -> dsviper.Type: return definitions().check_enumeration(<u.name;format="snake">.data.<e.name;format="usnake">)};separator="\n">
+<u.structures:{s|def type_<u.name>_<s.name>() -> dsviper.Type: return definitions().check_structure(<u.name;format="snake">.data.<s.name;format="usnake">)};separator="\n">
 >>
 
 vec(v) ::= <%@functools.cache<\n>def type<v.typeSuffix>() -> dsviper.Type: return dsviper.<v.viperType>(type<v.elementTypeSuffix>(), <v.size>)%>

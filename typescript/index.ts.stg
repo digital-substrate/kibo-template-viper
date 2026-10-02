@@ -6,7 +6,7 @@ export { definitions } from "./definitions.js";
 export * from "./containers.js";
 export { AnyConceptKey, AnyValue } from "./_codegen/registry.js";
 export { Key } from "./_codegen/proxy.js";
-<m.nameSpaces:{u|export * as <u.name;format="lsc"> from "./<u.name;format="lsc">/index.js";};separator="\n">
+<m.nameSpaces:{u|export * as <u.name;format="snake"> from "./<u.name;format="snake">/index.js";};separator="\n">
 
 >>
 

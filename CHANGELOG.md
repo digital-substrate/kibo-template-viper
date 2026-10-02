@@ -79,7 +79,9 @@ migrating.
   `<package>.<unit>.attachments.<Concept>.<attachment>.<operation>` in Python, the same path
   as nested scopes in C++ and TypeScript; the field-level operations are typed methods.
 - **Python follows its own idiom**: fields and operations in snake_case, enumerations as
-  `enum.Enum`, the wrapped value as `vpr_value`.
+  `enum.Enum`, the wrapped value as `vpr_value`. Every static name — modules and package
+  directories included, in both packages — goes through kibo's one `snake` rule (`doc_uint8`,
+  `vec3_curves`), which a project tunes with `[names]`.
 - **A read leaves the Viper world only at the primitive leaves.** bool, integers, floats,
   string and blob read as the host's own values; every other type reads as a view, and an
   optional is one of them: an `optional<T>` field reads as its declared class

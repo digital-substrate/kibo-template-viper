@@ -86,7 +86,7 @@ from .._codegen import AnyConceptKey, AnyValue, unwrap, wrap
 if typing.TYPE_CHECKING:
     from .. import containers
 
-<p.dependencies.functions:{d|from .. import <d.name;format="lsc">};separator="\n">
+<p.dependencies.functions:{d|from .. import <d.name;format="snake">};separator="\n">
 >>
 
 function(f) ::= <<
@@ -100,7 +100,7 @@ doc(f) ::= <<
 >>
 
 attachment_function(f) ::= <<
-    def <f.name;format="snake">(self, attachment_<f.interfaceType;format="lsc">: dsviper.Attachment<f.interfaceType><if(f.parameters)>, <f.parameters:parameter();separator=", "><endif>) -> <ret(f)>:
+    def <f.name;format="snake">(self, attachment_<f.interfaceType;format="snake">: dsviper.Attachment<f.interfaceType><if(f.parameters)>, <f.parameters:parameter();separator=", "><endif>) -> <ret(f)>:
 <doc(f)>        <attachment_call(f)>
 >>
 
@@ -109,7 +109,7 @@ ret(f) ::= <%<if(f.isVoid)>None<else><hint(f.returnBindingType)><endif>%>
 argument(a) ::= <%<if(a.bindingType.useProxy)>unwrap(<a.name;format="snake">)<else><a.name;format="snake"><endif>%>
 
 call(f) ::= <%<if(f.isVoid)>self._funcs["<f.name>"](<f.parameters:argument();separator=", ">)<else>return <wrap(f)>self._funcs["<f.name>"](<f.parameters:argument();separator=", ">)<unwrap(f)><endif>%>
-attachment_call(f) ::= <%<attachment_invoke(f, {attachment_<f.interfaceType;format="lsc">})>%>
+attachment_call(f) ::= <%<attachment_invoke(f, {attachment_<f.interfaceType;format="snake">})>%>
 attachment_invoke(f, context) ::= <%<if(f.isVoid)>self._funcs["<f.name>"](<context><if(f.parameters)>, <endif><f.parameters:argument();separator=", ">)<else>return <wrap(f)>self._funcs["<f.name>"](<context><if(f.parameters)>, <endif><f.parameters:argument();separator=", ">)<unwrap(f)><endif>%>
 wrap(f) ::= <%wrap(%>
 unwrap(f) ::= <%)%>

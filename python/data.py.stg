@@ -17,7 +17,7 @@ from .._codegen.container import _unwrap_deep
 
 if typing.TYPE_CHECKING:
     from .. import containers
-<u.dependencies.types:{d|from .. import <d.name;format="lsc">};separator="\n">
+<u.dependencies.types:{d|from .. import <d.name;format="snake">};separator="\n">
 
 <u.concepts:runtime_id();separator="\n">
 <u.clubs:runtime_id();separator="\n">
@@ -43,7 +43,7 @@ __all__ = [<u.concepts:exported_key();separator=", "><if(u.clubs)>, <u.clubs:exp
 
 >>
 
-runtime_id(v) ::= <%<v.name;format="usc">: dsviper.ValueUUId = dsviper.ValueUUId.create("<v.runtimeId>")%>
+runtime_id(v) ::= <%<v.name;format="usnake">: dsviper.ValueUUId = dsviper.ValueUUId.create("<v.runtimeId>")%>
 exported(v) ::= <%"<v.name>"%>
 exported_key(v) ::= <%"<v.name>Key"%>
 
@@ -62,13 +62,13 @@ concept(c, u) ::= <<
 >>
 
 descendant_to(d, c) ::= <<
-    def to_<d.asNameInNamespace;format="lsc">_key(self) -> <d.bindingInNamespace> | None:
+    def to_<d.asNameInNamespace;format="snake">_key(self) -> <d.bindingInNamespace> | None:
         return self.as_(<d.bindingInNamespace>)
 >>
 
 descendant_from(d, c) ::= <<
     @classmethod
-    def from_<d.asNameInNamespace;format="lsc">_key(cls, key: <d.bindingInNamespace>) -> <c.name>Key:
+    def from_<d.asNameInNamespace;format="snake">_key(cls, key: <d.bindingInNamespace>) -> <c.name>Key:
         return cls.from_key(key)
 >>
 
@@ -81,7 +81,7 @@ class <c.name>Key(Key):
     @classmethod
     @functools.cache
     def club(cls) -> dsviper.TypeClub:
-        return definitions().check_club(<c.name;format="usc">)
+        return definitions().check_club(<c.name;format="usnake">)
 
     @classmethod
     @functools.cache
@@ -138,7 +138,7 @@ class <c.name>Key(Key):
     @classmethod
     @functools.cache
     def concept(cls) -> dsviper.TypeConcept:
-        return definitions().check_<kind>(<c.name;format="usc">)
+        return definitions().check_<kind>(<c.name;format="usnake">)
 
     @classmethod
     @functools.cache
@@ -205,7 +205,7 @@ class <e.name>(enum.Enum):
     @classmethod
     @functools.cache
     def type(cls) -> dsviper.TypeEnumeration:
-        return definitions().check_enumeration(<e.name;format="usc">)
+        return definitions().check_enumeration(<e.name;format="usnake">)
 
     @classmethod
     def from_str(cls, name: str) -> <e.name>:
@@ -263,7 +263,7 @@ class <e.name>(enum.Enum):
         return self.value
 >>
 
-enumeration_case(c) ::= <<    <c.name;format="usc"> = "<c.name>">>
+enumeration_case(c) ::= <<    <c.name;format="usnake"> = "<c.name>">>
 
 structure(s, u) ::= <<
 class <s.name>(Proxy[dsviper.ValueStructure]):
@@ -273,7 +273,7 @@ class <s.name>(Proxy[dsviper.ValueStructure]):
     @classmethod
     @functools.cache
     def type(cls) -> dsviper.TypeStructure:
-        return definitions().check_structure(<s.name;format="usc">)
+        return definitions().check_structure(<s.name;format="usnake">)
 
     def __init__(self, source: dsviper.ValueStructure | dict | None = None, /, *,
                  <s.fields:{f|<f.name;format="snake">: <input_hint(f)> | NotGiven = NOT_GIVEN};separator=",\n">) -> None:
@@ -312,16 +312,16 @@ repr_field(f) ::= <%<f.name;format="snake">={self.<f.name;format="snake">}%>
 hint(f) ::= <%<f.bindingType.annotation>%>
 input_hint(f) ::= <%<f.bindingType.input>%>
 
-registered(v) ::= <%<v.name;format="usc">: <v.name>%>
-registered_key(v) ::= <%<v.name;format="usc">: <v.name>Key%>
+registered(v) ::= <%<v.name;format="usnake">: <v.name>%>
+registered_key(v) ::= <%<v.name;format="usnake">: <v.name>Key%>
 
 club_to(cm, c) ::= <<
-    def to_<cm.asNameInNamespace;format="lsc">_key(self) -> <cm.bindingInNamespace> | None:
+    def to_<cm.asNameInNamespace;format="snake">_key(self) -> <cm.bindingInNamespace> | None:
         return self.as_(<cm.bindingInNamespace>)
 >>
 
 club_from(cm, c) ::= <<
     @classmethod
-    def from_<cm.asNameInNamespace;format="lsc">_key(cls, key: <cm.bindingInNamespace>) -> <c.name>Key:
+    def from_<cm.asNameInNamespace;format="snake">_key(cls, key: <cm.bindingInNamespace>) -> <c.name>Key:
         return cls(key)
 >>

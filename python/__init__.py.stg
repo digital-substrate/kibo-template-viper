@@ -12,7 +12,7 @@ import dsviper as _dsviper
 from . import resources
 from ._codegen import AnyConceptKey, AnyValue, Key
 
-__all__ = ["AnyConceptKey", "AnyValue", "Key", "containers", "definitions", <m.nameSpaces:{u|"<u.name;format="lsc">"};separator=", ">]
+__all__ = ["AnyConceptKey", "AnyValue", "Key", "containers", "definitions", <m.nameSpaces:{u|"<u.name;format="snake">"};separator=", ">]
 
 @_functools.cache
 def definitions() -> _dsviper.DefinitionsConst:
@@ -21,7 +21,7 @@ def definitions() -> _dsviper.DefinitionsConst:
 
 
 from . import containers  # noqa: E402
-<m.nameSpaces:{u|from . import <u.name;format="lsc">  # noqa: E402};separator="\n">
+<m.nameSpaces:{u|from . import <u.name;format="snake">  # noqa: E402};separator="\n">
 
 >>
 
