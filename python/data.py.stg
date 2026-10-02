@@ -214,6 +214,10 @@ class <e.name>(enum.Enum):
 
     @classmethod
     def _missing_(cls, value: object) -> typing.Any:
+        if isinstance(value, dsviper.ValueEnumeration):
+            if value.type_enumeration() != cls.type():
+                raise TypeError(f"{value!r} is not a case of <e.name>")
+            return cls(value.name())
         if isinstance(value, int) and not isinstance(value, bool):
             cases = list(cls)
             if value in range(len(cases)):
@@ -225,6 +229,30 @@ class <e.name>(enum.Enum):
 
     def index(self) -> int:
         return list(type(self)).index(self)
+
+    @property
+    def vpr_value(self) -> dsviper.ValueEnumeration:
+        return dsviper.ValueEnumeration.cast(dsviper.Value.create(type(self).type(), self.value))
+
+    def __lt__(self, other: <e.name>) -> bool:
+        if not isinstance(other, <e.name>):
+            return NotImplemented
+        return bool(self.vpr_value \< other.vpr_value)
+
+    def __le__(self, other: <e.name>) -> bool:
+        if not isinstance(other, <e.name>):
+            return NotImplemented
+        return bool(self.vpr_value \<= other.vpr_value)
+
+    def __gt__(self, other: <e.name>) -> bool:
+        if not isinstance(other, <e.name>):
+            return NotImplemented
+        return bool(self.vpr_value > other.vpr_value)
+
+    def __ge__(self, other: <e.name>) -> bool:
+        if not isinstance(other, <e.name>):
+            return NotImplemented
+        return bool(self.vpr_value >= other.vpr_value)
 
     @classmethod
     def _wrap(cls, value: typing.Any) -> <e.name>:

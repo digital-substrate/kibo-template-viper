@@ -357,15 +357,15 @@ export class Mapping<K, V> extends View {
     }
 
     entries(): [K, V][] {
-        return [...this.pairs()];
+        return [...this.#pairs()];
     }
 
 
     *[Symbol.iterator](): Iterator<[K, V]> {
-        yield* this.pairs();
+        yield* this.#pairs();
     }
 
-    private *pairs(): Generator<[K, V]> {
+    *#pairs(): Generator<[K, V]> {
         for (const pair of this.map as unknown as Iterable<dsviper.OutputValue>) {
             const [key, element] = pair as unknown as [dsviper.OutputValue, dsviper.OutputValue];
             yield [wrap(key), wrap(element)];
@@ -629,6 +629,7 @@ function boundFor(view: unknown, type: dsviper.Type): unknown {
 
 function bind<V extends View, I>(view: new (value: dsviper.Value) => V,
                                  typeOf: () => dsviper.Type,
+                                 name: string | undefined,
                                  build: (type: dsviper.Type, value: unknown) => dsviper.Value): Bound<V, I> {
     const cached = bound.get(typeOf);
     if (cached !== undefined) {
@@ -663,6 +664,11 @@ function bind<V extends View, I>(view: new (value: dsviper.Value) => V,
         }
     }
 
+    // The class a container is declared as, not the factory's local name, is what a stack
+    // trace or the console shows.
+    if (name !== undefined) {
+        Object.defineProperty(BoundView, "name", { value: name });
+    }
     bound.set(typeOf, BoundView);
     return BoundView as unknown as Bound<V, I>;
 }
@@ -678,28 +684,28 @@ type OrderedStatics = {
     createPosition(): dsviper.ValueUUId;
 };
 
-export const vectorOf = <E, I = never>(typeOf: () => dsviper.Type) =>
-    bind<Vector<E>, I>(Vector as never, typeOf,
+export const vectorOf = <E, I = never>(typeOf: () => dsviper.Type, name?: string) =>
+    bind<Vector<E>, I>(Vector as never, typeOf, name,
                        (t, v) => dsviper.Value.create(t, v as dsviper.InputValue));
-export const setOf = <E, I = never>(typeOf: () => dsviper.Type) =>
-    bind<SetView<E>, I>(SetView as never, typeOf,
+export const setOf = <E, I = never>(typeOf: () => dsviper.Type, name?: string) =>
+    bind<SetView<E>, I>(SetView as never, typeOf, name,
                         (t, v) => dsviper.Value.create(t, v as dsviper.InputValue));
-export const fixedOf = <E, I = never>(typeOf: () => dsviper.Type) =>
-    bind<Fixed<E>, I>(Fixed as never, typeOf,
+export const fixedOf = <E, I = never>(typeOf: () => dsviper.Type, name?: string) =>
+    bind<Fixed<E>, I>(Fixed as never, typeOf, name,
                       (t, v) => dsviper.Value.create(t, v as dsviper.InputValue));
-export const matrixOf = <E, I = never>(typeOf: () => dsviper.Type) =>
-    bind<Matrix<E>, I>(Matrix as never, typeOf,
+export const matrixOf = <E, I = never>(typeOf: () => dsviper.Type, name?: string) =>
+    bind<Matrix<E>, I>(Matrix as never, typeOf, name,
                        (t, v) => dsviper.Value.create(t, v as dsviper.InputValue));
-export const mappingOf = <K, V, I = never>(typeOf: () => dsviper.Type) =>
-    bind<Mapping<K, V>, I>(Mapping as never, typeOf,
+export const mappingOf = <K, V, I = never>(typeOf: () => dsviper.Type, name?: string) =>
+    bind<Mapping<K, V>, I>(Mapping as never, typeOf, name,
                            (t, v) => new dsviper.ValueMap(t as dsviper.TypeMap, v as dsviper.InputValue));
-export const orderedOf = <E, I = never>(typeOf: () => dsviper.Type) =>
-    bind<Ordered<E>, I>(Ordered as never, typeOf,
+export const orderedOf = <E, I = never>(typeOf: () => dsviper.Type, name?: string) =>
+    bind<Ordered<E>, I>(Ordered as never, typeOf, name,
                         (t, v) => new dsviper.ValueXArray(t as dsviper.TypeXArray, v as dsviper.InputValue)) as
         Bound<Ordered<E>, I> & OrderedStatics;
-export const optionalOf = <E, I = never>(typeOf: () => dsviper.Type) =>
-    bind<Optional<E>, I>(Optional as never, typeOf,
+export const optionalOf = <E, I = never>(typeOf: () => dsviper.Type, name?: string) =>
+    bind<Optional<E>, I>(Optional as never, typeOf, name,
                          (t, v) => new dsviper.ValueOptional(t as dsviper.TypeOptional, v as dsviper.InputValue));
-export const variantOf = <E, I = never>(typeOf: () => dsviper.Type) =>
-    bind<Variant<E>, I>(Variant as never, typeOf,
+export const variantOf = <E, I = never>(typeOf: () => dsviper.Type, name?: string) =>
+    bind<Variant<E>, I>(Variant as never, typeOf, name,
                         (t, v) => dsviper.Value.create(t, v as dsviper.InputValue));

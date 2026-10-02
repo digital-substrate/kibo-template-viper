@@ -5,21 +5,21 @@ model(m) ::= <<
 
 from __future__ import annotations
 
-import base64
-import functools
-import zlib
+import base64 as _base64
+import functools as _functools
+import zlib as _zlib
 
-import dsviper
+import dsviper as _dsviper
 
 from . import resources
 from ._codegen import AnyConceptKey, AnyValue, Key
 
 __all__ = ["AnyConceptKey", "AnyValue", "Key", "definitions"]
 
-@functools.cache
-def definitions() -> dsviper.DefinitionsConst:
-    blob = dsviper.ValueBlob(zlib.decompress(base64.b64decode(resources.B64_DEFINITIONS)))
-    return dsviper.Definitions.decode(blob).const()
+@_functools.cache
+def definitions() -> _dsviper.DefinitionsConst:
+    blob = _dsviper.ValueBlob(_zlib.decompress(_base64.b64decode(resources.B64_DEFINITIONS)))
+    return _dsviper.Definitions.decode(blob).const()
 
 
 from . import containers  # noqa: E402

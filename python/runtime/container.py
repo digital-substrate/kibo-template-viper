@@ -47,6 +47,19 @@ class View:
     def __hash__(self) -> int:
         return self._value.hash()
 
+    # The runtime orders every value; a view orders as its value does, as a proxy does.
+    def __lt__(self, other: View) -> bool:
+        return bool(self._value < unwrap(other))
+
+    def __le__(self, other: View) -> bool:
+        return bool(self._value <= unwrap(other))
+
+    def __gt__(self, other: View) -> bool:
+        return bool(self._value > unwrap(other))
+
+    def __ge__(self, other: View) -> bool:
+        return bool(self._value >= unwrap(other))
+
     def __repr__(self) -> str:
         return repr(self._value)
 

@@ -71,7 +71,7 @@ variant(v) ::= <%const type<v.typeSuffix> = () => new dsviper.<v.viperType>([<v.
 member(t) ::= <%type<t.typeSuffix>()%>
 
 bound(v, factory) ::= <<
-export const <v.bindingType.proxy> = <factory>(type<v.typeSuffix>);
+export const <v.bindingType.proxy> = <factory>(type<v.typeSuffix>, "<v.bindingType.proxy>");
 export type <v.bindingType.proxy> = InstanceType\<typeof <v.bindingType.proxy>\>;
 >>
 
