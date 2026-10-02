@@ -24,6 +24,24 @@ output from different template versions, and what a generated file reports —
 that repackages both into a single artefact should not read that artefact's
 version as either one.
 
+## [Unreleased]
+
+### Changed
+
+- **A pool function is called, and registered, by its DSM name.** A function and
+  its parameters travel under the names the DSM declares (`addVector`, not
+  `add_vector`), in the C++ registration (`FunctionPools`,
+  `AttachmentFunctionPools`), the C++ remotes, and the Python and TypeScript
+  pools and remotes. Every other name in the runtime's dynamic space already
+  followed the DSM spelling; function names were the one snake_case exception.
+  The static names do not move: the C++ bridge an application implements, the
+  C++ remote methods and the Python methods keep their spelling. A service and
+  its clients regenerated together are unaffected; a client regenerated against
+  a service that was not, or the reverse, no longer find each other's functions.
+  This is the spelling the kibo 2 templates use, so a 1.2 service and a kibo 2
+  client call each other. The attachment pool generated for each attachment
+  keeps its composed names.
+
 ## [1.2.4] - 2026-09-10
 
 Two C++ template defects, both surfaced by the render diagnostics kibo now prints.

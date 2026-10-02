@@ -48,9 +48,9 @@ def <f.name;format="lsc">(self, attachment_<f.interfaceType;format="l">: dsviper
     """
     <endif>
     <if(f.isVoid)>
-    self._funcs["<f.name;format="lsc">"](attachment_<f.interfaceType;format="l">, <f.parameters:parameter_call();separator=", ">)
+    self._funcs["<f.name>"](attachment_<f.interfaceType;format="l">, <f.parameters:parameter_call();separator=", ">)
     <else>
-    result = self._funcs["<f.name;format="lsc">"](attachment_<f.interfaceType;format="l">, <f.parameters:parameter_call();separator=", ">)
+    result = self._funcs["<f.name>"](attachment_<f.interfaceType;format="l">, <f.parameters:parameter_call();separator=", ">)
     return <f.returnPythonType:wrap("result")>
     <endif>
 

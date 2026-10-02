@@ -71,7 +71,7 @@ public:
 >>
 
 // MARK: - Common for all type of pool
-parameter_prototype(p) ::= <%parameters.push_back({"<p.name;format="lsc">", ValueType::type<p.typeSuffix>()});%>
+parameter_prototype(p) ::= <%parameters.push_back({"<p.name>", ValueType::type<p.typeSuffix>()});%>
 function_make(f) ::= <<
 static std::shared_ptr\<F_<f:name()>\> make() {
     std::vector\<Viper::FunctionPrototype::Parameter> parameters;
@@ -80,7 +80,7 @@ static std::shared_ptr\<F_<f:name()>\> make() {
     auto returnType{ValueType::type<f.typeSuffix>()};
 
     return std::make_shared\<F_<f:name()>\>(
-        Viper::FunctionPrototype::make("<f:name()>", std::move(parameters), std::move(returnType)),
+        Viper::FunctionPrototype::make("<f.name>", std::move(parameters), std::move(returnType)),
         "<f.documentation>");
 }
 >>

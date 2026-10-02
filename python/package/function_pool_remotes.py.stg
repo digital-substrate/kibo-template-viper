@@ -39,9 +39,9 @@ def <f.name;format="lsc">(self<if(f.parameters)>, <f.parameters:parameter();sepa
     """
     <endif>
     <if(f.isVoid)>
-    self.funcs["<f.name;format="lsc">"](<f.parameters:parameter_call();separator=", ">)
+    self.funcs["<f.name>"](<f.parameters:parameter_call();separator=", ">)
     <else>
-    result = self.funcs["<f.name;format="lsc">"](<f.parameters:parameter_call();separator=", ">)
+    result = self.funcs["<f.name>"](<f.parameters:parameter_call();separator=", ">)
     return <f.returnPythonType:wrap("result")>
     <endif>
 >>

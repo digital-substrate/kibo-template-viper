@@ -27,7 +27,7 @@ function_return(f) ::= <%<if(f.isVoid)>void<else><f.type><endif>%>
 fp_parameter_push_back(p) ::= <%parameters.push_back(ValueEncoder::encode<p.typeSuffix>(<p.name>));%>
 fp_function(f,po) ::= <<
 <f:function_return()> <po.name;format="uf">::<f.name;format="lsc">(<f:function_parameters()>) const {
-    static std::string const funcName("<f.name;format="lsc">");
+    static std::string const funcName("<f.name>");
 
     std::vector\<std::shared_ptr\<Viper::Value\>> parameters;
     <f.parameters:fp_parameter_push_back();separator="\n">
