@@ -79,7 +79,7 @@ import typing
 
 import dsviper
 
-from .._codegen import AnyConceptKey, AnyValue, wrap
+from .._codegen import AnyConceptKey, AnyValue, unwrap, wrap
 
 if typing.TYPE_CHECKING:
     from .. import containers
@@ -104,7 +104,7 @@ attachment_function(f) ::= <<
 
 parameter(a) ::= <%<a.name;format="snake">: <hint(a.bindingType)>%>
 ret(f) ::= <%<if(f.isVoid)>None<else><hint(f.returnBindingType)><endif>%>
-argument(a) ::= <%<if(a.bindingType.isNamed)><a.name;format="snake">._unwrap()<else><a.name;format="snake"><endif>%>
+argument(a) ::= <%<if(a.bindingType.useProxy)>unwrap(<a.name;format="snake">)<else><a.name;format="snake"><endif>%>
 
 call(f) ::= <%<if(f.isVoid)>self._funcs["<f.name>"](<f.parameters:argument();separator=", ">)<else>return <wrap(f)>self._funcs["<f.name>"](<f.parameters:argument();separator=", ">)<unwrap(f)><endif>%>
 attachment_call(f) ::= <%<attachment_invoke(f, {attachment_<f.interfaceType;format="lsc">})>%>
