@@ -110,6 +110,7 @@
       "doc": "A function pool and its client edge. Most projects have none: a pool is a service surface, not a consequence of having a model.",
       "templates": [
         "pool/index.ts.stg",
+        "pools.ts.stg",
         "pool.ts.stg"
       ],
       "requires": [

@@ -33,6 +33,7 @@ import { definitions } from "../definitions.js";
 <endif>
 
 register(<u.concepts:registered_key();separator=", "><if(u.clubs)>, <u.clubs:registered_key();separator=", "><endif><if(u.enumerations)>, <u.enumerations:registered();separator=", "><endif><if(u.structures)>, <u.structures:registered();separator=", "><endif>);
+
 >>
 
 runtime_id(v) ::= <%export const <v.name;format="usc"> = dsviper.ValueUUId.create("<v.runtimeId>");%>

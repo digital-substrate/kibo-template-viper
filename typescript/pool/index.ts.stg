@@ -3,6 +3,7 @@ import "../banner.stg"
 pool(p) ::= <<
 <preamble(p.model)>
 export * from "./pool.js";
+
 >>
 
 attachment_pool(p) ::= <<

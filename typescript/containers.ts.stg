@@ -32,6 +32,7 @@ import type { AnyConceptKey, AnyValue } from "./_codegen/registry.js";
 <m.mapFunctions:{v|<bound(v, {mappingOf\<<v.bindingKeyType.qualified>, <v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
 <m.xarrayFunctions:{v|<bound(v, {orderedOf\<<v.bindingElementType.qualified>, <v.bindingType.constructorInput>\>})>};separator="\n">
 <m.variantFunctions:variant_class();separator="\n\n">
+
 >>
 
 primitives() ::= <<

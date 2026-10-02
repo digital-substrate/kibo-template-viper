@@ -16,6 +16,7 @@ export class Remote {
 
 <p.functions:remote_call();separator="\n\n">
 }
+
 >>
 
 attachment_pool(p) ::= <<
@@ -34,6 +35,7 @@ export class Remote {
 
 <p.functions:attachment_remote_call();separator="\n\n">
 }
+
 >>
 
 preamble(p) ::= <<

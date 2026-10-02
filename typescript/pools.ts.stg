@@ -1,0 +1,14 @@
+import "banner.stg"
+
+model(m) ::= <<
+<banner(m)>
+
+/** Every pool of the model, one namespace each, holding the `Remote` a client calls through a
+ *  service. Rendered with the `Pool` feature only; a module even when the model has no pool. */
+export {};
+<m.functionPools:pool_export();separator="\n">
+<m.attachmentFunctionPools:pool_export();separator="\n">
+
+>>
+
+pool_export(p) ::= <%export * as <p.name;format="lsc"> from "./<p.name;format="lsc">/index.js";%>

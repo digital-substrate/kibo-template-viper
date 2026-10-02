@@ -43,6 +43,7 @@ if typing.TYPE_CHECKING:
 <m.nameSpaces:{u|from . import <u.name;format="lsc">  # noqa: E402};separator="\n">
 
 declare(<[m.vecFunctions, m.matFunctions, m.tupleFunctions, m.optionalFunctions, m.vectorFunctions, m.setFunctions, m.mapFunctions, m.xarrayFunctions, m.variantFunctions]:{v|<v.bindingType.proxy>};separator=", ">)
+
 >>
 
 primitives() ::= <<

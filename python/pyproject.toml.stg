@@ -20,4 +20,5 @@ include = ["<m.namespace;format="lsc">", "<m.namespace;format="lsc">.*"]
 
 [tool.setuptools.package-data]
 "<m.namespace;format="lsc">" = ["py.typed", "*.pyi"]
+
 >>

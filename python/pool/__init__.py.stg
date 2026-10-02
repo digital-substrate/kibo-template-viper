@@ -4,6 +4,9 @@ pool(p) ::= <<
 <preamble(p.model)>
 
 from .pool import Pool, Remote
+
+__all__ = ["Pool", "Remote"]
+
 >>
 
 attachment_pool(p) ::= <<

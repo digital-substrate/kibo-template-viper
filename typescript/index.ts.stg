@@ -7,12 +7,14 @@ export * from "./containers.js";
 export { AnyConceptKey, AnyValue } from "./_codegen/registry.js";
 export { Key } from "./_codegen/proxy.js";
 <m.nameSpaces:{u|export * as <u.name;format="lsc"> from "./<u.name;format="lsc">/index.js";};separator="\n">
+
 >>
 
 unit(u) ::= <<
 <preamble(u.model)>
 export * from "./data.js";
 export * as attachments from "./attachments.js";
+
 >>
 
 preamble(m) ::= <<

@@ -14,8 +14,11 @@ from .._codegen import AnyConceptKey, AnyValue, AttachmentProxy
 from .. import containers
 from .. import <u.name;format="lsc">
 <u.dependencies.attachments:{d|from .. import <d.name;format="lsc">};separator="\n">
+<if(u.attachmentScopes)>
 
 <u.attachmentScopes:by_concept(u);separator="\n\n">
+<endif>
+
 >>
 
 by_concept(s, u) ::= <<
