@@ -179,6 +179,12 @@ range, the licence — and the model's own documentation (`docstring` and `comme
 Python and TypeScript output carries no other prose; a C++ file's header adds a short
 statement of what the file holds.
 
+The header is written once per target, in `<target>/banner.stg`, which every template
+imports and calls (`<banner(m)>`, or `manifest_banner` / `configuration_banner` for a file
+that is not code). Its first line is the generator's own (`m.generated`): what was rendered,
+by which kibo. A third-party template writes its own header: its `Templates:` line names its
+author and licence, not this pack's, and the runtime notice is the third party's to state.
+
 ## 3. The runtime the packages carry
 
 `_codegen/` is small and generic; everything type-specific is generated.

@@ -3,9 +3,11 @@
 the tree agrees with itself.
 
 The stamp is a generated SDK's only record of which template snapshot produced
-it. When a template loses its stamp, or two templates disagree, a consumer
-holding generated code has no way to answer "is my SDK affected by this fix, do
-I need to regenerate?" -- so both are failures here, not warnings.
+it. Each target writes it once, in its `banner.stg`, which every template it
+renders imports and calls. When a template renders without a banner, or two
+banners disagree, a consumer holding generated code has no way to answer "is my
+SDK affected by this fix, do I need to regenerate?" -- so both are failures
+here, not warnings.
 
     python tools/bump_version.py --check
     python tools/bump_version.py 1.2.3
@@ -41,6 +43,11 @@ RUNTIME = {
 VERSION = re.compile(r"^\d+\.\d+\.\d+$")
 RELEASED = re.compile(r"^## \[(\d+\.\d+\.\d+)\]", re.MULTILINE)
 
+# A template calls its target's banner: `<banner(m)>`, or a variant for a file that is
+# not code (`<manifest_banner(m)>`, `<configuration_banner(m)>`).
+BANNER = "banner.stg"
+CALLS = re.compile(r"<\w*banner\(")
+
 # Templates whose generated output cannot carry a comment. The rest of the project
 # generated alongside them carries the stamp, so the snapshot is still identifiable.
 EXEMPT = {
@@ -66,28 +73,34 @@ def templates(root):
 
 
 def survey(root):
-    """Return (stamped, versions, unstamped, runtimes, models) across the tree."""
+    """Return (stamped, versions, unstamped, runtimes, models) across the tree.
+
+    `stamped` are the banners, which carry the stamp; `unstamped` are the templates that
+    render without calling one, and the targets that have no banner."""
     stamped, versions, unstamped = [], set(), []
     runtimes = {target: set() for target in TARGETS}
     models = set()
+    for target in TARGETS:
+        if not (root / target / BANNER).exists():
+            unstamped.append(f"{target}/{BANNER}")
     for path in templates(root):
         rel = path.relative_to(root).as_posix()
         text = read(path)
+        if path.name != BANNER:
+            if not CALLS.search(text) and rel not in EXEMPT:
+                unstamped.append(rel)
+            continue
+
         match = STAMP.search(text)
         if match:
             stamped.append(path)
-            versions.add(match.group(2))
-        elif rel not in EXEMPT:
+            versions.update(m.group(2) for m in STAMP.finditer(text))
+        else:
             unstamped.append(rel)
 
         target = rel.split("/", 1)[0]
-        runtime = RUNTIME[target].search(text)
-        if runtime:
-            runtimes[target].add(runtime.group(1))
-
-        model = MODEL.search(text)
-        if model:
-            models.add(model.group(1))
+        runtimes[target].update(m.group(1) for m in RUNTIME[target].finditer(text))
+        models.update(m.group(1) for m in MODEL.finditer(text))
     return stamped, versions, unstamped, runtimes, models
 
 
@@ -99,10 +112,10 @@ def check(root, total, stamped, versions, unstamped, runtimes, models):
 
     failed = False
     if unstamped:
-        print("error: template(s) missing the version stamp:", file=sys.stderr)
+        print("error: template(s) rendering without the version stamp:", file=sys.stderr)
         for rel in unstamped:
             print("  " + rel, file=sys.stderr)
-        print("Add the stamp, or exempt the file in EXEMPT with a reason.", file=sys.stderr)
+        print("Call the target's banner, or exempt the file in EXEMPT with a reason.", file=sys.stderr)
         failed = True
 
     if len(versions) > 1:
@@ -158,8 +171,8 @@ def main():
     current = next(iter(versions))
 
     if args.check:
-        print("{} ({} of {} templates stamped, {} exempt)"
-              .format(current, len(stamped), len(total), len(total) - len(stamped)))
+        print("{} ({} banners, {} templates calling them, {} exempt)"
+              .format(current, len(stamped), len(total) - len(stamped) - len(EXEMPT), len(EXEMPT)))
         changelog_warning(root, current)
         return 0
 
@@ -180,7 +193,7 @@ def main():
               file=sys.stderr)
         return 1
 
-    print("{} -> {} ({} templates)".format(current, args.version, len(after_stamped)))
+    print("{} -> {} ({} banners)".format(current, args.version, len(after_stamped)))
     print("Remember the CHANGELOG heading.")
     return 0
 

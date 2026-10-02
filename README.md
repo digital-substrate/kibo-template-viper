@@ -59,12 +59,22 @@ API by another name: renaming a generated class, field or operation breaks the c
 against it, and is a breaking change of this pack.
 
 This repository versions itself (see *Compatible runtime versions* below): a release is
-stamped into every template, and every generated file carries the stamp.
+stamped into each target's `banner.stg`, which every template calls, so every generated
+file carries the stamp.
 
 ## Usage
 
-Kibo renders one template, or a directory of them, per run. A project resolves its features,
-then renders each template:
+A project declares what it generates in a `kibo.toml`, and
+[kibo-project](https://github.com/digital-substrate/kibo-project) does the rest: it resolves
+the features, renders each template, embeds the definitions and copies the runtime, as
+`features.json` declares.
+
+```bash
+python3 ../kibo-project/kibo_project.py generate
+```
+
+Underneath, kibo renders one template, or a directory of them, per run. A project resolves
+its features, then renders each template:
 
 ```bash
 for stg in $(python3 -c "import resolve; print(*resolve.templates('cpp', ['Attachments']))"); do
@@ -93,6 +103,12 @@ $ ./resolve.py cpp MyReport --with path/to/my-templates/features.json
 
 In Python, `resolve.templates("cpp", ["MyReport"], extra=["path/to/my-templates/features.json"])`.
 A feature name the pack already declares is refused.
+
+Besides the features, `features.json` declares what a tool driving kibo needs to know of this
+pack, so that it carries no knowledge of its own: `generator.kibo`, the oldest kibo exposing the
+Template Model these templates consume, and `layout`, per target, where the templates render,
+which runtime is copied beside them, and how the definitions are embedded.
+[kibo-project](https://github.com/digital-substrate/kibo-project) reads both.
 
 ## License
 

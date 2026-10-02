@@ -149,5 +149,75 @@
         "Base"
       ]
     }
+  },
+  "generator": {
+    "_comment": [
+      "The kibo this pack renders through: the oldest release exposing the Template Model",
+      "these templates consume. A floor, not a co-version: a later kibo exposing the same",
+      "Template Model renders them too."
+    ],
+    "kibo": ">=2.0.0"
+  },
+  "layout": {
+    "_comment": [
+      "Where a generator puts what this pack renders, per target, so that a tool driving kibo",
+      "needs no knowledge of the pack: the directory the templates render into, below the",
+      "target's output (`sources`), the templates rendered at the output itself (`root`), the",
+      "runtime copied beside the sources, and the embedded definitions with their encoding.",
+      "`{infrastructure}` is the name passed to kibo as -n.",
+      "`with` names the feature that reads what is written beside the templates: a target",
+      "that does not render it gets neither the definitions nor the runtime."
+    ],
+    "cpp": {
+      "sources": "",
+      "resources": {
+        "with": "Base",
+        "path": "{infrastructure}_resources.hpp",
+        "encoding": "cpp-bytes",
+        "symbol": "{infrastructure}_resources_definitions"
+      }
+    },
+    "python": {
+      "sources": "{infrastructure}",
+      "root": [
+        "pyproject.toml.stg"
+      ],
+      "runtime": {
+        "with": "Base",
+        "from": "python/runtime",
+        "to": "_codegen",
+        "exclude": [
+          "__pycache__",
+          "*.md"
+        ]
+      },
+      "resources": {
+        "with": "Base",
+        "path": "resources.py",
+        "encoding": "python-base64-zlib",
+        "symbol": "B64_DEFINITIONS"
+      }
+    },
+    "typescript": {
+      "sources": "src",
+      "root": [
+        "package.json.stg",
+        "tsconfig.json.stg"
+      ],
+      "runtime": {
+        "with": "Base",
+        "from": "typescript/runtime",
+        "to": "_codegen",
+        "exclude": [
+          "*.md"
+        ]
+      },
+      "resources": {
+        "with": "Base",
+        "path": "resources.ts",
+        "encoding": "typescript-base64",
+        "symbol": "B64_DEFINITIONS"
+      }
+    }
   }
 }
