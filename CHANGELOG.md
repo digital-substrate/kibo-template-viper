@@ -149,6 +149,9 @@ migrating.
   `KeyError`, an alternative a variant does not hold `ValueError`, an unknown case name
   `ValueError`; TypeScript: the runtime's `ViperError`, and `TypeError` for an alternative a
   variant does not hold.
+- **A TypeScript xarray field takes the list of its elements**, as Python and an optional of
+  an xarray do: `u.f_xarray = [1, 2]` type-checks, the Node binding (>= 1.2.14) decoding an
+  xarray from its elements.
 - **Containers declare what each kind does, in both languages.** Python: a vector is a `Vector`
   (`append`, `insert`, `extend`, `pop`, `remove`, `count`, `index`, `exchange`, `front`,
   `back`, `[i] =`, `del`, `+`, `+=`), a set a `SetView` (`add`, `remove`, `discard`, `pop`,

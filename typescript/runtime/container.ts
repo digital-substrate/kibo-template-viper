@@ -265,6 +265,10 @@ export class Fixed<E> extends Sequence<E, dsviper.ValueVec | dsviper.ValueTuple>
     }
 }
 
+/**
+ * A mat<T, columns, rows>, column-major: built from and iterated as a list of columns, an
+ * element at at(column, row), a column by column(index).
+ */
 export class Matrix<E> extends View<dsviper.ValueMat> {
     private get mat(): dsviper.ValueMat {
         return this[VALUE] as dsviper.ValueMat;
@@ -516,6 +520,7 @@ export class Ordered<E> extends View<dsviper.ValueXArray> {
     }
 }
 
+/** An optional. `clear()` empties it; read from a field, it empties that field. */
 export class Optional<E> extends View<dsviper.ValueOptional> {
     private get optional(): dsviper.ValueOptional {
         return this[VALUE] as dsviper.ValueOptional;
@@ -549,6 +554,7 @@ export class Optional<E> extends View<dsviper.ValueOptional> {
     }
 }
 
+/** An any. `clear()` empties it; read from a field, it empties that field. */
 export class AnyValue extends View<dsviper.ValueAny> {
     constructor(value?: unknown) {
         super(new dsviper.ValueAny(value instanceof dsviper.ValueAny ? value : unwrapDeep(value)));

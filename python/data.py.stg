@@ -304,6 +304,8 @@ class <s.name>(Proxy[dsviper.ValueStructure]):
 
     def __init__(self, source: dsviper.ValueStructure | dict[str, typing.Any] | None = None, /, *,
                  <s.fields:{f|<f.name;format="snake">: <input_hint(f)> | NotGiven = NOT_GIVEN};separator=",\n">) -> None:
+        """Fields by keyword, in snake_case; or a source: a Viper ValueStructure of this
+        type, copied, or a dict keyed by the DSM field names, as the runtime takes it."""
         if source is None:
             source = dsviper.ValueStructure(self.type())
         elif isinstance(source, dict):

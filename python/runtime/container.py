@@ -262,6 +262,8 @@ class Fixed(Sequence[V, E]):
 
 
 class Matrix(View[dsviper.ValueMat], typing.Generic[E]):
+    """A mat<T, columns, rows>, column-major: built from and iterated as a list of columns,
+    an element at m[column, row], a column by column(index)."""
     __slots__ = ()
 
     def __len__(self) -> int:
@@ -488,6 +490,7 @@ class Ordered(View[dsviper.ValueXArray], typing.Generic[E]):
 
 
 class Optional(View[dsviper.ValueOptional], typing.Generic[E]):
+    """An optional. `clear()` empties it; read from a field, it empties that field."""
     __slots__ = ()
 
     def __bool__(self) -> bool:
@@ -538,6 +541,7 @@ class Variant(View[dsviper.ValueVariant], typing.Generic[E]):
 
 
 class AnyValue(View[dsviper.ValueAny]):
+    """An any. `clear()` empties it; read from a field, it empties that field."""
     __slots__ = ()
 
     def __init__(self, value: typing.Any = None) -> None:
