@@ -260,10 +260,6 @@ export const <e.name> = {
         return <e.name>.wrapValue(new dsviper.ValueEnumeration(<e.name>.type(), name));
     },
 
-    name(held: <e.name>): string {
-        return held;
-    },
-
     index(held: <e.name>): number {
         return <e.name>.type().cases().findIndex((c) => c.name() === held);
     },

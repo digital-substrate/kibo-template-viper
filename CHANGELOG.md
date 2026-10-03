@@ -138,6 +138,13 @@ migrating.
   `decode`, `hexdigest` and the TypeScript keys' `compareTo` are gone; `AnyConceptKey` gains
   `type()` so a key crosses back too, and a TypeScript key is also made from its instance id
   as a string, as the runtime allows.
+- **The bindings offer what the runtime, 1.2 or the C++ offer, and no more.** A TypeScript
+  variant's type-keyed `holds` / `as` are protected (the typed `isX` / `getX` remain); an
+  attachment's `enumerate` takes an `AttachmentGetting` or a `Database`, without `encoded` or a
+  `CommitState`; a TypeScript enumeration's companion loses `name(held)`, which returned its
+  argument; a TypeScript attachment deletes with `del`, as in C++ and 1.2 (Python keeps
+  `delete`, `del` being its keyword). A C++ pool's identity is public again, as in 1.2:
+  `<namespace>::<pool>::poolName` and `poolId`, shared by the pool and its `Remote`.
 - **Containers declare what each kind does, in both languages.** Python: a vector is a `Vector`
   (`append`, `insert`, `extend`, `pop`, `remove`, `count`, `index`, `exchange`, `front`,
   `back`, `[i] =`, `del`, `+`, `+=`), a set a `SetView` (`add`, `remove`, `discard`, `pop`,

@@ -5,6 +5,12 @@ pool(p) ::= <<
 
 namespace <p.model.namespace>::<p.name;format="lsc"> {
 
+#ifndef <p.guard.pool>_IDENTITY
+#define <p.guard.pool>_IDENTITY
+inline constexpr std::string_view poolName{"<p.name>"};
+inline Viper::UUId const poolId{Viper::UUId::parse("<p.uuid>")};
+#endif
+
 <remote(p)>
 
 } // namespace <p.model.namespace>::<p.name;format="lsc">
@@ -17,6 +23,12 @@ attachment_pool(p) ::= <<
 <preamble(p, "yes")>
 
 namespace <p.model.namespace>::<p.name;format="lsc"> {
+
+#ifndef <p.guard.pool>_IDENTITY
+#define <p.guard.pool>_IDENTITY
+inline constexpr std::string_view poolName{"<p.name>"};
+inline Viper::UUId const poolId{Viper::UUId::parse("<p.uuid>")};
+#endif
 
 <attachment_remote(p)>
 
@@ -50,6 +62,7 @@ preamble(p, context) ::= <<
 
 #include \<cstdint>
 #include \<memory>
+#include \<string_view>
 >>
 
 remote(f) ::= <<

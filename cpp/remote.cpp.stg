@@ -5,12 +5,6 @@ pool(p) ::= <<
 
 namespace <p.model.namespace>::<p.name;format="lsc"> {
 
-namespace {
-
-Viper::UUId const poolId{Viper::UUId::parse("<p.uuid>")};
-
-} // namespace
-
 <remote(p)>
 
 } // namespace <p.model.namespace>::<p.name;format="lsc">
@@ -21,12 +15,6 @@ attachment_pool(p) ::= <<
 <preamble(p)>
 
 namespace <p.model.namespace>::<p.name;format="lsc"> {
-
-namespace {
-
-Viper::UUId const poolId{Viper::UUId::parse("<p.uuid>")};
-
-} // namespace
 
 <attachment_remote(p)>
 

@@ -65,11 +65,8 @@ export class AttachmentProxy<K, D, KS = SetView<K>, DI = D> {
         return wrap(getting.keys(this.descriptor)) as KS;
     }
 
-    enumerate(getting: Getting): [K, D | undefined][] {
-        const source = (getting as unknown as { enumerate?: unknown; attachmentGetting?: () => dsviper.AttachmentGetting });
-        const reader = typeof source.enumerate === "function"
-            ? (getting as unknown as dsviper.AttachmentGetting)
-            : (source.attachmentGetting as () => dsviper.AttachmentGetting)();
+    enumerate(getting: dsviper.AttachmentGetting | dsviper.Database): [K, D | undefined][] {
+        const reader = getting instanceof dsviper.Database ? getting.attachmentGetting() : getting;
         return reader.enumerate(this.descriptor)
             .map(([key, document]) => [wrap(key), wrap(document)]);
     }
@@ -108,7 +105,7 @@ export class AttachmentProxy<K, D, KS = SetView<K>, DI = D> {
         mutating.diff(this.descriptor, unwrap(key) as dsviper.ValueKey, unwrap(value), recursive);
     }
 
-    delete(database: { delete(a: dsviper.Attachment, k: dsviper.ValueKey): boolean }, key: K): boolean {
+    del(database: dsviper.Database, key: K): boolean {
         return database.delete(this.descriptor, unwrap(key) as dsviper.ValueKey);
     }
 

@@ -598,7 +598,7 @@ export class Variant<E> extends View<dsviper.ValueVariant> {
         }
     }
 
-    as<T>(type: dsviper.Type): T {
+    protected as<T>(type: dsviper.Type): T {
         const held = this.variant.unwrap(false) as dsviper.Value;
         if (!held.type().equals(type)) {
             throw new RangeError(`the variant holds a ${held.type().representation()}, `
@@ -607,7 +607,7 @@ export class Variant<E> extends View<dsviper.ValueVariant> {
         return wrap(held);
     }
 
-    holds(type: dsviper.Type): boolean {
+    protected holds(type: dsviper.Type): boolean {
         return (this.variant.unwrap(false) as dsviper.Value).type().equals(type);
     }
 }

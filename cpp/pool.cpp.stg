@@ -8,8 +8,6 @@ namespace <p.model.namespace>::<p.name;format="lsc"> {
 
 namespace {
 
-Viper::UUId const poolId{Viper::UUId::parse("<p.uuid>")};
-
 <p.functions:function(p);separator="\n\n">
 
 } // namespace
@@ -35,8 +33,6 @@ attachment_pool(p) ::= <<
 namespace <p.model.namespace>::<p.name;format="lsc"> {
 
 namespace {
-
-Viper::UUId const poolId{Viper::UUId::parse("<p.uuid>")};
 
 <p.functions:attachment_function(p);separator="\n\n">
 

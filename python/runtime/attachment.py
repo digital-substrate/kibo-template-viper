@@ -50,11 +50,11 @@ class AttachmentProxy(typing.Generic[K, D, KS, DI]):
     def get(self, getting: dsviper.AttachmentGetting | dsviper.Database, key: K) -> Optional[D]:
         return typing.cast("Optional[D]", _wrap(getting.get(self.descriptor, key.unwrap_value())))
 
-    def enumerate(self, getting: dsviper.AttachmentGetting | dsviper.Database | dsviper.CommitState,
-                  *, encoded: bool = True) -> list[tuple[K, D]]:
-        source: typing.Any = getting if hasattr(getting, "enumerate") else getting.attachment_getting()
-        return [(_wrap(key), _wrap(document) if isinstance(document, dsviper.Value) else document)
-                for key, document in source.enumerate(self.descriptor, encoded=encoded)]
+    def enumerate(self, getting: dsviper.AttachmentGetting | dsviper.Database) -> list[tuple[K, D]]:
+        source = getting.attachment_getting() if isinstance(getting, dsviper.Database) else getting
+        return typing.cast("list[tuple[K, D]]", [
+            (_wrap(key), _wrap(document) if isinstance(document, dsviper.Value) else document)
+            for key, document in source.enumerate(self.descriptor)])
 
     def diff_keys(self, current: dsviper.AttachmentGetting, other: dsviper.AttachmentGetting
                   ) -> tuple[KS, KS, KS, KS]:

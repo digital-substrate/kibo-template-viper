@@ -5,6 +5,12 @@ pool(p) ::= <<
 
 namespace <p.model.namespace>::<p.name;format="lsc"> {
 
+#ifndef <p.guard.pool>_IDENTITY
+#define <p.guard.pool>_IDENTITY
+inline constexpr std::string_view poolName{"<p.name>"};
+inline Viper::UUId const poolId{Viper::UUId::parse("<p.uuid>")};
+#endif
+
 <p.functions:bridge();separator="\n">
 
 <pool_doc(p)>std::shared_ptr\<Viper::FunctionPool> pool();
@@ -19,6 +25,12 @@ attachment_pool(p) ::= <<
 <preamble(p, "AttachmentFunctionPool", "yes")>
 
 namespace <p.model.namespace>::<p.name;format="lsc"> {
+
+#ifndef <p.guard.pool>_IDENTITY
+#define <p.guard.pool>_IDENTITY
+inline constexpr std::string_view poolName{"<p.name>"};
+inline Viper::UUId const poolId{Viper::UUId::parse("<p.uuid>")};
+#endif
 
 <p.functions:attachment_bridge();separator="\n">
 
@@ -55,6 +67,7 @@ preamble(p, kind, context) ::= <<
 
 #include \<cstdint>
 #include \<memory>
+#include \<string_view>
 >>
 
 bridge(f) ::= <<
