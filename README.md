@@ -87,6 +87,23 @@ package. A Python or TypeScript package also carries its runtime: copy `python/r
 into it as `_codegen/` (`typescript/runtime/` into `src/_codegen/`). The model's definitions
 are embedded beside it by the project — `resources.py`, `resources.ts`, `<ns>_resources.hpp`.
 
+## What a generated package gives
+
+Each target has its page — what the package holds, how to use it, what is shared and what
+is copied:
+
+- [`cpp/README.md`](cpp/README.md) — C++ value types over the Viper runtime, crossing to a
+  `Value` through the generated codec. It is the base reference: the other targets offer
+  what it offers, with its restrictions.
+- [`python/README.md`](python/README.md) — a package over `dsviper`, following the runtime's
+  reference semantics: `Cls.wrap_value(value)` / `p.unwrap_value()` share the Viper value, a
+  constructor copies.
+- [`typescript/README.md`](typescript/README.md) — the same over `@digitalsubstrate/dsviper`,
+  with `wrapValue` / `unwrapValue`, and how a project imports the runtime and type-checks.
+
+Code written against the 1.2 output migrates as the CHANGELOG's *Migrating from 1.2* table
+says.
+
 ## Third-party templates
 
 This repo is for **first-party templates only** (DS-maintained). Third
@@ -183,7 +200,8 @@ consumer's build reads it:
   attachment function that only reads takes an `AttachmentGetting`, which the wheel
   accepts from `1.2.29`. The generated `pyproject.toml` declares it.
 - **`typescript`**: the generated `package.json` declares `>=1.2.14 <1.3.0`, the binding
-  whose remote attachment call accepts an `AttachmentGetting`.
+  whose remote attachment call accepts an `AttachmentGetting` and which decodes a written
+  xarray from the list of its elements.
 - **`cpp`**: the generated code crosses to a `Value`, and hashes, through the runtime's
   static layer — `Viper_StaticType`, `Viper_StaticWriter`, `Viper_StaticReader`,
   `Viper_StaticHash` — on viper's `LTS-1.2` branch, and calls a remote attachment function
