@@ -47,40 +47,40 @@ declare(<[m.vecFunctions, m.matFunctions, m.tupleFunctions, m.optionalFunctions,
 >>
 
 primitives() ::= <<
-def type_bool() -> dsviper.TypeBool: return dsviper.TypeBool()
-def type_uint8() -> dsviper.TypeUInt8: return dsviper.TypeUInt8()
-def type_uint16() -> dsviper.TypeUInt16: return dsviper.TypeUInt16()
-def type_uint32() -> dsviper.TypeUInt32: return dsviper.TypeUInt32()
-def type_uint64() -> dsviper.TypeUInt64: return dsviper.TypeUInt64()
-def type_int8() -> dsviper.TypeInt8: return dsviper.TypeInt8()
-def type_int16() -> dsviper.TypeInt16: return dsviper.TypeInt16()
-def type_int32() -> dsviper.TypeInt32: return dsviper.TypeInt32()
-def type_int64() -> dsviper.TypeInt64: return dsviper.TypeInt64()
-def type_float() -> dsviper.TypeFloat: return dsviper.TypeFloat()
-def type_double() -> dsviper.TypeDouble: return dsviper.TypeDouble()
-def type_string() -> dsviper.TypeString: return dsviper.TypeString()
-def type_blob() -> dsviper.TypeBlob: return dsviper.TypeBlob()
-def type_blob_id() -> dsviper.TypeBlobId: return dsviper.TypeBlobId()
-def type_commit_id() -> dsviper.TypeCommitId: return dsviper.TypeCommitId()
-def type_uuid() -> dsviper.TypeUUId: return dsviper.TypeUUId()
-def type_any() -> dsviper.TypeAny: return dsviper.TypeAny()
-def type_AnyConceptKey() -> dsviper.TypeKey: return dsviper.TypeKey(dsviper.TypeAnyConcept())
+def _type_bool() -> dsviper.TypeBool: return dsviper.TypeBool()
+def _type_uint8() -> dsviper.TypeUInt8: return dsviper.TypeUInt8()
+def _type_uint16() -> dsviper.TypeUInt16: return dsviper.TypeUInt16()
+def _type_uint32() -> dsviper.TypeUInt32: return dsviper.TypeUInt32()
+def _type_uint64() -> dsviper.TypeUInt64: return dsviper.TypeUInt64()
+def _type_int8() -> dsviper.TypeInt8: return dsviper.TypeInt8()
+def _type_int16() -> dsviper.TypeInt16: return dsviper.TypeInt16()
+def _type_int32() -> dsviper.TypeInt32: return dsviper.TypeInt32()
+def _type_int64() -> dsviper.TypeInt64: return dsviper.TypeInt64()
+def _type_float() -> dsviper.TypeFloat: return dsviper.TypeFloat()
+def _type_double() -> dsviper.TypeDouble: return dsviper.TypeDouble()
+def _type_string() -> dsviper.TypeString: return dsviper.TypeString()
+def _type_blob() -> dsviper.TypeBlob: return dsviper.TypeBlob()
+def _type_blob_id() -> dsviper.TypeBlobId: return dsviper.TypeBlobId()
+def _type_commit_id() -> dsviper.TypeCommitId: return dsviper.TypeCommitId()
+def _type_uuid() -> dsviper.TypeUUId: return dsviper.TypeUUId()
+def _type_any() -> dsviper.TypeAny: return dsviper.TypeAny()
+def _type_AnyConceptKey() -> dsviper.TypeKey: return dsviper.TypeKey(dsviper.TypeAnyConcept())
 >>
 
 named(u, m) ::= <<
-<u.concepts:{c|def type_<u.name>_<c.name>Key() -> dsviper.Type: return dsviper.TypeKey(definitions().check_concept(<u.name;format="snake">.data.<c.name;format="usnake">))};separator="\n">
-<u.clubs:{c|def type_<u.name>_<c.name>Key() -> dsviper.Type: return dsviper.TypeKey(definitions().check_club(<u.name;format="snake">.data.<c.name;format="usnake">))};separator="\n">
-<u.enumerations:{e|def type_<u.name>_<e.name>() -> dsviper.Type: return definitions().check_enumeration(<u.name;format="snake">.data.<e.name;format="usnake">)};separator="\n">
-<u.structures:{s|def type_<u.name>_<s.name>() -> dsviper.Type: return definitions().check_structure(<u.name;format="snake">.data.<s.name;format="usnake">)};separator="\n">
+<u.concepts:{c|def _type_<u.name>_<c.name>Key() -> dsviper.Type: return dsviper.TypeKey(definitions().check_concept(<u.name;format="snake">.data.<c.name;format="usnake">))};separator="\n">
+<u.clubs:{c|def _type_<u.name>_<c.name>Key() -> dsviper.Type: return dsviper.TypeKey(definitions().check_club(<u.name;format="snake">.data.<c.name;format="usnake">))};separator="\n">
+<u.enumerations:{e|def _type_<u.name>_<e.name>() -> dsviper.Type: return definitions().check_enumeration(<u.name;format="snake">.data.<e.name;format="usnake">)};separator="\n">
+<u.structures:{s|def _type_<u.name>_<s.name>() -> dsviper.Type: return definitions().check_structure(<u.name;format="snake">.data.<s.name;format="usnake">)};separator="\n">
 >>
 
-vec(v) ::= <%@functools.cache<\n>def type<v.typeSuffix>() -> dsviper.Type: return dsviper.<v.viperType>(type<v.elementTypeSuffix>(), <v.size>)%>
-mat(v) ::= <%@functools.cache<\n>def type<v.typeSuffix>() -> dsviper.Type: return dsviper.<v.viperType>(type<v.elementTypeSuffix>(), <v.columns>, <v.rows>)%>
-element(v) ::= <%@functools.cache<\n>def type<v.typeSuffix>() -> dsviper.Type: return dsviper.<v.viperType>(type<v.elementTypeSuffix>())%>
-map(v) ::= <%@functools.cache<\n>def type<v.typeSuffix>() -> dsviper.Type: return dsviper.<v.viperType>(type<v.keyTypeSuffix>(), type<v.elementTypeSuffix>())%>
-tuple(v) ::= <%@functools.cache<\n>def type<v.typeSuffix>() -> dsviper.Type: return dsviper.<v.viperType>([<v.members:member();separator=", ">])%>
-variant(v) ::= <%@functools.cache<\n>def type<v.typeSuffix>() -> dsviper.Type: return dsviper.<v.viperType>([<v.members:member();separator=", ">])%>
-member(t) ::= <%type<t.typeSuffix>()%>
+vec(v) ::= <%@functools.cache<\n>def _type<v.typeSuffix>() -> dsviper.Type: return dsviper.<v.viperType>(_type<v.elementTypeSuffix>(), <v.size>)%>
+mat(v) ::= <%@functools.cache<\n>def _type<v.typeSuffix>() -> dsviper.Type: return dsviper.<v.viperType>(_type<v.elementTypeSuffix>(), <v.columns>, <v.rows>)%>
+element(v) ::= <%@functools.cache<\n>def _type<v.typeSuffix>() -> dsviper.Type: return dsviper.<v.viperType>(_type<v.elementTypeSuffix>())%>
+map(v) ::= <%@functools.cache<\n>def _type<v.typeSuffix>() -> dsviper.Type: return dsviper.<v.viperType>(_type<v.keyTypeSuffix>(), _type<v.elementTypeSuffix>())%>
+tuple(v) ::= <%@functools.cache<\n>def _type<v.typeSuffix>() -> dsviper.Type: return dsviper.<v.viperType>([<v.members:member();separator=", ">])%>
+variant(v) ::= <%@functools.cache<\n>def _type<v.typeSuffix>() -> dsviper.Type: return dsviper.<v.viperType>([<v.members:member();separator=", ">])%>
+member(t) ::= <%_type<t.typeSuffix>()%>
 
 vector_class(v) ::= <<
 <declared(v, {Vector["<v.bindingElementType.qualified>"]}, "ValueVector")>
@@ -121,13 +121,13 @@ variant_class(v) ::= <<
 
 alternative(t) ::= <<
     def is_<t.bindingType.proxy>(self) -> bool:
-        return self._holds(type<t.typeSuffix>())
+        return self._holds(_type<t.typeSuffix>())
 
     def get_<t.bindingType.proxy>(self) -> <t.bindingType.qualified>:
-        return typing.cast("<t.bindingType.qualified>", self._get(type<t.typeSuffix>()))
+        return typing.cast("<t.bindingType.qualified>", self._get(_type<t.typeSuffix>()))
 
     def set_<t.bindingType.proxy>(self, value: <t.bindingType.inputQualified>) -> None:
-        self._set(type<t.typeSuffix>(), value)
+        self._set(_type<t.typeSuffix>(), value)
 >>
 
 declared(v, base, value) ::= <<
@@ -139,5 +139,5 @@ class <v.bindingType.proxy>(Declared, <base>):
 
     @classmethod
     def type(cls) -> dsviper.Type:
-        return type<v.typeSuffix>()
+        return _type<v.typeSuffix>()
 >>

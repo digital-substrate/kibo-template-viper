@@ -101,6 +101,9 @@ export class <c.name>Key extends Key {
 
     /** The key a Viper value of exactly this type holds; a key of another type throws TypeError. */
     static wrapValue(value: dsviper.Value): <c.name>Key {
+        if (!(value instanceof dsviper.Value) || !value.type().equals(<c.name>Key.type())) {
+            throw new TypeError(`this value is not a ${<c.name>Key.type().representation()}`);
+        }
         return new <c.name>Key(dsviper.ValueKey.cast(value));
     }
 
@@ -153,6 +156,9 @@ club(c, u) ::= <<
 let <c.name;format="snake">Club: dsviper.TypeClub | undefined;
 let <c.name;format="snake">Type: dsviper.TypeKey | undefined;
 
+<if(c.hasDocumentation)>
+/** <c.documentation;format="comment"> */
+<endif>
 export class <c.name>Key extends Key {
     declare private readonly <c.name;format="snake">KeyBrand: never;
 
@@ -188,6 +194,9 @@ export class <c.name>Key extends Key {
 
     /** The key a Viper value of exactly this type holds; a key of another type throws TypeError. */
     static wrapValue(value: dsviper.Value): <c.name>Key {
+        if (!(value instanceof dsviper.Value) || !value.type().equals(<c.name>Key.type())) {
+            throw new TypeError(`this value is not a ${<c.name>Key.type().representation()}`);
+        }
         return new <c.name>Key(dsviper.ValueKey.cast(value));
     }
 
@@ -247,11 +256,10 @@ export const <e.name> = {
 
     /** The case a Viper value of exactly this enumeration holds; another type throws TypeError. */
     wrapValue(value: dsviper.Value): <e.name> {
-        const held = dsviper.ValueEnumeration.cast(value);
-        if (!held.type().equals(<e.name>.type())) {
-            throw new TypeError(`${held.type().representation()} is not <u.name>::<e.name>`);
+        if (!(value instanceof dsviper.Value) || !value.type().equals(<e.name>.type())) {
+            throw new TypeError(`this value is not a ${<e.name>.type().representation()}`);
         }
-        return held.name() as <e.name>;
+        return dsviper.ValueEnumeration.cast(value).name() as <e.name>;
     },
 
     /** Return the case the model names `name`, spelled as the DSM spells it: `fromStr("<first(e.members):{c|<c.name>}>")`
@@ -279,15 +287,15 @@ enumeration_member(m) ::= <<    <m.name;format="usnake">: "<m.name>" as const>>
 structure(s, u) ::= <<
 let <s.name;format="snake">Type: dsviper.TypeStructure | undefined;
 
-<if(s.hasDocumentation)>
-/** <s.documentation;format="comment"> */
-<endif>
 export interface <s.name>Init {
     <s.fields:{f|<f.name;format="lf">?: <f.bindingType.input>;};separator="\n">
 }
 
 const <s.name;format="snake">Fields: readonly string[] = [<s.fields:{f|"<f.name;format="lf">"};separator=", ">];
 
+<if(s.hasDocumentation)>
+/** <s.documentation;format="comment"> */
+<endif>
 export class <s.name> extends Proxy\<dsviper.ValueStructure> {
     declare private readonly <s.name;format="snake">Brand: never;
 
@@ -323,11 +331,10 @@ export class <s.name> extends Proxy\<dsviper.ValueStructure> {
      * explicitly (`new <s.name>(value.copy())`). Another type throws TypeError.
      */
     static wrapValue(value: dsviper.Value): <s.name> {
-        const structure = dsviper.ValueStructure.cast(value);
-        if (!structure.type().equals(<s.name>.type())) {
-            throw new TypeError("this value is not a <u.name>::<s.name>");
+        if (!(value instanceof dsviper.Value) || !value.type().equals(<s.name>.type())) {
+            throw new TypeError(`this value is not a ${<s.name>.type().representation()}`);
         }
-        return adopt(<s.name>, structure);
+        return adopt(<s.name>, dsviper.ValueStructure.cast(value));
     }
 
 <s.fields:field(s);separator="\n\n">

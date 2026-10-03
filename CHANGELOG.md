@@ -77,13 +77,13 @@ GraphEditor and RaptorEditor migrated to.
 | `database_attachments.<ns>_<concept>_<att>_set(db, …)`, `_get`, `_del` | the same attachment, given the `Database`: `.set(db, …)`, `.get(db, …)`, `.delete(db, key)` |
 | `p.vpr_value`; `Cls(value)` to view a stored value | `p.unwrap_value()`; `Cls.wrap_value(value)` or `Cls(value)`, both boxing it |
 | `p.encode()`; `Cls.decode(blob)` | `Value.encode(p.unwrap_value())`; `Cls.wrap_value(Value.decode(blob, Cls.type(), pkg.definitions()))` |
-| `value_type.type_X()` | `Cls.type()`, `containers.type_X()` |
+| `value_type.type_X()` | `Cls.type()`: `demo.StructureS.type()`, `containers.Vector_of_uint8.type()` |
 | a field `f_uint_8`, `channel_0`, an enumeration case `A_0` | `f_uint8`, `channel0`, `A0` (kibo's snake_case rule; a project fixes a name with `[names]` in `kibo.toml`) |
 | an `any` read as the runtime `ValueAny` | `AnyValue`; `unwrap()` gives the runtime value, as before |
 | **TypeScript** | |
 | `Vector_uint8`, `Map_A_to_B`, … | `Vector_of_uint8`, `Map_of_A_to_B`, …, at the package root |
 | `functionPoolRemotes.Tools`, `attachmentFunctionPoolRemotes.PlayerModel` | `tools.Remote`, `player_model.Remote`, from `pkg/pools` |
-| `x.compareTo(y)` | `x.unwrapValue().compare(y.unwrapValue())` |
+| `x.compareTo(y)` | `x.compare(y)` |
 | an enumeration as a proxy class: `e.name()`, `e.vprValue` | a string-literal union with a companion: `e` is the case name, `E.unwrapValue(e)`, `E.index(e)` |
 | `new X(value)` over a stored value | `X.wrapValue(value)` or `new X(value)`, both boxing it |
 | **C++** | |
@@ -179,8 +179,8 @@ packager's to add.
   `Cls(value.copy())`, `p.copy()`. A runtime feature is called through
   the bridge: `Value.encode(p.unwrap_value())`,
   `Cls.wrap_value(Value.decode(blob, Cls.type(), definitions()))`, and the same for JSON, XML
-  or a hexdigest, or an order (`a.unwrapValue().compare(b.unwrapValue())`). A TypeScript
-  enumeration's `wrapValue` refuses a case of another enumeration, as Python does. The per-proxy `encode`,
+  or a hexdigest. Every `wrap_value` / `wrapValue` refuses a value of another type with
+  `TypeError`, whatever its kind. The per-proxy `encode`,
   `decode`, `hexdigest`, the stream `write` / `read` and the TypeScript `compareTo` (keys,
   structures, enumerations, containers) are gone; `AnyConceptKey` gains
   `type()` so a key crosses back too, and a TypeScript key is also made from its instance id
@@ -203,6 +203,12 @@ packager's to add.
   container have `compare(other)`, the runtime's order, as C++'s `operator<` and Python's `<`;
   `enumerate` yields `[K, D]`; `AttachmentProxy` is exported as a type, for a helper over any
   attachment.
+- **The two packages expose the same surface**, measured member by member on the
+  laboratory's sites; `DESIGN.md` §7 lists where the idioms differ. TypeScript documents a
+  structure and a club on its class, as Python does, not on the `…Init` interface; its
+  proxies and containers have one hash, `hashKey()`, the key of a native `Map` or `Set`.
+  Python's `containers` keeps its type functions private, as TypeScript does: a type is
+  `Cls.type()`. An enumeration's `wrap_value` is documented.
 - **Containers declare what each kind does, in both languages.** Python: a vector is a `Vector`
   (`append`, `insert`, `extend`, `pop`, `remove`, `count`, `index`, `exchange`, `front`,
   `back`, `[i] =`, `del`, `+`, `+=`), a set a `SetView` (`add`, `remove`, `discard`, `pop`,

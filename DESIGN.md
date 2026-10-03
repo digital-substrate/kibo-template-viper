@@ -318,14 +318,22 @@ demands:
 | enumeration | `enum.Enum`, `from_str`, index via `E(i)` | literal union + object: `fromStr`, `index`, `unwrapValue` |
 | container | `Sequence` / `Mapping` / `Ordered`, dunder protocol | same views, `Symbol.iterator` + methods |
 | absent optional | `None` | `undefined` |
+| equality, hash, order, display | `==`, `hash()`, `<`, `repr()` | `equals`, `hashKey`, `compare`, `toString` / `toJSON` |
+| container protocol | `len()`, `in`, `contains`, `empty`, `to_list` / `to_tuple`, `items`, `v + w`, `m[c] = column` | `size` / `length`, `has`, `toArray`, `entries`, `concat`, `setColumn` |
+| a value of another type | `TypeError`, from every `wrap_value` and constructor | `TypeError`, from every `wrapValue` and constructor |
+| documentation | the DSM documentation on the class, the field, the attachment | the same places; a structure's, on the class, not on its `…Init` |
 | attachment | `<unit>.attachments.<Concept>.<attachment>.get(getting, key)` | `<Concept>.<attachment>.get(getting, key)` |
-| attachment verbs | `keys`, `has`, `get`, `enumerate`, `diff_keys`, `set`, `delete`, `diff` | `keys`, `has`, `get`, `enumerate`, `diffKeys`, `set`, `delete`, `diff` |
+| attachment verbs | `keys`, `has`, `get`, `enumerate`, `diff_keys`, `set`, `delete`, `diff` (`del` is a keyword) | `keys`, `has`, `get`, `enumerate`, `diffKeys`, `set`, `del`, `diff`, as the C++ |
 | field-level verbs | `set_<f>`, `union_<f>`, `subtract_<f>`, `update_<f>`, `insert_<f>`, `remove_<f>` | `set<F>`, `union<F>`, `subtract<F>`, `update<F>`, `insert<F>`, `remove<F>` |
-| function pool | `Pool` (local) and `Remote` | `Remote` |
+| function pool | `Pool` (local, holding `NAME` and `UUID`) and `Remote` | `Remote`; `NAME` and `UUID` are the module's |
 
 The argument order is the same everywhere: state first, then key, then value. Divergences
 beyond these rows are drift, not idiom — treat them as bugs. The function-pool row is the
 one open gap (§9).
+
+The rows were measured, not recalled: every public member of the two packages of each
+laboratory site, names compared without case or underscores, and whether each carries
+documentation. What is left once these rows are set aside is drift.
 
 ### What a template reads about a type, and what it never computes
 

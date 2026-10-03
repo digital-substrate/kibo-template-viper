@@ -34,10 +34,8 @@ export class View<V extends dsviper.Value = dsviper.Value> {
         return this[VALUE].type();
     }
 
-    hash(): bigint {
-        return this[VALUE].hash();
-    }
-
+    /** A bigint equal for equal values: key a native Map or Set by it, which compare objects
+     *  by identity. */
     hashKey(): bigint {
         return this[VALUE].hashKey();
     }
@@ -576,6 +574,9 @@ export class AnyValue extends View<dsviper.ValueAny> {
      * (`new AnyValue(value.copy())`).
      */
     static wrapValue(value: dsviper.Value): AnyValue {
+        if (!(value instanceof dsviper.Value) || !value.type().equals(dsviper.Type.ANY)) {
+            throw new TypeError("this value is not an any");
+        }
         return adopt(AnyValue, dsviper.ValueAny.cast(value));
     }
 

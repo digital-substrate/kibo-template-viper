@@ -280,6 +280,10 @@ class <e.name>(enum.Enum):
 
     @classmethod
     def wrap_value(cls, value: dsviper.Value) -> <e.name>:
+        """The case a Viper value of exactly this enumeration holds; another type raises
+        TypeError."""
+        if not isinstance(value, dsviper.Value) or value.type() != cls.type():
+            raise TypeError(f"this value is not a {cls.type().representation()}")
         return cls(dsviper.ValueEnumeration.cast(value))
 
     @classmethod

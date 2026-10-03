@@ -39,6 +39,8 @@ export abstract class Proxy<V extends dsviper.Value> {
         return other instanceof Proxy && this[VALUE].equals(other.unwrapValue());
     }
 
+    /** A bigint equal for equal values: key a native Map or Set by it, which compare objects
+     *  by identity. */
     hashKey(): bigint {
         return this[VALUE].hashKey();
     }
@@ -54,10 +56,6 @@ export abstract class Proxy<V extends dsviper.Value> {
 
     type(): dsviper.Type {
         return this[VALUE].type();
-    }
-
-    hash(): bigint {
-        return this[VALUE].hash();
     }
 
     toString(): string {
@@ -99,6 +97,9 @@ export class AnyConceptKey extends Key {
     }
 
     static wrapValue(value: dsviper.Value): AnyConceptKey {
+        if (!(value instanceof dsviper.Value) || !value.type().equals(AnyConceptKey.type())) {
+            throw new TypeError(`this value is not a ${AnyConceptKey.type().representation()}`);
+        }
         return new AnyConceptKey(dsviper.ValueKey.cast(value));
     }
 
