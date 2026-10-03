@@ -203,6 +203,11 @@ packager's to add.
   container have `compare(other)`, the runtime's order, as C++'s `operator<` and Python's `<`;
   `enumerate` yields `[K, D]`; `AttachmentProxy` is exported as a type, for a helper over any
   attachment.
+- **A package says where to start.** The Python package's docstring and the TypeScript
+  package's header name the units, the containers, `definitions()` and the model's pools, show
+  how a database is opened and a document stored, how bytes are written and read back through
+  the bridge, and what is raised; the TypeScript header adds that the package and the project
+  must reach one installation of the runtime. `definitions()` is documented in both.
 - **The two packages expose the same surface**, measured member by member on the
   laboratory's sites; `DESIGN.md` §7 lists where the idioms differ. TypeScript documents a
   structure and a club on its class, as Python does, not on the `…Init` interface; its

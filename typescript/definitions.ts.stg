@@ -8,6 +8,8 @@ import { B64_DEFINITIONS } from "./resources.js";
 
 let cached: dsviper.DefinitionsConst | undefined;
 
+/** The model's definitions, decoded once: what a database is extended with, and what decoding
+ *  a value needs. */
 export function definitions(): dsviper.DefinitionsConst {
     if (cached === undefined) {
         cached = dsviper.Definitions.decode(dsviper.ValueBlob.base64Decode(B64_DEFINITIONS)).const();

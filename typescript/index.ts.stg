@@ -2,6 +2,44 @@ import "banner.stg"
 
 model(m) ::= <<
 <preamble(m)>
+/**
+ * The <m.namespace> model, generated over `@digitalsubstrate/dsviper`.
+ *
+ * Each DSM namespace is a namespace of this module holding its structures, enumerations and
+ * keys, and its attachments as `attachments`:
+ * <m.nameSpaces:{u|`<u.name;format="snake">`};separator=", ">.
+ * The containers the model's structures use are exported here, and `definitions()` is the
+ * model.<if(m.functionPools || m.attachmentFunctionPools)>
+ * The pools, rendered with the Pool feature, are imported from `<m.namespace;format="snake">/pools`:
+ * <[m.functionPools, m.attachmentFunctionPools]:{p|`<p.name;format="snake">`};separator=", ">.<endif>
+
+ *
+ * A document is stored in a dsviper database that knows the model, and read and written
+ * through an attachment, given the database or a state:
+ *
+ * ```ts
+ * import dsviper from "@digitalsubstrate/dsviper";
+ * import { definitions, <first(m.nameSpaces):{u|<u.name;format="snake">}> } from "<m.namespace;format="snake">";
+ *
+ * const db = dsviper.Database.createInMemory();   // a CommitDatabase keeps every commit
+ * db.extendDefinitions(definitions());
+ * db.beginTransaction();
+ * <first(m.nameSpaces):{u|<u.name;format="snake">}>.attachments.Concept.attachment.set(db, key, document);
+ * db.commit();
+ * ```
+ *
+ * A generated object is a box around a Viper value: `p.unwrapValue()` gives it, and
+ * `Cls.wrapValue(value)` boxes one. A runtime feature is called on that value: bytes are
+ * `dsviper.Value.encode(p.unwrapValue())`, read back with
+ * `Cls.wrapValue(dsviper.Value.decode(blob, Cls.type(), definitions()))`. A value of the wrong
+ * type throws TypeError; what the runtime refuses throws dsviper.ViperError.
+ *
+ * This package and the code that opens a database must reach one installation of the
+ * runtime: make `@digitalsubstrate/dsviper` a dependency of the project, in the range this
+ * package declares. A second copy of the native binding refuses to load.
+ *
+ * @packageDocumentation
+ */
 export { definitions } from "./definitions.js";
 export * from "./containers.js";
 export { AnyConceptKey, AnyValue } from "./_codegen/registry.js";
