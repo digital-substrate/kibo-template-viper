@@ -211,7 +211,9 @@ migrating.
   into `containers` and the package entry point, with `definitions`.
 - **Python and TypeScript `database_attachments`, `path`, `value_type`, `definitions`**:
   absorbed into the attachments, the package entry point and the containers; field paths
-  are not exposed — the typed field operations cover them. An attachment carries its runtime
+  are not exposed — the typed field operations cover them. The runtime ids `RuntimeIds`
+  held are exported by each unit, as the C++ `runtime_ids::` and TypeScript do:
+  `features.demo.CONCEPT_A`, `features.demo.STRUCTURE_S`. An attachment carries its runtime
   id, which `AttachmentRuntimeIds` held, as the C++ attachment does:
   `attachments.Concept.attachment.runtime_id` (Python), `.runtimeId` (TypeScript), a constant
   that tells which attachment an id names without resolving the definitions; its

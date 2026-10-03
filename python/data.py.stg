@@ -39,13 +39,14 @@ if typing.TYPE_CHECKING:
 
 register({<u.concepts:registered_key();separator=", "><if(u.clubs)>, <u.clubs:registered_key();separator=", "><endif><if(u.enumerations)>, <u.enumerations:registered();separator=", "><endif><if(u.structures)>, <u.structures:registered();separator=", "><endif>})
 
-__all__ = [<u.concepts:exported_key();separator=", "><if(u.clubs)>, <u.clubs:exported_key();separator=", "><endif><if(u.enumerations)>, <u.enumerations:exported();separator=", "><endif><if(u.structures)>, <u.structures:exported();separator=", "><endif>]
+__all__ = [<[[u.concepts, u.clubs]:exported_key(), [u.enumerations, u.structures]:exported(), [u.concepts, u.clubs, u.enumerations, u.structures]:exported_id()];separator=", ">]
 
 >>
 
 runtime_id(v) ::= <%<v.name;format="usnake">: dsviper.ValueUUId = dsviper.ValueUUId.create("<v.runtimeId>")%>
 exported(v) ::= <%"<v.name>"%>
 exported_key(v) ::= <%"<v.name>Key"%>
+exported_id(v) ::= <%"<v.name;format="usnake">"%>
 
 concept(c, u) ::= <<
 <key(c, u, "concept")>
