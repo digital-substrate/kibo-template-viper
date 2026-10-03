@@ -58,6 +58,50 @@ carries its static layer. Every generated file names its runtime and its range i
 header. The generated surface changes throughout: code written against 1.2 output needs
 migrating.
 
+### Migrating from 1.2
+
+What a 1.2 client writes, and what it writes against 2.0. The Python and TypeScript rows were
+run against the laboratory's packages; the C++ rows follow the generated headers and what
+GraphEditor and RaptorEditor migrated to.
+
+| 1.2 | 2.0 |
+|---|---|
+| **Python** | |
+| `from pkg.data import *`; `Demo_StructureS`, `Demo_ConceptAKey` | `from pkg import demo`; `demo.StructureS`, `demo.ConceptAKey` |
+| `Vector_uint8`, `Set_X`, `Map_A_to_B`, `Optional_X`, `XArray_X`, at the package root | `containers.Vector_of_uint8`, `Set_of_X`, `Map_of_A_to_B`, `Optional_of_X`, `XArray_of_X` |
+| `Variant_A_B`, `Tuple_a_b`, `Vec_uint8_2`, `Mat_uint8_2_3` | `containers.Variant_of_A_or_B`, `Tuple_of_a_and_b`, `Vec2_of_uint8`, `Mat2x3_of_uint8` |
+| `pkg.definitions.definitions()` | `pkg.definitions()` |
+| `RuntimeIds.Demo_StructureS` | `pkg.demo.STRUCTURE_S` |
+| `AttachmentRuntimeIds.Demo_ConceptA_Properties` | `pkg.demo.attachments.ConceptA.properties.runtime_id` |
+| `<ns>_<concept>_<att>_get(getting, key)`, `_set`, `_has`, `_keys`, `_diff` | `pkg.<ns>.attachments.<Concept>.<att>.get(getting, key)`, … |
+| `database_attachments.<ns>_<concept>_<att>_set(db, …)`, `_get`, `_del` | the same attachment, given the `Database`: `.set(db, …)`, `.get(db, …)`, `.delete(db, key)` |
+| `p.vpr_value`; `Cls(value)` to view a stored value | `p.unwrap_value()`; `Cls.wrap_value(value)` (a constructor copies) |
+| `p.encode()`; `Cls.decode(blob)` | `Value.encode(p.unwrap_value())`; `Cls.wrap_value(Value.decode(blob, Cls.type(), pkg.definitions()))` |
+| `value_type.type_X()` | `Cls.type()`, `containers.type_X()` |
+| a field `f_uint_8`, `channel_0`, an enumeration case `A_0` | `f_uint8`, `channel0`, `A0` (kibo's snake_case rule; a project fixes a name with `[names]` in `kibo.toml`) |
+| an `any` read as the runtime `ValueAny` | `AnyValue`; `unwrap()` gives the runtime value, as before |
+| **TypeScript** | |
+| `Vector_uint8`, `Map_A_to_B`, … | `Vector_of_uint8`, `Map_of_A_to_B`, …, at the package root |
+| `functionPoolRemotes.Tools`, `attachmentFunctionPoolRemotes.PlayerModel` | `tools.Remote`, `player_model.Remote`, from `pkg/pools` |
+| `x.compareTo(y)` | `x.unwrapValue().compare(y.unwrapValue())` |
+| an enumeration as a proxy class: `e.name()`, `e.vprValue` | a string-literal union with a companion: `e` is the case name, `E.unwrapValue(e)`, `E.index(e)` |
+| `new X(value)` over a stored value | `X.wrapValue(value)` (a constructor copies) |
+| **C++** | |
+| `NS::Demo::StructureS`, `NS::definitions()` | `ns::demo::StructureS`, `ns::codec::definitions()` |
+| `ValueEncoder::encode_X(v)`, `ValueDecoder::decode_X(val)` | `ns::codec::encode(v)`, `ns::codec::decode<T>(val)` |
+| `Writer{enc}.write_X(v)`, `Reader{dec, defs}.read_X()` | `write(w, v)` on a `Viper::StaticWriter::Writer`, `read(r, tag<T>{})` on a `Viper::StaticReader::Reader` — the same bytes |
+| `NS::Attachments::Concept_Att::get(…)`, `DatabaseAttachments::…` | `ns::demo::attachments::Concept::att::get(…)`, the `Database` overloads included |
+| `NS::Database::create(…)` (the model registered for you) | `Viper::Database::create(…)` then `extendDefinitions(ns::codec::definitions())` |
+| `AttachmentRuntimeIds::C_a` | `ns::demo::attachments::C::a::runtimeId` |
+| `NS::FunctionPools::tools()`, `FunctionPoolBridges::Tools::add_vector` | `ns::tools::pool()`, `ns::tools::addVector` |
+| `NS::AttachmentFunctionPools::attachments()` | gone (see Removed) |
+
+A third-party template that used `value_type` (`mt.attachment_<ns>_<id>()`) reads an
+attachment from the generated class instead: `….attachments.<Concept>.<att>.descriptor`, or
+its `runtime_id`. The wheel's `pyproject.toml` keeps the name, the version, the packages and
+the `dsviper` dependency; authors, maintainers, a readme, classifiers and keywords are the
+packager's to add.
+
 ### Changed
 
 - **One DSM namespace is one unit.** C++ gets a file-name prefix and a `namespace`, Python
@@ -135,7 +179,8 @@ migrating.
   `Cls.wrap_value(Value.decode(blob, Cls.type(), definitions()))`, and the same for JSON, XML
   or a hexdigest, or an order (`a.unwrapValue().compare(b.unwrapValue())`). A TypeScript
   enumeration's `wrapValue` refuses a case of another enumeration, as Python does. The per-proxy `encode`,
-  `decode`, `hexdigest` and the TypeScript keys' `compareTo` are gone; `AnyConceptKey` gains
+  `decode`, `hexdigest`, the stream `write` / `read` and the TypeScript `compareTo` (keys,
+  structures, enumerations, containers) are gone; `AnyConceptKey` gains
   `type()` so a key crosses back too, and a TypeScript key is also made from its instance id
   as a string, as the runtime allows.
 - **The bindings offer what the runtime, 1.2 or the C++ offer, and no more.** A TypeScript
@@ -260,7 +305,8 @@ migrating.
 ### Added
 
 - **`Fields`** (C++): every field's name and path as constants, for code that handles
-  structures through the dynamic API.
+  structures through the dynamic API — 1.2's `Field` and `Path`, renamed: `Field::S::f`
+  becomes `fields::S::f`, a `std::string_view`, and `Path::S::f()` becomes `fields::S::fPath()`.
 - **`Package`** (TypeScript): `package.json` and `tsconfig.json` at the package root, the
   counterpart of Python's `Wheel`.
 
