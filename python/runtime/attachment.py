@@ -58,7 +58,14 @@ class AttachmentProxy(typing.Generic[K, D, KS, DI]):
         return wrapped[0], wrapped[1], wrapped[2], wrapped[3]
 
 
+    @typing.overload
+    def set(self, mutating: dsviper.AttachmentMutating, key: K, value: DI) -> None: ...
+
+    @typing.overload
+    def set(self, mutating: dsviper.Database, key: K, value: DI) -> bool: ...
+
     def set(self, mutating: dsviper.AttachmentMutating | dsviper.Database, key: K, value: DI) -> bool | None:
+        """Write the document; on a Database, True once written (a refusal raises), on an AttachmentMutating, None."""
         return mutating.set(self.descriptor, key.vpr_value, _unwrap(value))
 
     def delete(self, database: dsviper.Database, key: K) -> bool:

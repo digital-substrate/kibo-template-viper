@@ -85,6 +85,9 @@ export class AttachmentProxy<K, D, KS = SetView<K>, DI = D> {
         return wrap(getting.get(this.descriptor, unwrap(key) as dsviper.ValueKey));
     }
 
+    /** Write the document; on a Database, true once written (a refusal throws), on a mutating state, nothing. */
+    set(setting: Mutating, key: K, value: DI): void;
+    set(setting: dsviper.Database, key: K, value: DI): boolean;
     set(setting: Setting, key: K, value: DI): unknown {
         const document = unwrap(value);
         if (document instanceof dsviper.Value

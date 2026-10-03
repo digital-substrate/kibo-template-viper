@@ -59,7 +59,12 @@ concept(c, u) ::= <<
 <descendant_to(d, c)>
 
 <descendant_from(d, c)><endif>}>
+
+    def to_concept_key(self) -> <concept_union(c)>:
+        return typing.cast("<concept_union(c)>", super().to_concept_key())
 >>
+
+concept_union(c) ::= <%<c.name>Key<c.strictDescendantsInNamespace:{d|<if(d.isLocal)> | <d.bindingInNamespace><endif>}><if(c.hasForeignDescendants)> | Key<endif>%>
 
 descendant_to(d, c) ::= <<
     def to_<d.asNameInNamespace;format="snake">_key(self) -> <d.bindingInNamespace> | None:
@@ -88,7 +93,7 @@ class <c.name>Key(Key):
     def type(cls) -> dsviper.Type:
         return dsviper.TypeKey(cls.club())
 
-    def __init__(self, key: <c.membersInNamespace:{m|<m.bindingInNamespace> | }>dsviper.ValueKey) -> None:
+    def __init__(self, key: <c.name>Key | <c.membersInNamespace:{m|<m.bindingInNamespace> | }>dsviper.ValueKey) -> None:
         value = key._value if isinstance(key, Proxy) else key
         if not isinstance(value, dsviper.ValueKey):
             raise TypeError("this value is not a key")

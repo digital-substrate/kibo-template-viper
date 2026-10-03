@@ -40,6 +40,8 @@ runtime_id(v) ::= <%export const <v.name;format="usnake"> = dsviper.ValueUUId.cr
 registered(v) ::= <%[<v.name;format="usnake">, <v.name>]%>
 registered_key(v) ::= <%[<v.name;format="usnake">, <v.name>Key]%>
 
+concept_union(c) ::= <%<c.name>Key<c.strictDescendantsInNamespace:{d|<if(d.isLocal)> | <d.bindingInNamespace><endif>}><if(c.hasForeignDescendants)> | Key<endif>%>
+
 concept(c, u) ::= <<
 let <c.name;format="snake">Concept: dsviper.TypeConcept | undefined;
 let <c.name;format="snake">Type: dsviper.TypeKey | undefined;
@@ -110,6 +112,10 @@ export class <c.name>Key extends Key {
 <c.strictDescendantsInNamespace:{d|<if(d.isLocal)><descendant(d, c)>
 
 <endif>}>
+    override toConceptKey(): <concept_union(c)> {
+        return super.toConceptKey() as <concept_union(c)>;
+    }
+
     toAnyConceptKey(): AnyConceptKey {
         return new AnyConceptKey(this.vprValue.toAnyConceptKey());
     }
@@ -150,7 +156,7 @@ export class <c.name>Key extends Key {
         return (<c.name;format="snake">Type ??= new dsviper.TypeKey(<c.name>Key.club()));
     }
 
-    constructor(key: <c.membersInNamespace:{m|<m.bindingInNamespace> | }>dsviper.ValueKey) {
+    constructor(key: <c.name>Key | <c.membersInNamespace:{m|<m.bindingInNamespace> | }>dsviper.ValueKey) {
         const value = key instanceof Proxy ? key.vprValue : key;
         if (value.type().equals(<c.name>Key.type())) {
             super(value);
