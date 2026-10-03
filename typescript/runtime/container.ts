@@ -5,8 +5,6 @@ import dsviper from "@digitalsubstrate/dsviper";
 
 import { unwrap, unwrapDeep, wrap } from "./registry.js";
 
-// As strict as the container: an element of another type throws, a child key included --
-// widen it first with toParentKey(), as storing it requires.
 function holds(container: dsviper.Value, element: unknown): boolean {
     return (container as unknown as { contains(value: dsviper.InputValue): boolean }).contains(unwrapDeep(element));
 }
@@ -605,7 +603,6 @@ export class Variant<E> extends View<dsviper.ValueVariant> {
 export declare const kind: unique symbol;
 export type Kind<N extends string> = { readonly [kind]: N };
 
-// A declared container also takes the runtime value of its own kind, which it checks is of its type.
 type Bound<V, I> = {
     new (value?: V | I | (V extends View<infer R> ? R : never) | null): V;
     /** The container over a runtime value of exactly its type; any other is refused. */
@@ -677,8 +674,6 @@ function bind<V extends View, I, N extends string>(view: new (value: dsviper.Val
         }
     }
 
-    // The class a container is declared as, not the factory's local name, is what a stack
-    // trace or the console shows.
     if (name !== undefined) {
         Object.defineProperty(BoundView, "name", { value: name });
     }

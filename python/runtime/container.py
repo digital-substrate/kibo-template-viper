@@ -49,7 +49,6 @@ class View(typing.Generic[V]):
     def __hash__(self) -> int:
         return typing.cast("int", self._value.hash())
 
-    # The runtime orders every value; a view orders as its value does, as a proxy does.
     def __lt__(self, other: View[dsviper.Value]) -> bool:
         return bool(self._value < unwrap(other))
 
@@ -570,8 +569,6 @@ _DECLARED: dict[str, type] = {}
 
 
 def _holds(container: typing.Any, element: object) -> bool:
-    # As strict as the container: an element of another type raises, a child key included --
-    # widen it first with to_parent_key(), as storing it requires.
     return _unwrap_deep(element) in container
 
 
