@@ -551,8 +551,13 @@ export class AnyValue extends View<dsviper.ValueAny> {
         return this.any.isNil();
     }
 
+    /**
+     * What the runtime's any holds, as the runtime gives it (a native for a primitive, a
+     * runtime `Value` otherwise), as the C++ `Viper::Any` does; build a generated class from it
+     * with its static `wrap`.
+     */
     unwrap(): unknown {
-        return wrap(this.any.unwrap(false) as dsviper.Value);
+        return this.any.unwrap();
     }
 
     wrap(element: unknown): void {

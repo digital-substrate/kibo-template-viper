@@ -543,7 +543,10 @@ class AnyValue(View[dsviper.ValueAny]):
         return typing.cast("bool", self._value.is_nil())
 
     def unwrap(self) -> typing.Any:
-        return wrap(self._value.unwrap())
+        """What the runtime's any holds, as the runtime gives it (a native for a primitive, a
+        runtime Value otherwise), as the C++ Viper::Any does; build a generated class from it
+        with its constructor."""
+        return self._value.unwrap()
 
     def wrap(self, element: typing.Any) -> None:
         self._value.wrap(unwrap(element))

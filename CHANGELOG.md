@@ -96,8 +96,10 @@ migrating.
   and writes each alternative by a generated method named after it — `is_Demo_ConceptAKey()`,
   `get_…`, `set_…` in Python, `isDemo_ConceptAKey()`, … in TypeScript — and changes in place;
   the dynamic attribute lookup that served them is gone. An any reads as `AnyValue`, a view
-  whose content comes back as the generated class, and takes any value, a generated one
-  included.
+  whose `unwrap()` gives what the runtime's any holds as the runtime gives it — a native for
+  a primitive, a runtime `Value` otherwise, as the C++ `Viper::Any` and 1.2 did — and which
+  takes any value, a generated one included; a generated class is built from what it gives
+  (`StructureS(value)`, `StructureS.wrap(value)`).
 - **The package leads to every unit.** TypeScript: the entry exports each unit as a namespace
   (`features.demo.StructureU`), each unit its attachments (`demo.attachments.ConceptA`), and
   `AnyConceptKey` and `AnyValue`; every top-level directory is a subpath export
