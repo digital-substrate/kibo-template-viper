@@ -11,6 +11,9 @@ class Pool:
     UUID = dsviper.ValueUUId.create("<p.uuid>")
 
     def __init__(self, pool: dsviper.FunctionPool):
+        """The pool a host application exposes to its embedded Python: the
+        dsviper.FunctionPool comes from that C++ host, the wheel cannot build one.
+        From a client, use Remote."""
         self._funcs = pool.funcs
 
 <p.functions:function();separator="\n\n">
@@ -20,6 +23,10 @@ class Remote:
     __slots__ = ("_queried",)
 
     def __init__(self, service: dsviper.ServiceRemote):
+        """The pool as a service carries it: service is a
+        dsviper.ServiceRemote.connect(host, port, dsviper.Definitions()). is_available()
+        says whether the service declares this pool; the connection's own state is
+        service.is_closed()."""
         self._queried = service.function_pool_funcs(Pool.NAME)
 
     def is_available(self) -> bool:
@@ -46,6 +53,9 @@ class Pool:
     UUID = dsviper.ValueUUId.create("<p.uuid>")
 
     def __init__(self, pool: dsviper.AttachmentFunctionPool):
+        """The pool a host application exposes to its embedded Python: the
+        dsviper.AttachmentFunctionPool comes from that C++ host, the wheel cannot build one.
+        From a client, use Remote."""
         self._funcs = pool.funcs
 
 <p.functions:attachment_function();separator="\n\n">
@@ -55,6 +65,10 @@ class Remote:
     __slots__ = ("_queried",)
 
     def __init__(self, service: dsviper.ServiceRemote):
+        """The pool as a service carries it: service is a
+        dsviper.ServiceRemote.connect(host, port, dsviper.Definitions()). is_available()
+        says whether the service declares this pool; the connection's own state is
+        service.is_closed()."""
         self._queried = service.attachment_function_pool_funcs(Pool.NAME)
 
     def is_available(self) -> bool:

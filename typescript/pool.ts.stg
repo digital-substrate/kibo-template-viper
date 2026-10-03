@@ -6,6 +6,11 @@ pool(p) ::= <<
 export class Remote {
     private readonly service: dsviper.ServiceRemote;
 
+    /**
+     * The pool as a service carries it: service is a dsviper.ServiceRemote.connect(host, port,
+     * new dsviper.Definitions()). isAvailable() says whether the service declares this pool;
+     * the connection's own state is service.isClosed().
+     */
     constructor(service: dsviper.ServiceRemote) {
         this.service = service;
     }
@@ -25,6 +30,11 @@ attachment_pool(p) ::= <<
 export class Remote {
     private readonly service: dsviper.ServiceRemote;
 
+    /**
+     * The pool as a service carries it: service is a dsviper.ServiceRemote.connect(host, port,
+     * new dsviper.Definitions()). isAvailable() says whether the service declares this pool;
+     * the connection's own state is service.isClosed().
+     */
     constructor(service: dsviper.ServiceRemote) {
         this.service = service;
     }

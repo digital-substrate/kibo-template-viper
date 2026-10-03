@@ -40,6 +40,21 @@ export interface Mutating extends Setting {
                    position: dsviper.ValueUUId): void;
 }
 
+/**
+ * An attachment of the model; each operation takes the store it acts on.
+ *
+ * Reading - keys, has, get, enumerate - takes an AttachmentGetting (a CommitState's or a
+ * mutable state's attachmentGetting()) or a Database.
+ *
+ * Writing goes one of two ways. On a Database, set and del write the current state directly:
+ * register the model first, db.extendDefinitions(definitions()), and write inside a
+ * transaction. On a CommitDatabase, set, diff and the field operations write to an
+ * AttachmentMutating, which a CommitMutableState gives (attachmentMutating()); nothing is
+ * stored until that state is committed - db.commitMutations(label, state), or a CommitStore's
+ * dispatch, which commits for you. A Database has no AttachmentMutating, so diff and the field
+ * operations are a commit database's only; del is a Database's only, a commit never removing
+ * a key.
+ */
 export class AttachmentProxy<K, D, KS = SetView<K>, DI = D> {
     /**
      * The attachment's runtime id, a constant: it tells which attachment an id names without
