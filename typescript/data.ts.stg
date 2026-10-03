@@ -112,10 +112,12 @@ export class <c.name>Key extends Key {
 <c.strictDescendantsInNamespace:{d|<if(d.isLocal)><descendant(d, c)>
 
 <endif>}>
+<if(!c.hasForeignDescendants)>
     override toConceptKey(): <concept_union(c)> {
         return super.toConceptKey() as <concept_union(c)>;
     }
 
+<endif>
     toAnyConceptKey(): AnyConceptKey {
         return new AnyConceptKey(this.vprValue.toAnyConceptKey());
     }

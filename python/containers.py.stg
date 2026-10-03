@@ -47,24 +47,24 @@ declare(<[m.vecFunctions, m.matFunctions, m.tupleFunctions, m.optionalFunctions,
 >>
 
 primitives() ::= <<
-type_bool = lambda: dsviper.TypeBool()
-type_uint8 = lambda: dsviper.TypeUInt8()
-type_uint16 = lambda: dsviper.TypeUInt16()
-type_uint32 = lambda: dsviper.TypeUInt32()
-type_uint64 = lambda: dsviper.TypeUInt64()
-type_int8 = lambda: dsviper.TypeInt8()
-type_int16 = lambda: dsviper.TypeInt16()
-type_int32 = lambda: dsviper.TypeInt32()
-type_int64 = lambda: dsviper.TypeInt64()
-type_float = lambda: dsviper.TypeFloat()
-type_double = lambda: dsviper.TypeDouble()
-type_string = lambda: dsviper.TypeString()
-type_blob = lambda: dsviper.TypeBlob()
-type_blob_id = lambda: dsviper.TypeBlobId()
-type_commit_id = lambda: dsviper.TypeCommitId()
-type_uuid = lambda: dsviper.TypeUUId()
-type_any = lambda: dsviper.TypeAny()
-type_AnyConceptKey = lambda: dsviper.TypeKey(dsviper.TypeAnyConcept())
+def type_bool() -> dsviper.TypeBool: return dsviper.TypeBool()
+def type_uint8() -> dsviper.TypeUInt8: return dsviper.TypeUInt8()
+def type_uint16() -> dsviper.TypeUInt16: return dsviper.TypeUInt16()
+def type_uint32() -> dsviper.TypeUInt32: return dsviper.TypeUInt32()
+def type_uint64() -> dsviper.TypeUInt64: return dsviper.TypeUInt64()
+def type_int8() -> dsviper.TypeInt8: return dsviper.TypeInt8()
+def type_int16() -> dsviper.TypeInt16: return dsviper.TypeInt16()
+def type_int32() -> dsviper.TypeInt32: return dsviper.TypeInt32()
+def type_int64() -> dsviper.TypeInt64: return dsviper.TypeInt64()
+def type_float() -> dsviper.TypeFloat: return dsviper.TypeFloat()
+def type_double() -> dsviper.TypeDouble: return dsviper.TypeDouble()
+def type_string() -> dsviper.TypeString: return dsviper.TypeString()
+def type_blob() -> dsviper.TypeBlob: return dsviper.TypeBlob()
+def type_blob_id() -> dsviper.TypeBlobId: return dsviper.TypeBlobId()
+def type_commit_id() -> dsviper.TypeCommitId: return dsviper.TypeCommitId()
+def type_uuid() -> dsviper.TypeUUId: return dsviper.TypeUUId()
+def type_any() -> dsviper.TypeAny: return dsviper.TypeAny()
+def type_AnyConceptKey() -> dsviper.TypeKey: return dsviper.TypeKey(dsviper.TypeAnyConcept())
 >>
 
 named(u, m) ::= <<
@@ -124,7 +124,7 @@ alternative(t) ::= <<
         return self._holds(type<t.typeSuffix>())
 
     def get_<t.bindingType.proxy>(self) -> <t.bindingType.qualified>:
-        return self._get(type<t.typeSuffix>())
+        return typing.cast("<t.bindingType.qualified>", self._get(type<t.typeSuffix>()))
 
     def set_<t.bindingType.proxy>(self, value: <t.bindingType.inputQualified>) -> None:
         self._set(type<t.typeSuffix>(), value)

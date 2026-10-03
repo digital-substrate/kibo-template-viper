@@ -26,7 +26,7 @@ class Remote:
         return self._queried is not None
 
     @property
-    def _funcs(self):
+    def _funcs(self) -> typing.Any:
         if self._queried is None:
             raise RuntimeError(f"the service does not carry the pool {Pool.NAME}")
         return self._queried
@@ -61,7 +61,7 @@ class Remote:
         return self._queried is not None
 
     @property
-    def _funcs(self):
+    def _funcs(self) -> typing.Any:
         if self._queried is None:
             raise RuntimeError(f"the service does not carry the pool {Pool.NAME}")
         return self._queried
@@ -111,7 +111,7 @@ argument(a) ::= <%<if(a.bindingType.useProxy)>unwrap(<a.name;format="snake">)<el
 call(f) ::= <%<if(f.isVoid)>self._funcs["<f.name>"](<f.parameters:argument();separator=", ">)<else>return <wrap(f)>self._funcs["<f.name>"](<f.parameters:argument();separator=", ">)<unwrap(f)><endif>%>
 attachment_call(f) ::= <%<attachment_invoke(f, {attachment_<f.interfaceType;format="snake">})>%>
 attachment_invoke(f, context) ::= <%<if(f.isVoid)>self._funcs["<f.name>"](<context><if(f.parameters)>, <endif><f.parameters:argument();separator=", ">)<else>return <wrap(f)>self._funcs["<f.name>"](<context><if(f.parameters)>, <endif><f.parameters:argument();separator=", ">)<unwrap(f)><endif>%>
-wrap(f) ::= <%wrap(%>
-unwrap(f) ::= <%)%>
+wrap(f) ::= <%typing.cast("<ret(f)>", wrap(%>
+unwrap(f) ::= <%))%>
 
 hint(b) ::= <%<b.annotation>%>

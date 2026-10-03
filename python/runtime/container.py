@@ -31,7 +31,7 @@ class View(typing.Generic[V]):
         return self._value
 
     def type(self) -> dsviper.Type:
-        return self._value.type()
+        return typing.cast("dsviper.Type", self._value.type())
 
     def copy(self) -> typing.Self:
         return type(self)(self._value.copy())
@@ -47,7 +47,7 @@ class View(typing.Generic[V]):
             return False
 
     def __hash__(self) -> int:
-        return self._value.hash()
+        return typing.cast("int", self._value.hash())
 
     # The runtime orders every value; a view orders as its value does, as a proxy does.
     def __lt__(self, other: View[dsviper.Value]) -> bool:
@@ -76,13 +76,13 @@ class Sequence(View[V], typing.Generic[V, E]):
         return (wrap(element) for element in self._value)
 
     def __getitem__(self, index: int) -> E:
-        return wrap(self._value[index])
+        return typing.cast("E", wrap(self._value[index]))
 
     def __contains__(self, element: object) -> bool:
         return _holds(self._value, element)
 
     def at(self, index: int) -> E:
-        return wrap(self._value.at(index))
+        return typing.cast("E", wrap(self._value.at(index)))
 
     def contains(self, element: E) -> bool:
         return _holds(self._value, element)
@@ -123,7 +123,7 @@ class Vector(Sequence[dsviper.ValueVector, E]):
             self._value.append(unwrap(element))
 
     def pop(self, index: int = -1) -> E:
-        return wrap(self._value.pop(index))
+        return typing.cast("E", wrap(self._value.pop(index)))
 
     def remove(self, element: E) -> None:
         self._value.remove(unwrap(element))
@@ -132,19 +132,19 @@ class Vector(Sequence[dsviper.ValueVector, E]):
         self._value.clear()
 
     def count(self, element: E) -> int:
-        return self._value.count(unwrap(element))
+        return typing.cast("int", self._value.count(unwrap(element)))
 
     def index(self, element: E) -> int:
-        return self._value.index(unwrap(element))
+        return typing.cast("int", self._value.index(unwrap(element)))
 
     def exchange(self, first: int, second: int) -> None:
         self._value.exchange(first, second)
 
     def front(self) -> E:
-        return wrap(self._value.front())
+        return typing.cast("E", wrap(self._value.front()))
 
     def back(self) -> E:
-        return wrap(self._value.back())
+        return typing.cast("E", wrap(self._value.back()))
 
     def __add__(self, other: Vector[E] | typing.Iterable[E]) -> typing.Self:
         return type(self)(self._value + _unwrap_deep(other))
@@ -167,19 +167,19 @@ class SetView(Sequence[dsviper.ValueSet, E]):
         self._value.discard(unwrap(element))
 
     def pop(self) -> E:
-        return wrap(self._value.pop())
+        return typing.cast("E", wrap(self._value.pop()))
 
     def pop_max(self) -> E:
-        return wrap(self._value.pop_max())
+        return typing.cast("E", wrap(self._value.pop_max()))
 
     def clear(self) -> None:
         self._value.clear()
 
     def min(self) -> E:
-        return wrap(self._value.min())
+        return typing.cast("E", wrap(self._value.min()))
 
     def max(self) -> E:
-        return wrap(self._value.max())
+        return typing.cast("E", wrap(self._value.max()))
 
     def extend(self, elements: typing.Iterable[E]) -> None:
         for element in elements:
@@ -210,13 +210,13 @@ class SetView(Sequence[dsviper.ValueSet, E]):
         self._value.symmetric_difference_update(_unwrap_deep(other))
 
     def issubset(self, other: SetView[E] | typing.Iterable[E]) -> bool:
-        return self._value.issubset(_unwrap_deep(other))
+        return typing.cast("bool", self._value.issubset(_unwrap_deep(other)))
 
     def issuperset(self, other: SetView[E] | typing.Iterable[E]) -> bool:
-        return self._value.issuperset(_unwrap_deep(other))
+        return typing.cast("bool", self._value.issuperset(_unwrap_deep(other)))
 
     def isdisjoint(self, other: SetView[E] | typing.Iterable[E]) -> bool:
-        return self._value.isdisjoint(_unwrap_deep(other))
+        return typing.cast("bool", self._value.isdisjoint(_unwrap_deep(other)))
 
     def __or__(self, other: SetView[E] | typing.Iterable[E]) -> typing.Self:
         return self.union(other)
@@ -291,13 +291,13 @@ class Matrix(View[dsviper.ValueMat], typing.Generic[E]):
             self._value.set(position, row, unwrap(held))
 
     def columns(self) -> int:
-        return self._value.columns()
+        return typing.cast("int", self._value.columns())
 
     def rows(self) -> int:
-        return self._value.rows()
+        return typing.cast("int", self._value.rows())
 
     def at(self, column: int, row: int) -> E:
-        return wrap(self._value.at(column, row))
+        return typing.cast("E", wrap(self._value.at(column, row)))
 
     def set(self, column: int, row: int, element: E) -> None:
         self._value.set(column, row, unwrap(element))
@@ -322,7 +322,7 @@ class Mapping(View[dsviper.ValueMap], typing.Generic[K, E]):
         return (wrap(key) for key in self._value)
 
     def __getitem__(self, key: K) -> E:
-        return wrap(self._value.at(unwrap(key)))
+        return typing.cast("E", wrap(self._value.at(unwrap(key))))
 
     def __setitem__(self, key: K, element: E) -> None:
         self._value.set(unwrap(key), unwrap(element))
@@ -334,7 +334,7 @@ class Mapping(View[dsviper.ValueMap], typing.Generic[K, E]):
         return _holds(self._value, key)
 
     def at(self, key: K) -> E:
-        return wrap(self._value.at(unwrap(key)))
+        return typing.cast("E", wrap(self._value.at(unwrap(key))))
 
     def set(self, key: K, element: E) -> None:
         self._value.set(unwrap(key), unwrap(element))
@@ -344,10 +344,10 @@ class Mapping(View[dsviper.ValueMap], typing.Generic[K, E]):
             else (wrap(self._value.at(unwrap(key))) if unwrap(key) in self._value else None)
 
     def setdefault(self, key: K, element: E) -> E:
-        return wrap(self._value.setdefault(unwrap(key), unwrap(element)))
+        return typing.cast("E", wrap(self._value.setdefault(unwrap(key), unwrap(element))))
 
     def pop(self, key: K, *args: typing.Any) -> E:
-        return wrap(self._value.pop(unwrap(key), *[unwrap(a) for a in args]))
+        return typing.cast("E", wrap(self._value.pop(unwrap(key), *[unwrap(a) for a in args])))
 
     def remove(self, key: K) -> None:
         self._value.remove(unwrap(key))
@@ -365,7 +365,7 @@ class Mapping(View[dsviper.ValueMap], typing.Generic[K, E]):
         self._value.clear()
 
     def empty(self) -> bool:
-        return self._value.empty()
+        return typing.cast("bool", self._value.empty())
 
     def size(self) -> int:
         return len(self._value)
@@ -375,10 +375,10 @@ class Mapping(View[dsviper.ValueMap], typing.Generic[K, E]):
         return wrap(key), wrap(element)
 
     def min(self) -> K:
-        return wrap(self._value.min())
+        return typing.cast("K", wrap(self._value.min()))
 
     def max(self) -> K:
-        return wrap(self._value.max())
+        return typing.cast("K", wrap(self._value.max()))
 
     def keys(self) -> list[K]:
         return list(self)
@@ -406,7 +406,7 @@ class Ordered(View[dsviper.ValueXArray], typing.Generic[E]):
         return (wrap(element) for element in self._value)
 
     def __getitem__(self, key: int | dsviper.ValueUUId) -> E | None:
-        return wrap(self._value[key])
+        return typing.cast("E | None", wrap(self._value[key]))
 
     def __setitem__(self, key: int | dsviper.ValueUUId, element: E) -> None:
         self._value[key] = unwrap(element)
@@ -422,13 +422,13 @@ class Ordered(View[dsviper.ValueXArray], typing.Generic[E]):
         return dsviper.ValueXArray.create_position()
 
     def positions(self) -> list[dsviper.ValueUUId]:
-        return self._value.positions()
+        return typing.cast("list[dsviper.ValueUUId]", self._value.positions())
 
     def position(self, index: int) -> dsviper.ValueUUId | None:
-        return self._value.position(index)
+        return typing.cast("dsviper.ValueUUId | None", self._value.position(index))
 
     def index(self, position: dsviper.ValueUUId) -> int | None:
-        return self._value.index(position)
+        return typing.cast("int | None", self._value.index(position))
 
     def position_of(self, element: E) -> dsviper.ValueUUId | None:
         for position in self.positions():
@@ -437,7 +437,7 @@ class Ordered(View[dsviper.ValueXArray], typing.Generic[E]):
         return None
 
     def has_position(self, position: dsviper.ValueUUId) -> bool:
-        return self._value.has_position(position)
+        return typing.cast("bool", self._value.has_position(position))
 
     def at(self, position: dsviper.ValueUUId) -> E | None:
         element = self._value.at(position)
@@ -448,14 +448,13 @@ class Ordered(View[dsviper.ValueXArray], typing.Generic[E]):
 
     def insert(self, before_position: dsviper.ValueUUId, element: E,
                new_position: dsviper.ValueUUId | None = None) -> dsviper.ValueUUId:
-        return self._value.insert(before_position, unwrap(element), new_position) \
-            if new_position is not None else self._value.insert(before_position, unwrap(element))
+        return typing.cast("dsviper.ValueUUId", self._value.insert(before_position, unwrap(element), new_position) if new_position is not None else self._value.insert(before_position, unwrap(element)))
 
     def insert_position(self, before_position: dsviper.ValueUUId, new_position: dsviper.ValueUUId) -> None:
         self._value.insert_position(before_position, new_position)
 
     def append(self, element: E) -> dsviper.ValueUUId:
-        return self._value.append(unwrap(element))
+        return typing.cast("dsviper.ValueUUId", self._value.append(unwrap(element)))
 
     def remove(self, position: dsviper.ValueUUId) -> None:
         self._value.remove(position)
@@ -474,7 +473,7 @@ class Ordered(View[dsviper.ValueXArray], typing.Generic[E]):
         return _holds(self._value, element)
 
     def to_vector(self) -> Vector[E]:
-        return wrap(self._value.to_vector())
+        return typing.cast("Vector[E]", wrap(self._value.to_vector()))
 
     def empty(self) -> bool:
         return len(self._value) == 0
@@ -490,10 +489,10 @@ class Optional(View[dsviper.ValueOptional], typing.Generic[E]):
         return not self.is_nil()
 
     def is_nil(self) -> bool:
-        return self._value.is_nil()
+        return typing.cast("bool", self._value.is_nil())
 
     def unwrap(self) -> E:
-        return wrap(self._value.unwrap())
+        return typing.cast("E", wrap(self._value.unwrap()))
 
     def wrap(self, element: E) -> None:
         self._value.wrap(unwrap(element))
@@ -509,14 +508,14 @@ class Variant(View[dsviper.ValueVariant], typing.Generic[E]):
     __slots__ = ()
 
     def unwrap(self) -> E:
-        return wrap(self._value.unwrap())
+        return typing.cast("E", wrap(self._value.unwrap()))
 
     def wrap(self, element: E, type: dsviper.Type | None = None) -> None:
         self._value.wrap(unwrap(element), type) if type is not None \
             else self._value.wrap(unwrap(element))
 
     def _holds(self, alternative: dsviper.Type) -> bool:
-        return self._value.unwrap(encoded=False).type() == alternative
+        return typing.cast("bool", self._value.unwrap(encoded=False).type() == alternative)
 
     def _get(self, alternative: dsviper.Type) -> typing.Any:
         if not self._holds(alternative):
@@ -539,7 +538,7 @@ class AnyValue(View[dsviper.ValueAny]):
         return not self._value.is_nil()
 
     def is_nil(self) -> bool:
-        return self._value.is_nil()
+        return typing.cast("bool", self._value.is_nil())
 
     def unwrap(self) -> typing.Any:
         return wrap(self._value.unwrap())

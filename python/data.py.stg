@@ -59,9 +59,11 @@ concept(c, u) ::= <<
 <descendant_to(d, c)>
 
 <descendant_from(d, c)><endif>}>
+<if(!c.hasForeignDescendants)>
 
     def to_concept_key(self) -> <concept_union(c)>:
         return typing.cast("<concept_union(c)>", super().to_concept_key())
+<endif>
 >>
 
 concept_union(c) ::= <%<c.name>Key<c.strictDescendantsInNamespace:{d|<if(d.isLocal)> | <d.bindingInNamespace><endif>}><if(c.hasForeignDescendants)> | Key<endif>%>
@@ -268,7 +270,7 @@ class <e.name>(enum.Enum):
         return cls(dsviper.ValueEnumeration.cast(value).name())
 
     def _unwrap(self) -> str:
-        return self.value
+        return typing.cast(str, self.value)
 >>
 
 enumeration_case(c) ::= <<    <c.name;format="usnake"> = "<c.name>">>
@@ -283,7 +285,7 @@ class <s.name>(Proxy[dsviper.ValueStructure]):
     def type(cls) -> dsviper.TypeStructure:
         return definitions().check_structure(<s.name;format="usnake">)
 
-    def __init__(self, source: dsviper.ValueStructure | dict | None = None, /, *,
+    def __init__(self, source: dsviper.ValueStructure | dict[str, typing.Any] | None = None, /, *,
                  <s.fields:{f|<f.name;format="snake">: <input_hint(f)> | NotGiven = NOT_GIVEN};separator=",\n">) -> None:
         if source is None:
             source = dsviper.ValueStructure(self.type())
@@ -313,7 +315,7 @@ field(f, s) ::= <<
         <write(f)>
 >>
 
-read(f) ::= <%<if(f.bindingType.useProxy)>return wrap(self._value.at("<f.name>", encoded=False))<else>return self._value.at("<f.name>")<endif>%>
+read(f) ::= <%<if(f.bindingType.useProxy)>return typing.cast("<hint(f)>", wrap(self._value.at("<f.name>", encoded=False)))<else>return typing.cast("<hint(f)>", self._value.at("<f.name>"))<endif>%>
 write(f) ::= <%self._value.set("<f.name>", <if(f.bindingType.useProxy)>unwrap(value)<else>value<endif>)%>
 repr_field(f) ::= <%<f.name;format="snake">={self.<f.name;format="snake">}%>
 

@@ -27,22 +27,22 @@ class Proxy(typing.Generic[V]):
         return bool(self._value == other._value)
 
     def __hash__(self) -> int:
-        return self._value.hash()
+        return typing.cast("int", self._value.hash())
 
     def copy(self) -> typing.Self:
         return type(self)(self._value.copy())
 
     def __lt__(self, other: Proxy[dsviper.Value]) -> bool:
-        return self._value < unwrap(other)
+        return typing.cast("bool", self._value < unwrap(other))
 
     def __le__(self, other: Proxy[dsviper.Value]) -> bool:
-        return self._value <= unwrap(other)
+        return typing.cast("bool", self._value <= unwrap(other))
 
     def __gt__(self, other: Proxy[dsviper.Value]) -> bool:
-        return self._value > unwrap(other)
+        return typing.cast("bool", self._value > unwrap(other))
 
     def __ge__(self, other: Proxy[dsviper.Value]) -> bool:
-        return self._value >= unwrap(other)
+        return typing.cast("bool", self._value >= unwrap(other))
 
     @classmethod
     def _wrap(cls, value: typing.Any) -> typing.Self:
@@ -63,7 +63,7 @@ NOT_GIVEN = NotGiven()
 
 _CLASSES: dict[str, type] = {}
 
-def register(classes: dict) -> None:
+def register(classes: dict[dsviper.ValueUUId, type]) -> None:
     for runtime_id, cls in classes.items():
         _CLASSES[runtime_id.encoded()] = cls
 
@@ -148,6 +148,8 @@ KeyT = typing.TypeVar("KeyT", bound="Key")
 class Key(Proxy[dsviper.ValueKey]):
     __slots__ = ()
 
+    _value: dsviper.ValueKey
+
     @classmethod
     def from_any_concept_key(cls: type[KeyT], key: Proxy[dsviper.ValueKey] | dsviper.ValueKey) -> KeyT | None:
         raise NotImplementedError
@@ -156,7 +158,7 @@ class Key(Proxy[dsviper.ValueKey]):
         return cls.from_any_concept_key(self)
 
     def to_concept_key(self) -> Key:
-        return wrap(self._value.to_concept_key())
+        return typing.cast("Key", wrap(self._value.to_concept_key()))
 
     def _held(self) -> str:
         concept = self._value.type_concept()

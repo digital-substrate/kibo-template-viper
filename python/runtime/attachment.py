@@ -36,13 +36,13 @@ class AttachmentProxy(typing.Generic[K, D, KS, DI]):
 
 
     def keys(self, getting: dsviper.AttachmentGetting | dsviper.Database) -> KS:
-        return _wrap(getting.keys(self.descriptor))
+        return typing.cast("KS", _wrap(getting.keys(self.descriptor)))
 
     def has(self, getting: dsviper.AttachmentGetting | dsviper.Database, key: K) -> bool:
         return getting.has(self.descriptor, key.vpr_value)
 
     def get(self, getting: dsviper.AttachmentGetting | dsviper.Database, key: K) -> Optional[D]:
-        return _wrap(getting.get(self.descriptor, key.vpr_value))
+        return typing.cast("Optional[D]", _wrap(getting.get(self.descriptor, key.vpr_value)))
 
     def enumerate(self, getting: dsviper.AttachmentGetting | dsviper.Database | dsviper.CommitState,
                   *, encoded: bool = True) -> list[tuple[K, D]]:
