@@ -41,7 +41,11 @@ export interface Mutating extends Setting {
 }
 
 export class AttachmentProxy<K, D, KS = SetView<K>, DI = D> {
-    private readonly runtimeId: dsviper.ValueUUId;
+    /**
+     * The attachment's runtime id, a constant: it tells which attachment an id names without
+     * resolving the definitions.
+     */
+    readonly runtimeId: dsviper.ValueUUId;
     private readonly definitions: () => dsviper.DefinitionsConst;
     private resolved?: dsviper.Attachment;
 

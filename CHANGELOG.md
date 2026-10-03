@@ -208,7 +208,11 @@ migrating.
   into `containers` and the package entry point, with `definitions`.
 - **Python and TypeScript `database_attachments`, `path`, `value_type`, `definitions`**:
   absorbed into the attachments, the package entry point and the containers; field paths
-  are not exposed — the typed field operations cover them.
+  are not exposed — the typed field operations cover them. An attachment carries its runtime
+  id, which `AttachmentRuntimeIds` held, as the C++ attachment does:
+  `attachments.Concept.attachment.runtime_id` (Python), `.runtimeId` (TypeScript), a constant
+  that tells which attachment an id names without resolving the definitions; its
+  `descriptor` is the runtime's `Attachment`, which compares and hashes as well.
 - **`Test` and `TestApp`**: they test the generator, not an application, and stay with the
   laboratory, `devkit-codegen-test`.
 - **The generated attachment pool** (1.2: `AttachmentFunctionPool_Attachments`): every

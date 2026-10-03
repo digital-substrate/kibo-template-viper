@@ -30,6 +30,12 @@ class AttachmentProxy(typing.Generic[K, D, KS, DI]):
         self._key = key
         self._document = document
 
+    @property
+    def runtime_id(self) -> dsviper.ValueUUId:
+        """The attachment's runtime id, a constant: it tells which attachment an id names
+        without resolving the definitions."""
+        return self._runtime_id
+
     @functools.cached_property
     def descriptor(self) -> dsviper.Attachment:
         return self._definitions().check_attachment(self._runtime_id)
