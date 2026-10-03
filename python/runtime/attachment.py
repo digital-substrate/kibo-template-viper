@@ -48,6 +48,8 @@ class AttachmentProxy(typing.Generic[K, D, KS, DI]):
         return getting.has(self.descriptor, key.unwrap_value())
 
     def get(self, getting: dsviper.AttachmentGetting | dsviper.Database, key: K) -> Optional[D]:
+        """Return the stored document as an optional. It is a copy: changing it does not
+        change what is stored; write it back with `set`."""
         return typing.cast("Optional[D]", _wrap(getting.get(self.descriptor, key.unwrap_value())))
 
     def enumerate(self, getting: dsviper.AttachmentGetting | dsviper.Database) -> list[tuple[K, D]]:
@@ -71,7 +73,9 @@ class AttachmentProxy(typing.Generic[K, D, KS, DI]):
     def set(self, mutating: dsviper.Database, key: K, value: DI) -> bool: ...
 
     def set(self, mutating: dsviper.AttachmentMutating | dsviper.Database, key: K, value: DI) -> bool | None:
-        """Write the document; on a Database, True once written (a refusal raises), on an AttachmentMutating, None."""
+        """Write the document; on a Database, True once written (a refusal raises), on an
+        AttachmentMutating, None. The document is copied in: changing it afterwards does not
+        reach what was written."""
         return mutating.set(self.descriptor, key.unwrap_value(), _unwrap(value))
 
     def delete(self, database: dsviper.Database, key: K) -> bool:

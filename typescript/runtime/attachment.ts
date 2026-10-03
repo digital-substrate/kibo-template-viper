@@ -82,11 +82,19 @@ export class AttachmentProxy<K, D, KS = SetView<K>, DI = D> {
         return getting.has(this.descriptor, unwrap(key) as dsviper.ValueKey);
     }
 
+    /**
+     * Return the stored document as an optional. It is a copy: changing it does not change what
+     * is stored; write it back with `set`.
+     */
     get(getting: Getting, key: K): Optional<D> {
         return wrap(getting.get(this.descriptor, unwrap(key) as dsviper.ValueKey));
     }
 
-    /** Write the document; on a Database, true once written (a refusal throws), on a mutating state, nothing. */
+    /**
+     * Write the document; on a Database, true once written (a refusal throws), on a mutating
+     * state, nothing. The document is copied in: changing it afterwards does not reach what was
+     * written.
+     */
     set(setting: Mutating, key: K, value: DI): void;
     set(setting: dsviper.Database, key: K, value: DI): boolean;
     set(setting: Setting, key: K, value: DI): unknown {

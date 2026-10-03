@@ -18,7 +18,15 @@ def _adopt(cls: type[T], value: typing.Any) -> T:
 
 
 class Proxy(typing.Generic[V]):
-    """A generated class over the Viper value it wraps, which `unwrap_value()` returns."""
+    """A generated class over the Viper value it wraps, which `unwrap_value()` returns.
+
+    It follows Viper's reference semantics. A field read hands back what the value
+    holds: changing a nested structure or container read from a field changes this
+    object. A field write keeps the object it is given: changing that object
+    afterwards shows here too. Copied instead: a set element and a map key; a document
+    crossing a Database or a CommitDatabase, on set as on get; and a value or proxy
+    given to a constructor, shallowly. `copy()` gives an independent copy.
+    """
     __slots__ = ("_value",)
 
     def __init__(self, value: typing.Any) -> None:

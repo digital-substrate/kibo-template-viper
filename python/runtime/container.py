@@ -15,7 +15,12 @@ V = typing.TypeVar("V", bound=dsviper.Value, covariant=True)
 
 
 class View(typing.Generic[V]):
-    """A live view over the Viper container it wraps, which `unwrap_value()` returns."""
+    """A live view over the Viper container it wraps, which `unwrap_value()` returns.
+
+    An element read is the one the container holds, and an element written is kept,
+    not copied - except a set element and a map key, which are copies: changing one
+    read from the container does not change it.
+    """
     __slots__ = ("_value",)
 
     _value: typing.Any

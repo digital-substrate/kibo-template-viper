@@ -10,7 +10,13 @@ function holds(container: dsviper.Value, element: unknown): boolean {
     return (container as unknown as { contains(value: dsviper.InputValue): boolean }).contains(unwrapDeep(element));
 }
 
-/** A live view over the Viper container it wraps, which `unwrapValue()` returns. */
+/**
+ * A live view over the Viper container it wraps, which `unwrapValue()` returns.
+ *
+ * An element read is the one the container holds, and an element written is kept, not copied
+ * - except a set element and a map key, which are copies: changing one read from the container
+ * does not change it.
+ */
 export class View<V extends dsviper.Value = dsviper.Value> {
     readonly [VALUE]: V;
 
