@@ -29,9 +29,11 @@ against). This holds for **all three targets**; only the **bridge** between the 
 layers differs:
 
 - **Python / Node** (dynamic bindings) — the native object is a **thin handle that
-  holds one runtime `Value` and delegates** every operation to it (`vpr_value` /
-  `vprValue`). No parallel native state: the object *is* a typed view onto the
-  `Value`.
+  holds one runtime `Value` and delegates** every operation to it (`unwrap_value()` /
+  `unwrapValue()`). No parallel native state: the object *is* a typed view onto the
+  `Value`. The bindings follow the runtime's reference semantics: `wrap_value` /
+  `wrapValue` takes a Viper value without copying it, as `Value.create` and `cast` do, and a
+  constructor builds a new value, copying one it is given, as the runtime's constructors do.
 - **C++** (the runtime is a native library) — the native object is a **real struct
   with native fields**, and an explicit **static codec** — a generated `write` / `read`
   per type over the runtime's static layer (§6) — crosses `struct ⇄ Value` at the
@@ -97,9 +99,11 @@ generated class wraps exactly one runtime value and delegates every operation to
 runtime's base classes make it structural:
 
 - Python: `Proxy.__slots__ = ("_value",)`, every subclass `__slots__ = ()`; the value is
-  read through the read-only property `vpr_value`. The container `View` has the same shape.
-- TypeScript: `abstract class Proxy<V extends dsviper.Value>` with `readonly vprValue: V`;
-  `View` holds `readonly vprValue: dsviper.Value`.
+  read through `unwrap_value()`. The container `View` has the same shape.
+- TypeScript: `abstract class Proxy<V extends dsviper.Value>` holds the value under a symbol
+  key (`readonly [VALUE]: V`), read through `unwrapValue()`; `View` has the same shape.
+  `wrapValue` adopts a value without running the constructor (`adopt` in `value.ts`), so the
+  runtime classes declare no ES private (`#`) member, which an adopted object would lack.
 
 Equality, hashing, ordering, `encode`, `hexdigest` and `copy` on the base classes are one-line
 delegations to the held value. If an edit ever makes a generated class hold something other
@@ -306,10 +310,10 @@ demands:
 
 | Concern | Python | TypeScript |
 |---|---|---|
-| wrapped value | `vpr_value` (read-only property over `_value`) | `readonly vprValue` |
-| construct | `S(value \| dict \| None, **fields)`, `SKey(uuid \| str)` | `new S(value \| record?)`, `S.wrap(value)`, `new SKey(uuid?)` |
+| Viper value | `unwrap_value()` over `_value`; `S.wrap_value(value)` | `unwrapValue()`; `S.wrapValue(value)` |
+| construct | `S(value \| dict \| None, **fields)` (a value is copied), `SKey(uuid \| str)` | `new S(value \| record?)` (a value is copied), `new SKey(uuid?)` |
 | structure field | `@property` + setter | get/set accessors |
-| enumeration | `enum.Enum`, `from_str`, index via `E(i)` | literal union + object: `fromStr`, `index`, `value` |
+| enumeration | `enum.Enum`, `from_str`, index via `E(i)` | literal union + object: `fromStr`, `index`, `unwrapValue` |
 | container | `Sequence` / `Mapping` / `Ordered`, dunder protocol | same views, `Symbol.iterator` + methods |
 | absent optional | `None` | `undefined` |
 | attachment | `<unit>.attachments.<Concept>.<attachment>.get(getting, key)` | `<Concept>.<attachment>.get(getting, key)` |

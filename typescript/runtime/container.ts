@@ -4,56 +4,62 @@
 import dsviper from "@digitalsubstrate/dsviper";
 
 import { unwrap, unwrapDeep, wrap } from "./registry.js";
+import { VALUE, adopt } from "./value.js";
 
 function holds(container: dsviper.Value, element: unknown): boolean {
     return (container as unknown as { contains(value: dsviper.InputValue): boolean }).contains(unwrapDeep(element));
 }
 
-/** A live view over the runtime container it wraps, which `vprValue` returns. */
+/** A live view over the Viper container it wraps, which `unwrapValue()` returns. */
 export class View<V extends dsviper.Value = dsviper.Value> {
-    readonly vprValue: V;
+    readonly [VALUE]: V;
 
     constructor(value: dsviper.Value) {
-        this.vprValue = value as V;
+        this[VALUE] = value as V;
         Object.preventExtensions(this);
     }
 
+    /** The Viper value this container wraps, not a copy. */
+    unwrapValue(): V {
+        return this[VALUE];
+    }
+
     type(): dsviper.Type {
-        return this.vprValue.type();
+        return this[VALUE].type();
     }
 
     hash(): bigint {
-        return this.vprValue.hash();
+        return this[VALUE].hash();
     }
 
     hashKey(): bigint {
-        return this.vprValue.hashKey();
+        return this[VALUE].hashKey();
     }
 
     equals(other: unknown): boolean {
-        const compared = other instanceof View ? other.vprValue : other;
+        const compared = other instanceof View ? other.unwrapValue() : other;
 
         if (compared === null || compared === undefined) {
             return false;
         }
         try {
-            return this.vprValue.equals(compared);
+            return this[VALUE].equals(compared);
         } catch {
             return false;
         }
     }
 
     copy(): this {
-        return new (this.constructor as new (value: dsviper.Value) => this)(
-            (this.vprValue as unknown as { copy(): dsviper.Value }).copy());
+        return adopt(this.constructor as { prototype: object },
+                     (this[VALUE] as unknown as { copy(): dsviper.Value }).copy()) as this;
     }
 
     toJSON(): dsviper.NativeValue {
-        return this.vprValue.toJSON();
+        return this[VALUE].toJSON();
     }
 
     toString(): string {
-        return this.vprValue.toString();
+        return this[VALUE].toString();
     }
 }
 
@@ -66,7 +72,7 @@ interface Suite extends Iterable<dsviper.OutputValue> {
 
 export class Sequence<E, V extends dsviper.Value = dsviper.Value> extends View<V> {
     protected get suite(): Suite {
-        return this.vprValue as unknown as Suite;
+        return this[VALUE] as unknown as Suite;
     }
 
     get size(): number {
@@ -82,7 +88,7 @@ export class Sequence<E, V extends dsviper.Value = dsviper.Value> extends View<V
     }
 
     has(element: E): boolean {
-        return holds(this.vprValue, element);
+        return holds(this[VALUE], element);
     }
 
     *[Symbol.iterator](): Iterator<E> {
@@ -98,7 +104,7 @@ export class Sequence<E, V extends dsviper.Value = dsviper.Value> extends View<V
 
 export class Vector<E> extends Sequence<E, dsviper.ValueVector> {
     private get vector(): dsviper.ValueVector {
-        return this.vprValue as dsviper.ValueVector;
+        return this[VALUE] as dsviper.ValueVector;
     }
 
     set(index: number, element: E): void {
@@ -119,7 +125,7 @@ export class Vector<E> extends Sequence<E, dsviper.ValueVector> {
 
     concat(elements: Iterable<E>): this {
         return wrap(this.vector.concat(elements instanceof Vector
-            ? elements.vprValue as dsviper.ValueVector : [...elements].map(unwrap)));
+            ? elements.unwrapValue() as dsviper.ValueVector : [...elements].map(unwrap)));
     }
 
     pop(index?: number): E {
@@ -158,12 +164,12 @@ export class Vector<E> extends Sequence<E, dsviper.ValueVector> {
 type SetOperand<E> = SetView<E> | readonly E[] | ReadonlySet<E>;
 
 function setOperand<E>(other: SetOperand<E>): dsviper.InputValue[] | dsviper.ValueSet {
-    return other instanceof SetView ? other.vprValue as dsviper.ValueSet : [...other].map(unwrap);
+    return other instanceof SetView ? other.unwrapValue() as dsviper.ValueSet : [...other].map(unwrap);
 }
 
 export class SetView<E> extends Sequence<E, dsviper.ValueSet> {
     private get set(): dsviper.ValueSet {
-        return this.vprValue as dsviper.ValueSet;
+        return this[VALUE] as dsviper.ValueSet;
     }
 
     add(element: E): void {
@@ -249,13 +255,13 @@ export class SetView<E> extends Sequence<E, dsviper.ValueSet> {
 
 export class Fixed<E> extends Sequence<E, dsviper.ValueVec | dsviper.ValueTuple> {
     set(index: number, element: E): void {
-        (this.vprValue as unknown as { set(i: number, v: unknown): void }).set(index, unwrap(element));
+        (this[VALUE] as unknown as { set(i: number, v: unknown): void }).set(index, unwrap(element));
     }
 }
 
 export class Matrix<E> extends View<dsviper.ValueMat> {
     private get mat(): dsviper.ValueMat {
-        return this.vprValue as dsviper.ValueMat;
+        return this[VALUE] as dsviper.ValueMat;
     }
 
     get size(): number {
@@ -303,7 +309,7 @@ export class Matrix<E> extends View<dsviper.ValueMat> {
 
 export class Mapping<K, V> extends View<dsviper.ValueMap> {
     private get map(): dsviper.ValueMap {
-        return this.vprValue as dsviper.ValueMap;
+        return this[VALUE] as dsviper.ValueMap;
     }
 
     get size(): number {
@@ -324,7 +330,7 @@ export class Mapping<K, V> extends View<dsviper.ValueMap> {
     }
 
     has(key: K): boolean {
-        return holds(this.vprValue, key);
+        return holds(this[VALUE], key);
     }
 
     remove(key: K): void {
@@ -344,15 +350,15 @@ export class Mapping<K, V> extends View<dsviper.ValueMap> {
     }
 
     entries(): [K, V][] {
-        return [...this.#pairs()];
+        return [...this.pairs()];
     }
 
 
     *[Symbol.iterator](): Iterator<[K, V]> {
-        yield* this.#pairs();
+        yield* this.pairs();
     }
 
-    *#pairs(): Generator<[K, V]> {
+    private *pairs(): Generator<[K, V]> {
         for (const pair of this.map as unknown as Iterable<dsviper.OutputValue>) {
             const [key, element] = pair as unknown as [dsviper.OutputValue, dsviper.OutputValue];
             yield [wrap(key), wrap(element)];
@@ -393,7 +399,7 @@ export class Mapping<K, V> extends View<dsviper.ValueMap> {
 
 export class Ordered<E> extends View<dsviper.ValueXArray> {
     private get ordered(): dsviper.ValueXArray {
-        return this.vprValue as dsviper.ValueXArray;
+        return this[VALUE] as dsviper.ValueXArray;
     }
 
     static readonly END = dsviper.ValueXArray.END;
@@ -469,7 +475,7 @@ export class Ordered<E> extends View<dsviper.ValueXArray> {
     }
 
     has(element: E): boolean {
-        return holds(this.vprValue, element);
+        return holds(this[VALUE], element);
     }
 
     index(position: dsviper.ValueUUId): number | undefined {
@@ -505,7 +511,7 @@ export class Ordered<E> extends View<dsviper.ValueXArray> {
 
 export class Optional<E> extends View<dsviper.ValueOptional> {
     private get optional(): dsviper.ValueOptional {
-        return this.vprValue as dsviper.ValueOptional;
+        return this[VALUE] as dsviper.ValueOptional;
     }
 
     isNil(): boolean {
@@ -538,11 +544,19 @@ export class Optional<E> extends View<dsviper.ValueOptional> {
 
 export class AnyValue extends View<dsviper.ValueAny> {
     constructor(value?: unknown) {
-        super(value instanceof dsviper.ValueAny ? value : new dsviper.ValueAny(unwrapDeep(value)));
+        super(new dsviper.ValueAny(value instanceof dsviper.ValueAny ? value : unwrapDeep(value)));
+    }
+
+    /**
+     * The any over a Viper value, without copying it: a change made through one shows in the
+     * other. The constructor builds a new any.
+     */
+    static wrapValue(value: dsviper.Value): AnyValue {
+        return adopt(AnyValue, dsviper.ValueAny.cast(value));
     }
 
     private get any(): dsviper.ValueAny {
-        return this.vprValue as dsviper.ValueAny;
+        return this[VALUE] as dsviper.ValueAny;
     }
 
     isNil(): boolean {
@@ -569,7 +583,7 @@ export class AnyValue extends View<dsviper.ValueAny> {
 
 export class Variant<E> extends View<dsviper.ValueVariant> {
     private get variant(): dsviper.ValueVariant {
-        return this.vprValue as dsviper.ValueVariant;
+        return this[VALUE] as dsviper.ValueVariant;
     }
 
     unwrap(): E {
@@ -605,17 +619,32 @@ export type Kind<N extends string> = { readonly [kind]: N };
 
 type Bound<V, I> = {
     new (value?: V | I | (V extends View<infer R> ? R : never) | null): V;
-    /** The container over a runtime value of exactly its type; any other is refused. */
-    wrap(value: dsviper.Value): V;
+    /**
+     * The container over a Viper value of exactly its type, without copying it: a change made
+     * through one shows in the other. The constructor builds a new container.
+     */
+    wrapValue(value: dsviper.Value): V;
     type(): dsviper.Type;
 };
 
 const bound = new Map<() => dsviper.Type, unknown>();
 
-export function declaredFor(type: dsviper.Type): (new (value: dsviper.Value) => View) | undefined {
+const constructors: Record<string, (type: dsviper.Type, value: dsviper.Value) => dsviper.Value> = {
+    vector: (type, value) => new dsviper.ValueVector(type as dsviper.TypeVector, value as never),
+    set: (type, value) => new dsviper.ValueSet(type as dsviper.TypeSet, value as never),
+    map: (type, value) => new dsviper.ValueMap(type as dsviper.TypeMap, value as never),
+    optional: (type, value) => new dsviper.ValueOptional(type as dsviper.TypeOptional, value as never),
+    xarray: (type, value) => new dsviper.ValueXArray(type as dsviper.TypeXArray, value as never),
+    variant: (type, value) => new dsviper.ValueVariant(type as dsviper.TypeVariant, value as never),
+    tuple: (type, value) => new dsviper.ValueTuple(type as dsviper.TypeTuple, value as never),
+    vec: (type, value) => new dsviper.ValueVec(type as dsviper.TypeVec, value as never),
+    mat: (type, value) => new dsviper.ValueMat(type as dsviper.TypeMat, value as never),
+};
+
+export function declaredFor(type: dsviper.Type): { wrapValue(value: dsviper.Value): View } | undefined {
     for (const [typeOf, held] of bound) {
         if (typeOf().equals(type)) {
-            return held as new (value: dsviper.Value) => View;
+            return held as { wrapValue(value: dsviper.Value): View };
         }
     }
     return undefined;
@@ -643,7 +672,7 @@ function bind<V extends View, I, N extends string>(view: new (value: dsviper.Val
         constructor(value?: unknown) {
             const given = unwrapDeep(value);
             if (given instanceof dsviper.Value && given.type().equals(typeOf())) {
-                super(given);
+                super(constructors[given.typeCode()](typeOf(), given));
                 return;
             }
 
@@ -666,11 +695,11 @@ function bind<V extends View, I, N extends string>(view: new (value: dsviper.Val
             return typeOf();
         }
 
-        static wrap(value: dsviper.Value): BoundView {
+        static wrapValue(value: dsviper.Value): BoundView {
             if (!(value instanceof dsviper.Value) || !value.type().equals(typeOf())) {
                 throw new TypeError(`this value is not a ${typeOf().representation()}`);
             }
-            return new this(value);
+            return adopt(this, value);
         }
     }
 

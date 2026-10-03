@@ -79,7 +79,7 @@ migrating.
   `<package>.<unit>.attachments.<Concept>.<attachment>.<operation>` in Python, the same path
   as nested scopes in C++ and TypeScript; the field-level operations are typed methods.
 - **Python follows its own idiom**: fields and operations in snake_case, enumerations as
-  `enum.Enum`, the wrapped value as `vpr_value`. Every static name — modules and package
+  `enum.Enum`, the Viper value as `unwrap_value()`. Every static name — modules and package
   directories included, in both packages — goes through kibo's one `snake` rule (`doc_uint8`,
   `vec3_curves`), which a project tunes with `[names]`.
 - **A read leaves the Viper world only at the primitive leaves.** bool, integers, floats,
@@ -99,7 +99,7 @@ migrating.
   whose `unwrap()` gives what the runtime's any holds as the runtime gives it — a native for
   a primitive, a runtime `Value` otherwise, as the C++ `Viper::Any` and 1.2 did — and which
   takes any value, a generated one included; a generated class is built from what it gives
-  (`StructureS(value)`, `StructureS.wrap(value)`).
+  (`StructureS.wrap_value(value)`, `StructureS.wrapValue(value)`).
 - **The package leads to every unit.** TypeScript: the entry exports each unit as a namespace
   (`features.demo.StructureU`), each unit its attachments (`demo.attachments.ConceptA`), and
   `AnyConceptKey` and `AnyValue`; every top-level directory is a subpath export
@@ -123,12 +123,18 @@ migrating.
 - **A variant takes a native the runtime decodes into one of its alternatives**: in
   TypeScript, `u.f_variant = 7` picks `uint8` as `Value.create` does, instead of being refused
   as a `double`.
-- **A proxy carries its type and the bridge to the runtime, nothing more.** `type()`, the
-  runtime value (`vpr_value` / `vprValue`), a constructor from a runtime value (`wrap` in
-  TypeScript), the equality, hash and display its language expects, and `copy()`. A runtime
-  feature is called through the bridge: `Value.encode(p.vpr_value)`,
-  `Cls(Value.decode(blob, Cls.type(), definitions()))`, and the same for JSON, XML or a
-  hexdigest, or an order (`a.vprValue.compare(b.vprValue)`). The per-proxy `encode`,
+- **A proxy carries its type and the bridge to the Viper value, nothing more.** `type()`,
+  `Cls.wrap_value(value)` / `Cls.wrapValue(value)` over a Viper value of exactly its type
+  and `p.unwrap_value()` / `p.unwrapValue()` giving it back — both without copying, so a
+  change made through one shows in the other, as the runtime's reference semantics have it —
+  the equality, hash and display its language expects, and `copy()`. A constructor builds a
+  new value: from fields or natives, and from a Viper value or another proxy of its type by
+  copying it, shallowly, as the runtime's own constructors do (`ValueVector(type, v)`), where
+  `wrap_value` takes it as `Value.create` and `cast` do. A runtime feature is called through
+  the bridge: `Value.encode(p.unwrap_value())`,
+  `Cls.wrap_value(Value.decode(blob, Cls.type(), definitions()))`, and the same for JSON, XML
+  or a hexdigest, or an order (`a.unwrapValue().compare(b.unwrapValue())`). A TypeScript
+  enumeration's `wrapValue` refuses a case of another enumeration, as Python does. The per-proxy `encode`,
   `decode`, `hexdigest` and the TypeScript keys' `compareTo` are gone; `AnyConceptKey` gains
   `type()` so a key crosses back too, and a TypeScript key is also made from its instance id
   as a string, as the runtime allows.

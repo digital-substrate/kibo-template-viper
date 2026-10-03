@@ -10,7 +10,7 @@ export { AnyConceptKey } from "./proxy.js";
 export { AnyValue } from "./container.js";
 
 export interface Wrapping {
-    wrap(value: dsviper.Value): unknown;
+    wrapValue(value: dsviper.Value): unknown;
 }
 
 const classes = new Map<string, Wrapping>();
@@ -29,14 +29,14 @@ export function wrap(value: dsviper.OutputValue | dsviper.Value): any {
     switch (value.typeCode()) {
         case "struct":
         case "enum":
-            return named(value.type()).wrap(value);
+            return named(value.type()).wrapValue(value);
         case "key": {
             const key = dsviper.ValueKey.cast(value);
             const typeKey = key.typeKey();
-            return typeKey.isAnyConcept() ? new AnyConceptKey(key) : named(typeKey.elementType()).wrap(key);
+            return typeKey.isAnyConcept() ? new AnyConceptKey(key) : named(typeKey.elementType()).wrapValue(key);
         }
         case "any":
-            return new AnyValue(value);
+            return AnyValue.wrapValue(value);
         case "variant":
         case "optional":
         case "map":
@@ -48,7 +48,7 @@ export function wrap(value: dsviper.OutputValue | dsviper.Value): any {
         case "tuple": {
             const declared = declaredFor(value.type());
             if (declared !== undefined) {
-                return new declared(value);
+                return declared.wrapValue(value);
             }
             break;
         }
@@ -99,7 +99,7 @@ export function isKnown(value: dsviper.ValueKey): boolean {
 
 export function unwrap(value: unknown): dsviper.InputValue {
     if (value instanceof Proxy || value instanceof View) {
-        return value.vprValue;
+        return value.unwrapValue();
     }
     if (holdsGenerated(value)) {
         throw new TypeError("a native container of generated values: build its declared class instead, "
@@ -110,7 +110,7 @@ export function unwrap(value: unknown): dsviper.InputValue {
 
 export function unwrapDeep(value: unknown): dsviper.InputValue {
     if (value instanceof Proxy || value instanceof View) {
-        return value.vprValue;
+        return value.unwrapValue();
     }
     if (Array.isArray(value)) {
         return value.map(unwrapDeep) as dsviper.InputValue;

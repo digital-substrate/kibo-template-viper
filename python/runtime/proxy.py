@@ -8,17 +8,37 @@ import typing
 import dsviper
 
 V = typing.TypeVar("V", bound=dsviper.Value, covariant=True)
+T = typing.TypeVar("T")
+
+
+def _adopt(cls: type[T], value: typing.Any) -> T:
+    adopted = object.__new__(cls)
+    adopted._value = value  # type: ignore[attr-defined]
+    return adopted
 
 
 class Proxy(typing.Generic[V]):
-    """A generated class over the runtime value it wraps, which `vpr_value` returns."""
+    """A generated class over the Viper value it wraps, which `unwrap_value()` returns."""
     __slots__ = ("_value",)
 
     def __init__(self, value: typing.Any) -> None:
         self._value = value
 
-    @property
-    def vpr_value(self) -> V:
+    @classmethod
+    def type(cls) -> dsviper.Type:
+        raise NotImplementedError
+
+    @classmethod
+    def wrap_value(cls, value: dsviper.Value) -> typing.Self:
+        """The generated object over a Viper value, which must be of exactly this type, without
+        copying it: a change made through one shows in the other. A constructor builds a new
+        value."""
+        if not isinstance(value, dsviper.Value) or value.type() != cls.type():
+            raise TypeError(f"this value is not a {cls.type().representation()}")
+        return _adopt(cls, value)
+
+    def unwrap_value(self) -> V:
+        """The Viper value this object wraps, not a copy."""
         return typing.cast(V, self._value)
 
     def __eq__(self, other: object) -> bool:
@@ -30,7 +50,7 @@ class Proxy(typing.Generic[V]):
         return typing.cast("int", self._value.hash())
 
     def copy(self) -> typing.Self:
-        return type(self)(self._value.copy())
+        return _adopt(type(self), self._value.copy())
 
     def __lt__(self, other: Proxy[dsviper.Value]) -> bool:
         return typing.cast("bool", self._value < unwrap(other))
@@ -46,7 +66,7 @@ class Proxy(typing.Generic[V]):
 
     @classmethod
     def _wrap(cls, value: typing.Any) -> typing.Self:
-        return cls(value)
+        return cls.wrap_value(value)
 
     def _unwrap(self) -> V:
         return typing.cast(V, self._value)
@@ -81,16 +101,16 @@ def wrap(value: typing.Any) -> typing.Any:
         type_key = value.type_key()
         if type_key.is_any_concept():
             return AnyConceptKey(value)
-        return _named(type_key.element_type())(value)
+        return _named(type_key.element_type()).wrap_value(value)
 
     from .container import AnyValue, Fixed, Mapping, Matrix, Optional, Ordered, SetView, Variant, Vector, declared
 
     if code == "any":
-        return AnyValue(value)
+        return AnyValue.wrap_value(value)
 
     cls = declared(value)
     if cls is not None:
-        return cls(value)
+        return cls.wrap_value(value)
 
     if code == "map":
         return Mapping(value)

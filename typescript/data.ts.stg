@@ -7,6 +7,7 @@ import dsviper from "@digitalsubstrate/dsviper";
 
 import type * as containers from "../containers.js";
 import { Key, Proxy } from "../_codegen/proxy.js";
+import { adopt } from "../_codegen/value.js";
 import { AnyConceptKey, type AnyValue, isKnown, register, setField, wrap } from "../_codegen/registry.js";
 import { definitions } from "../definitions.js";
 <u.dependencies.types:{d|import * as <d.name;format="snake"> from "../<d.name;format="snake">/data.js";};separator="\n">
@@ -98,33 +99,33 @@ export class <c.name>Key extends Key {
         return new <c.name>Key(dsviper.ValueUUId.create());
     }
 
-    static wrap(value: dsviper.Value): <c.name>Key {
+    static wrapValue(value: dsviper.Value): <c.name>Key {
         return new <c.name>Key(dsviper.ValueKey.cast(value));
     }
 
     instanceId(): dsviper.ValueUUId {
-        return this.vprValue.instanceId();
+        return this.unwrapValue().instanceId();
     }
 
     runtimeId(): dsviper.ValueUUId {
-        return this.vprValue.typeConcept().runtimeId();
+        return this.unwrapValue().typeConcept().runtimeId();
     }
 
     isValid(): boolean {
-        return this.vprValue.instanceId().isValid();
+        return this.unwrapValue().instanceId().isValid();
     }
 
     description(): string {
-        return `${this.vprValue.instanceId().encoded()}:<u.name>::<c.name>Key${this.held()}`;
+        return `${this.unwrapValue().instanceId().encoded()}:<u.name>::<c.name>Key${this.held()}`;
     }
 
     isKnown(): boolean {
-        return isKnown(this.vprValue);
+        return isKnown(this.unwrapValue());
     }
 
 <if(c.parent)>
     toParentKey(): <c.parentBindingInNamespace> {
-        return new <c.parentBindingInNamespace>(this.vprValue.toParentKey());
+        return new <c.parentBindingInNamespace>(this.unwrapValue().toParentKey());
     }
 
 <endif>
@@ -132,11 +133,11 @@ export class <c.name>Key extends Key {
 
 <endif>}>
     toAnyConceptKey(): AnyConceptKey {
-        return new AnyConceptKey(this.vprValue.toAnyConceptKey());
+        return new AnyConceptKey(this.unwrapValue().toAnyConceptKey());
     }
 
     static fromAnyConceptKey(key: Proxy\<dsviper.ValueKey> | dsviper.ValueKey): <c.name>Key | undefined {
-        const value = key instanceof Proxy ? key.vprValue : key;
+        const value = key instanceof Proxy ? key.unwrapValue() : key;
         return value.isMember(<c.name>Key.concept())
             ? new <c.name>Key(value.toMemberKey(<c.name>Key.concept())) : undefined;
     }
@@ -173,7 +174,7 @@ export class <c.name>Key extends Key {
         } else if (runtimeId !== undefined) {
             throw new TypeError("a key carries its runtime id");
         }
-        const value = key instanceof Proxy ? key.vprValue : key;
+        const value = key instanceof Proxy ? key.unwrapValue() : key;
         if (value.type().equals(<c.name>Key.type())) {
             super(value);
             return;
@@ -184,36 +185,36 @@ export class <c.name>Key extends Key {
         super(value.toClubKey(<c.name>Key.club()));
     }
 
-    static wrap(value: dsviper.Value): <c.name>Key {
+    static wrapValue(value: dsviper.Value): <c.name>Key {
         return new <c.name>Key(dsviper.ValueKey.cast(value));
     }
 
     instanceId(): dsviper.ValueUUId {
-        return this.vprValue.instanceId();
+        return this.unwrapValue().instanceId();
     }
 
     runtimeId(): dsviper.ValueUUId {
-        return this.vprValue.typeConcept().runtimeId();
+        return this.unwrapValue().typeConcept().runtimeId();
     }
 
     isValid(): boolean {
-        return this.vprValue.instanceId().isValid();
+        return this.unwrapValue().instanceId().isValid();
     }
 
     description(): string {
-        return `${this.vprValue.instanceId().encoded()}:<u.name>::<c.name>Key${this.held()}`;
+        return `${this.unwrapValue().instanceId().encoded()}:<u.name>::<c.name>Key${this.held()}`;
     }
 
     isKnown(): boolean {
-        return isKnown(this.vprValue);
+        return isKnown(this.unwrapValue());
     }
 
     toAnyConceptKey(): AnyConceptKey {
-        return new AnyConceptKey(this.vprValue);
+        return new AnyConceptKey(this.unwrapValue());
     }
 
     static fromAnyConceptKey(key: Proxy\<dsviper.ValueKey> | dsviper.ValueKey): <c.name>Key | undefined {
-        const value = key instanceof Proxy ? key.vprValue : key;
+        const value = key instanceof Proxy ? key.unwrapValue() : key;
         return <c.name>Key.club().isMember(value.typeConcept()) ? new <c.name>Key(value) : undefined;
     }
 
@@ -242,8 +243,12 @@ export const <e.name> = {
         return (<e.name;format="snake">Type ??= definitions().checkEnumeration(<e.name;format="usnake">));
     },
 
-    wrap(value: dsviper.Value): <e.name> {
-        return dsviper.ValueEnumeration.cast(value).name() as <e.name>;
+    wrapValue(value: dsviper.Value): <e.name> {
+        const held = dsviper.ValueEnumeration.cast(value);
+        if (!held.type().equals(<e.name>.type())) {
+            throw new TypeError(`${held.type().representation()} is not <u.name>::<e.name>`);
+        }
+        return held.name() as <e.name>;
     },
 
     /** Return the case the model names `name`, spelled as the DSM spells it: `fromStr("<first(e.members):{c|<c.name>}>")`
@@ -252,7 +257,7 @@ export const <e.name> = {
         if (typeof name !== "string") {
             throw new TypeError(`${name} is not a case name`);
         }
-        return <e.name>.wrap(new dsviper.ValueEnumeration(<e.name>.type(), name));
+        return <e.name>.wrapValue(new dsviper.ValueEnumeration(<e.name>.type(), name));
     },
 
     name(held: <e.name>): string {
@@ -263,7 +268,7 @@ export const <e.name> = {
         return <e.name>.type().cases().findIndex((c) => c.name() === held);
     },
 
-    value(held: <e.name>): dsviper.ValueEnumeration {
+    unwrapValue(held: <e.name>): dsviper.ValueEnumeration {
         return new dsviper.ValueEnumeration(<e.name>.type(), held);
     },
 };
@@ -296,7 +301,7 @@ export class <s.name> extends Proxy\<dsviper.ValueStructure> {
             if (!value.type().equals(<s.name>.type())) {
                 throw new TypeError("this value is not a <u.name>::<s.name>");
             }
-            super(value);
+            super(new dsviper.ValueStructure(<s.name>.type(), value));
             return;
         }
         super(new dsviper.ValueStructure(<s.name>.type()));
@@ -313,8 +318,12 @@ export class <s.name> extends Proxy\<dsviper.ValueStructure> {
 \}};separator="\n">
     }
 
-    static wrap(value: dsviper.Value): <s.name> {
-        return new <s.name>(dsviper.ValueStructure.cast(value));
+    static wrapValue(value: dsviper.Value): <s.name> {
+        const structure = dsviper.ValueStructure.cast(value);
+        if (!structure.type().equals(<s.name>.type())) {
+            throw new TypeError("this value is not a <u.name>::<s.name>");
+        }
+        return adopt(<s.name>, structure);
     }
 
 <s.fields:field(s);separator="\n\n">
@@ -333,8 +342,8 @@ field(f, s) ::= <<
     }
 >>
 
-read(f) ::= <%<if(f.bindingType.useProxy)>return wrap(this.vprValue.at("<f.name>", false));<else>return this.vprValue.at("<f.name>") as <f.bindingType.annotation>;<endif>%>
-write(f) ::= <%setField(this.vprValue, "<f.name>", value);%>
+read(f) ::= <%<if(f.bindingType.useProxy)>return wrap(this.unwrapValue().at("<f.name>", false));<else>return this.unwrapValue().at("<f.name>") as <f.bindingType.annotation>;<endif>%>
+write(f) ::= <%setField(this.unwrapValue(), "<f.name>", value);%>
 
 descendant(d, c) ::= <<
     to<d.asNameInNamespace>Key(): <d.bindingInNamespace> | undefined {
@@ -345,7 +354,7 @@ descendant(d, c) ::= <<
         if (!(key instanceof <d.bindingInNamespace>)) {
             throw new TypeError(`${String(key)} is not a <d.bindingInNamespace>`);
         }
-        return new <c.name>Key(key.vprValue.toMemberKey(<c.name>Key.concept()));
+        return new <c.name>Key(key.unwrapValue().toMemberKey(<c.name>Key.concept()));
     }
 >>
 

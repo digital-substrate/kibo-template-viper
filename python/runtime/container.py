@@ -7,7 +7,7 @@ import typing
 
 import dsviper
 
-from .proxy import unwrap, wrap
+from .proxy import _adopt, unwrap, wrap
 
 E = typing.TypeVar("E")
 K = typing.TypeVar("K")
@@ -15,7 +15,7 @@ V = typing.TypeVar("V", bound=dsviper.Value, covariant=True)
 
 
 class View(typing.Generic[V]):
-    """A live view over the runtime container it wraps, which `vpr_value` returns."""
+    """A live view over the Viper container it wraps, which `unwrap_value()` returns."""
     __slots__ = ("_value",)
 
     _value: typing.Any
@@ -23,8 +23,8 @@ class View(typing.Generic[V]):
     def __init__(self, value: typing.Any) -> None:
         self._value = value
 
-    @property
-    def vpr_value(self) -> V:
+    def unwrap_value(self) -> V:
+        """The Viper value this container wraps, not a copy."""
         return typing.cast(V, self._value)
 
     def _unwrap(self) -> typing.Any:
@@ -34,10 +34,10 @@ class View(typing.Generic[V]):
         return typing.cast("dsviper.Type", self._value.type())
 
     def copy(self) -> typing.Self:
-        return type(self)(self._value.copy())
+        return _adopt(type(self), self._value.copy())
 
     def __eq__(self, other: object) -> bool:
-        other_value = other.vpr_value if isinstance(other, View) else other
+        other_value = other.unwrap_value() if isinstance(other, View) else other
         if not isinstance(other_value, dsviper.Value) and not isinstance(
                 other_value, (list, tuple, set, dict)):
             return NotImplemented
@@ -533,7 +533,15 @@ class AnyValue(View[dsviper.ValueAny]):
     __slots__ = ()
 
     def __init__(self, value: typing.Any = None) -> None:
-        super().__init__(value if isinstance(value, dsviper.ValueAny) else dsviper.ValueAny(_unwrap_deep(value)))
+        super().__init__(dsviper.ValueAny(value if isinstance(value, dsviper.ValueAny) else _unwrap_deep(value)))
+
+    @classmethod
+    def wrap_value(cls, value: dsviper.Value) -> AnyValue:
+        """The any over a Viper value, without copying it: a change made through one shows in
+        the other. The constructor builds a new any."""
+        if not isinstance(value, dsviper.ValueAny):
+            raise TypeError("this value is not an any")
+        return _adopt(cls, value)
 
     def __bool__(self) -> bool:
         return not self._value.is_nil()
@@ -553,6 +561,18 @@ class AnyValue(View[dsviper.ValueAny]):
     def clear(self) -> None:
         self._value.clear()
 
+
+_CONSTRUCTORS: dict[str, typing.Callable[[typing.Any, typing.Any], dsviper.Value]] = {
+    "vector": dsviper.ValueVector,
+    "set": dsviper.ValueSet,
+    "map": dsviper.ValueMap,
+    "optional": dsviper.ValueOptional,
+    "xarray": dsviper.ValueXArray,
+    "variant": dsviper.ValueVariant,
+    "tuple": dsviper.ValueTuple,
+    "vec": dsviper.ValueVec,
+    "mat": dsviper.ValueMat,
+}
 
 _CASTS: dict[type, typing.Callable[[typing.Any], typing.Any]] = {
     Vector: dsviper.ValueVector.cast,
@@ -593,12 +613,21 @@ class Declared:
     def type(cls) -> typing.Any:
         raise NotImplementedError
 
+    @classmethod
+    def wrap_value(cls, value: dsviper.Value) -> typing.Self:
+        """The container over a Viper value, which must be of exactly this type, without copying
+        it: a change made through one shows in the other. The constructor builds a new
+        container."""
+        if not isinstance(value, dsviper.Value) or value.type() != cls.type():
+            raise TypeError(f"this value is not a {cls.type().representation()}")
+        return _adopt(cls, value)
+
     def __init__(self, value: typing.Any = None) -> None:
         if isinstance(value, View):
-            value = value.vpr_value
+            value = value.unwrap_value()
         expected = type(self).type()
         if isinstance(value, dsviper.Value) and value.type() == expected:
-            View.__init__(typing.cast(View[typing.Any], self), value)
+            View.__init__(typing.cast(View[typing.Any], self), _CONSTRUCTORS[value.type_code()](expected, value))
             return
         view = next(base for base in type(self).__mro__ if base in _CASTS)
         try:

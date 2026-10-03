@@ -4,53 +4,60 @@
 import dsviper from "@digitalsubstrate/dsviper";
 
 import { isKnown } from "./registry.js";
+import { VALUE, adopt } from "./value.js";
 
+/** A generated class over the Viper value it wraps, which `unwrapValue()` returns. */
 export abstract class Proxy<V extends dsviper.Value> {
-    readonly vprValue: V;
+    readonly [VALUE]: V;
 
     protected constructor(value: V) {
-        this.vprValue = value;
+        this[VALUE] = value;
         Object.preventExtensions(this);
     }
 
+    /** The Viper value this object wraps, not a copy. */
+    unwrapValue(): V {
+        return this[VALUE];
+    }
+
     equals(other: unknown): boolean {
-        return other instanceof Proxy && this.vprValue.equals(other.vprValue);
+        return other instanceof Proxy && this[VALUE].equals(other.unwrapValue());
     }
 
     hashKey(): bigint {
-        return this.vprValue.hashKey();
+        return this[VALUE].hashKey();
     }
 
     toJSON(): dsviper.NativeValue {
-        return this.vprValue.toJSON();
+        return this[VALUE].toJSON();
     }
 
     copy(): this {
-        return new (this.constructor as new (value: V) => this)(
-            (this.vprValue as unknown as { copy(): V }).copy());
+        return adopt(this.constructor as { prototype: object },
+                     (this[VALUE] as unknown as { copy(): V }).copy()) as this;
     }
 
     type(): dsviper.Type {
-        return this.vprValue.type();
+        return this[VALUE].type();
     }
 
     hash(): bigint {
-        return this.vprValue.hash();
+        return this[VALUE].hash();
     }
 
     toString(): string {
-        return this.vprValue.toString();
+        return this[VALUE].toString();
     }
 }
 
 export abstract class Key extends Proxy<dsviper.ValueKey> {
     override hashKey(): bigint {
-        return this.vprValue.toAnyConceptKey().hashKey();
+        return this[VALUE].toAnyConceptKey().hashKey();
     }
 
     protected held(): string {
-        const concept = this.vprValue.typeConcept();
-        if (concept.runtimeId().equals(this.vprValue.typeKey().elementType().runtimeId())) {
+        const concept = this[VALUE].typeConcept();
+        if (concept.runtimeId().equals(this[VALUE].typeKey().elementType().runtimeId())) {
             return "";
         }
         return `(${concept.representation()}Key)`;
@@ -61,7 +68,7 @@ export class AnyConceptKey extends Key {
     declare private readonly anyConceptKeyBrand: never;
 
     constructor(key: Proxy<dsviper.ValueKey> | dsviper.ValueKey) {
-        super((key instanceof Proxy ? key.vprValue : key).toAnyConceptKey());
+        super((key instanceof Proxy ? key.unwrapValue() : key).toAnyConceptKey());
     }
 
     static type(): dsviper.TypeKey {
@@ -72,29 +79,29 @@ export class AnyConceptKey extends Key {
         return new AnyConceptKey(key);
     }
 
-    static wrap(value: dsviper.Value): AnyConceptKey {
+    static wrapValue(value: dsviper.Value): AnyConceptKey {
         return new AnyConceptKey(dsviper.ValueKey.cast(value));
     }
 
     instanceId(): dsviper.ValueUUId {
-        return this.vprValue.instanceId();
+        return this[VALUE].instanceId();
     }
 
     runtimeId(): dsviper.ValueUUId {
-        return this.vprValue.typeConcept().runtimeId();
+        return this[VALUE].typeConcept().runtimeId();
     }
 
     isValid(): boolean {
-        return this.vprValue.instanceId().isValid();
+        return this[VALUE].instanceId().isValid();
     }
 
     isKnown(): boolean {
-        return isKnown(this.vprValue);
+        return isKnown(this[VALUE]);
     }
 
     description(): string {
-        return `${this.vprValue.instanceId().encoded()}:AnyConceptKey`
-             + `(${this.vprValue.typeConcept().representation()}Key)`;
+        return `${this[VALUE].instanceId().encoded()}:AnyConceptKey`
+             + `(${this[VALUE].typeConcept().representation()}Key)`;
     }
 
     override toString(): string {

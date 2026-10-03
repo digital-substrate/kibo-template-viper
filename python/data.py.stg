@@ -255,33 +255,36 @@ class <e.name>(enum.Enum):
     def index(self) -> int:
         return list(type(self)).index(self)
 
-    @property
-    def vpr_value(self) -> dsviper.ValueEnumeration:
+    def unwrap_value(self) -> dsviper.ValueEnumeration:
         return dsviper.ValueEnumeration.cast(dsviper.Value.create(type(self).type(), self.value))
 
     def __lt__(self, other: <e.name>) -> bool:
         if not isinstance(other, <e.name>):
             return NotImplemented
-        return bool(self.vpr_value \< other.vpr_value)
+        return bool(self.unwrap_value() \< other.unwrap_value())
 
     def __le__(self, other: <e.name>) -> bool:
         if not isinstance(other, <e.name>):
             return NotImplemented
-        return bool(self.vpr_value \<= other.vpr_value)
+        return bool(self.unwrap_value() \<= other.unwrap_value())
 
     def __gt__(self, other: <e.name>) -> bool:
         if not isinstance(other, <e.name>):
             return NotImplemented
-        return bool(self.vpr_value > other.vpr_value)
+        return bool(self.unwrap_value() > other.unwrap_value())
 
     def __ge__(self, other: <e.name>) -> bool:
         if not isinstance(other, <e.name>):
             return NotImplemented
-        return bool(self.vpr_value >= other.vpr_value)
+        return bool(self.unwrap_value() >= other.unwrap_value())
+
+    @classmethod
+    def wrap_value(cls, value: dsviper.Value) -> <e.name>:
+        return cls(dsviper.ValueEnumeration.cast(value))
 
     @classmethod
     def _wrap(cls, value: typing.Any) -> <e.name>:
-        return cls(dsviper.ValueEnumeration.cast(value).name())
+        return cls.wrap_value(value)
 
     def _unwrap(self) -> str:
         return typing.cast(str, self.value)
@@ -307,6 +310,8 @@ class <s.name>(Proxy[dsviper.ValueStructure]):
             source = dsviper.ValueStructure(self.type(), _unwrap_deep(source))
         elif source.type() != self.type():
             raise TypeError("this value is not a <u.name>::<s.name>")
+        else:
+            source = dsviper.ValueStructure(self.type(), source)
         super().__init__(source)
         <s.fields:{f|if not isinstance(<f.name;format="snake">, NotGiven):
     self.<f.name;format="snake"> = <f.name;format="snake">};separator="\n">
