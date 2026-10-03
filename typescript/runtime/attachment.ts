@@ -80,10 +80,10 @@ export class AttachmentProxy<K, D, KS = SetView<K>, DI = D> {
         return wrap(getting.keys(this.descriptor)) as KS;
     }
 
-    enumerate(getting: dsviper.AttachmentGetting | dsviper.Database): [K, D | undefined][] {
+    enumerate(getting: dsviper.AttachmentGetting | dsviper.Database): [K, D][] {
         const reader = getting instanceof dsviper.Database ? getting.attachmentGetting() : getting;
         return reader.enumerate(this.descriptor)
-            .map(([key, document]) => [wrap(key), wrap(document)]);
+            .map(([key, document]) => [wrap(key) as K, wrap(document) as D]);
     }
 
     diffKeys(current: Getting, other: Getting): [KS, KS, KS, KS] {

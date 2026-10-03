@@ -30,6 +30,11 @@ export abstract class Proxy<V extends dsviper.Value> {
         return this[VALUE];
     }
 
+    /** -1, 0 or 1, as the runtime orders the two values: `list.sort((a, b) => a.compare(b))`. */
+    compare(other: Proxy<dsviper.Value>): number {
+        return this[VALUE].compare(other.unwrapValue());
+    }
+
     equals(other: unknown): boolean {
         return other instanceof Proxy && this[VALUE].equals(other.unwrapValue());
     }

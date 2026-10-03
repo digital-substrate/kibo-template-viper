@@ -42,6 +42,11 @@ export class View<V extends dsviper.Value = dsviper.Value> {
         return this[VALUE].hashKey();
     }
 
+    /** -1, 0 or 1, as the runtime orders the two values: `list.sort((a, b) => a.compare(b))`. */
+    compare(other: View): number {
+        return this[VALUE].compare(other.unwrapValue());
+    }
+
     equals(other: unknown): boolean {
         const compared = other instanceof View ? other.unwrapValue() : other;
 
@@ -173,6 +178,7 @@ function setOperand<E>(other: SetOperand<E>): dsviper.InputValue[] | dsviper.Val
     return other instanceof SetView ? other.unwrapValue() as dsviper.ValueSet : [...other].map(unwrap);
 }
 
+/** A set, in sorted order. `remove(e)` throws ViperError when the set does not hold e; `discard(e)` does not. */
 export class SetView<E> extends Sequence<E, dsviper.ValueSet> {
     private get set(): dsviper.ValueSet {
         return this[VALUE] as dsviper.ValueSet;
@@ -408,6 +414,10 @@ export class Mapping<K, V> extends View<dsviper.ValueMap> {
     }
 }
 
+/**
+ * An xarray. `at(position)` is undefined for a removed position, as `at(index)` is past the
+ * end; a position the array never created throws ViperError.
+ */
 export class Ordered<E> extends View<dsviper.ValueXArray> {
     private get ordered(): dsviper.ValueXArray {
         return this[VALUE] as dsviper.ValueXArray;

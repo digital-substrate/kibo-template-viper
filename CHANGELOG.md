@@ -199,6 +199,10 @@ packager's to add.
 - **A TypeScript xarray field takes the list of its elements**, as Python and an optional of
   an xarray do: `u.f_xarray = [1, 2]` type-checks, the Node binding (>= 1.2.14) decoding an
   xarray from its elements.
+- **TypeScript orders, enumerates and names its attachments as Python and C++ do**: a proxy and a
+  container have `compare(other)`, the runtime's order, as C++'s `operator<` and Python's `<`;
+  `enumerate` yields `[K, D]`; `AttachmentProxy` is exported as a type, for a helper over any
+  attachment.
 - **Containers declare what each kind does, in both languages.** Python: a vector is a `Vector`
   (`append`, `insert`, `extend`, `pop`, `remove`, `count`, `index`, `exchange`, `front`,
   `back`, `[i] =`, `del`, `+`, `+=`), a set a `SetView` (`add`, `remove`, `discard`, `pop`,

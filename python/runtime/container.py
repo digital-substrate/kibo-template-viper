@@ -159,6 +159,8 @@ class Vector(Sequence[dsviper.ValueVector, E]):
 
 
 class SetView(Sequence[dsviper.ValueSet, E]):
+    """A set, in sorted order. remove(e) raises KeyError when the set does not hold e;
+    discard(e) does not."""
     __slots__ = ()
 
     def add(self, element: E) -> None:
@@ -398,6 +400,8 @@ class Mapping(View[dsviper.ValueMap], typing.Generic[K, E]):
 
 
 class Ordered(View[dsviper.ValueXArray], typing.Generic[E]):
+    """An xarray. x[position] is None for a removed position; a position the array never
+    created raises KeyError, an index out of range IndexError."""
     __slots__ = ()
 
     END = dsviper.ValueXArray.END
