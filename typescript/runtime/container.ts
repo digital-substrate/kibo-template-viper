@@ -611,6 +611,8 @@ export type Kind<N extends string> = { readonly [kind]: N };
 // A declared container also takes the runtime value of its own kind, which it checks is of its type.
 type Bound<V, I> = {
     new (value?: V | I | (V extends View<infer R> ? R : never) | null): V;
+    /** The container over a runtime value of exactly its type; any other is refused. */
+    wrap(value: dsviper.Value): V;
     type(): dsviper.Type;
 };
 
@@ -668,6 +670,13 @@ function bind<V extends View, I, N extends string>(view: new (value: dsviper.Val
 
         static type(): dsviper.Type {
             return typeOf();
+        }
+
+        static wrap(value: dsviper.Value): BoundView {
+            if (!(value instanceof dsviper.Value) || !value.type().equals(typeOf())) {
+                throw new TypeError(`this value is not a ${typeOf().representation()}`);
+            }
+            return new this(value);
         }
     }
 

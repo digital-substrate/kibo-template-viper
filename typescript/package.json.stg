@@ -9,6 +9,10 @@ model(m) ::= <<
             "types": "./dist/index.d.ts",
             "import": "./dist/index.js"
         },
+        "./pools": {
+            "types": "./dist/pools.d.ts",
+            "import": "./dist/pools.js"
+        },
         "./*": {
             "types": "./dist/*/index.d.ts",
             "import": "./dist/*/index.js"
