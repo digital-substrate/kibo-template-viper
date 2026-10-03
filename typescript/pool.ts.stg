@@ -35,8 +35,11 @@ export class Remote {
      * new dsviper.Definitions()). isAvailable() says whether the service declares this pool;
      * the connection's own state is service.isClosed(). A function that mutates takes an
      * AttachmentMutating, one that reads an AttachmentGetting, as an attachment's operations
-     * do: their documentation says where each comes from. The service reads and writes that
-     * state in place; nothing is stored until it is committed.
+     * do: their documentation says where each comes from. The state knows the model: one a
+     * CommitDatabase extended with the package's definitions() gives, or new
+     * dsviper.CommitMutableState(new dsviper.CommitState(definitions())); over other
+     * definitions a call fails on an unregistered attachment. The service reads and writes
+     * that state in place; nothing is stored until it is committed.
      */
     constructor(service: dsviper.ServiceRemote) {
         this.service = service;
