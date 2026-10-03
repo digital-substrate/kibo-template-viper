@@ -99,6 +99,7 @@ export class <c.name>Key extends Key {
         return new <c.name>Key(dsviper.ValueUUId.create());
     }
 
+    /** The key a Viper value of exactly this type holds; a key of another type throws TypeError. */
     static wrapValue(value: dsviper.Value): <c.name>Key {
         return new <c.name>Key(dsviper.ValueKey.cast(value));
     }
@@ -185,6 +186,7 @@ export class <c.name>Key extends Key {
         super(value.toClubKey(<c.name>Key.club()));
     }
 
+    /** The key a Viper value of exactly this type holds; a key of another type throws TypeError. */
     static wrapValue(value: dsviper.Value): <c.name>Key {
         return new <c.name>Key(dsviper.ValueKey.cast(value));
     }
@@ -243,6 +245,7 @@ export const <e.name> = {
         return (<e.name;format="snake">Type ??= definitions().checkEnumeration(<e.name;format="usnake">));
     },
 
+    /** The case a Viper value of exactly this enumeration holds; another type throws TypeError. */
     wrapValue(value: dsviper.Value): <e.name> {
         const held = dsviper.ValueEnumeration.cast(value);
         if (!held.type().equals(<e.name>.type())) {
@@ -314,6 +317,11 @@ export class <s.name> extends Proxy\<dsviper.ValueStructure> {
 \}};separator="\n">
     }
 
+    /**
+     * The structure over a Viper value of exactly its type, without copying it: a change made
+     * through one shows in the other. The constructor boxes such a value the same way; copy it
+     * explicitly (`new <s.name>(value.copy())`). Another type throws TypeError.
+     */
     static wrapValue(value: dsviper.Value): <s.name> {
         const structure = dsviper.ValueStructure.cast(value);
         if (!structure.type().equals(<s.name>.type())) {

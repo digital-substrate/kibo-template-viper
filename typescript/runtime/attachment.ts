@@ -46,8 +46,8 @@ export interface Mutating extends Setting {
  * Reading - keys, has, get, enumerate - takes an AttachmentGetting (a CommitState's or a
  * mutable state's attachmentGetting()) or a Database.
  *
- * Writing goes one of two ways. On a Database, set and del write the current state directly:
- * register the model first, db.extendDefinitions(definitions()), and write inside a
+ * Either database needs the model first: db.extendDefinitions(definitions()). Writing then
+ * goes one of two ways. On a Database, set and del write the current state directly, inside a
  * transaction. On a CommitDatabase, set, diff and the field operations write to an
  * AttachmentMutating, which a CommitMutableState gives (attachmentMutating()); nothing is
  * stored until that state is committed - db.commitMutations(label, state), or a CommitStore's

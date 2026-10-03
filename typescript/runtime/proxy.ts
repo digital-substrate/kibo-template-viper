@@ -61,6 +61,10 @@ export abstract class Proxy<V extends dsviper.Value> {
 }
 
 export abstract class Key extends Proxy<dsviper.ValueKey> {
+    /**
+     * A bigint equal for equal keys, whatever the view (parent, club, any concept): key a
+     * native Map or Set by it, which compare objects by identity.
+     */
     override hashKey(): bigint {
         return this[VALUE].toAnyConceptKey().hashKey();
     }
