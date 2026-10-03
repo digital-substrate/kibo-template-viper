@@ -20,6 +20,11 @@ class View(typing.Generic[V]):
     An element read is the one the container holds, and an element written is kept,
     not copied - except a set element and a map key, which are copies: changing one
     read from the container does not change it.
+
+    An element given as a native goes through the runtime's conversion: content that does not
+    fit (300 for a uint8, a structure of another type) raises dsviper.ViperError, naming the
+    element at fault. A Viper value of another type, given where this container is
+    expected, raises TypeError.
     """
     __slots__ = ("_value",)
 
@@ -105,6 +110,8 @@ class Sequence(View[V], typing.Generic[V, E]):
 
 
 class Vector(Sequence[dsviper.ValueVector, E]):
+    """A vector. v[i] past the end raises IndexError; remove(e) of an element it does not
+    hold raises dsviper.ViperError."""
     __slots__ = ()
 
     def __setitem__(self, index: int, element: E) -> None:
@@ -494,7 +501,8 @@ class Ordered(View[dsviper.ValueXArray], typing.Generic[E]):
 
 
 class Optional(View[dsviper.ValueOptional], typing.Generic[E]):
-    """An optional. `clear()` empties it; read from a field, it empties that field."""
+    """An optional. `clear()` empties it; read from a field, it empties that field.
+    `unwrap()` of a nil optional raises dsviper.ViperError; `get(default)` answers default."""
     __slots__ = ()
 
     def __bool__(self) -> bool:
@@ -628,17 +636,19 @@ class Declared:
         return _adopt(cls, value)
 
     def __init__(self, value: typing.Any = None) -> None:
-        if isinstance(value, View):
-            value = value.unwrap_value()
+        value = _unwrap_deep(value)
         expected = type(self).type()
         if isinstance(value, dsviper.Value) and value.type() == expected:
             View.__init__(typing.cast(View[typing.Any], self), value)
             return
         view = next(base for base in type(self).__mro__ if base in _CASTS)
-        try:
-            built = _CASTS[view](dsviper.Value.create(expected, _unwrap_deep(value)))
-        except dsviper.ViperError as refusal:
-            raise TypeError(f"this value is not a {expected.representation()}") from refusal
+        if isinstance(value, dsviper.Value):
+            try:                                # an element of an optional, an alternative of a variant
+                built = _CASTS[view](dsviper.Value.create(expected, value))
+            except dsviper.ViperError as refusal:
+                raise TypeError(f"this value is not a {expected.representation()}") from refusal
+        else:
+            built = _CASTS[view](dsviper.Value.create(expected, value))
         View.__init__(typing.cast(View[typing.Any], self), built)
 
 

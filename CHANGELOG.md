@@ -192,10 +192,15 @@ packager's to add.
   argument; a TypeScript attachment deletes with `del`, as in C++ and 1.2 (Python keeps
   `delete`, `del` being its keyword). A C++ pool's identity is public again, as in 1.2:
   `<namespace>::<pool>::poolName` and `poolId`, shared by the pool and its `Remote`.
-- **Each language raises its own idiom's error, and says so.** Python: a missing map key raises
-  `KeyError`, an alternative a variant does not hold `ValueError`, an unknown case name
-  `ValueError`; TypeScript: the runtime's `ViperError`, and `TypeError` for an alternative a
-  variant does not hold.
+- **Errors follow the binding's three layers, in both languages, and are documented.** An
+  argument of another kind raises `TypeError` — a Viper value of another type, a key of
+  another concept. Native content that does not fit the type raises the runtime's
+  `ViperError`, naming the element at fault, whether it reaches a container's constructor,
+  an `append` or a field. An operation the runtime refuses raises `ViperError`: `remove` of an
+  element a vector does not hold, `unwrap()` of a nil optional. A read keeps each language's
+  idiom: Python raises `IndexError` past the end, `KeyError` for a missing map key,
+  `ValueError` for an unknown case name or an alternative a variant does not hold; TypeScript
+  throws `TypeError` for that alternative.
 - **A TypeScript xarray field takes the list of its elements**, as Python and an optional of
   an xarray do: `u.f_xarray = [1, 2]` type-checks, the Node binding (>= 1.2.14) decoding an
   xarray from its elements.

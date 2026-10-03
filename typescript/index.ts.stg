@@ -31,8 +31,9 @@ model(m) ::= <<
  * A generated object is a box around a Viper value: `p.unwrapValue()` gives it, and
  * `Cls.wrapValue(value)` boxes one. A runtime feature is called on that value: bytes are
  * `dsviper.Value.encode(p.unwrapValue())`, read back with
- * `Cls.wrapValue(dsviper.Value.decode(blob, Cls.type(), definitions()))`. A value of the wrong
- * type throws TypeError; what the runtime refuses throws dsviper.ViperError.
+ * `Cls.wrapValue(dsviper.Value.decode(blob, Cls.type(), definitions()))`. A Viper value of
+ * another type throws TypeError; native content that does not fit the type, and what the
+ * runtime refuses, throw dsviper.ViperError.
  *
  * This package and the code that opens a database must reach one installation of the
  * runtime: make `@digitalsubstrate/dsviper` a dependency of the project, in the range this

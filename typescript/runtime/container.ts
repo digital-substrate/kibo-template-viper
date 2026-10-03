@@ -16,6 +16,11 @@ function holds(container: dsviper.Value, element: unknown): boolean {
  * An element read is the one the container holds, and an element written is kept, not copied
  * - except a set element and a map key, which are copies: changing one read from the container
  * does not change it.
+ *
+ * An element given as a native goes through the runtime's conversion: content that does not
+ * fit (300 for a uint8, a structure of another type) throws ViperError, naming the element at
+ * fault. A Viper value of another type, given where this container is expected, throws
+ * TypeError.
  */
 export class View<V extends dsviper.Value = dsviper.Value> {
     readonly [VALUE]: V;
@@ -111,6 +116,7 @@ export class Sequence<E, V extends dsviper.Value = dsviper.Value> extends View<V
     }
 }
 
+/** A vector. `at(i)` past the end throws ViperError; `remove(e)` of an element it does not hold throws ViperError. */
 export class Vector<E> extends Sequence<E, dsviper.ValueVector> {
     private get vector(): dsviper.ValueVector {
         return this[VALUE] as dsviper.ValueVector;
@@ -528,7 +534,10 @@ export class Ordered<E> extends View<dsviper.ValueXArray> {
     }
 }
 
-/** An optional. `clear()` empties it; read from a field, it empties that field. */
+/**
+ * An optional. `clear()` empties it; read from a field, it empties that field. `unwrap()` of a
+ * nil optional throws ViperError; `get(fallback)` answers the fallback.
+ */
 export class Optional<E> extends View<dsviper.ValueOptional> {
     private get optional(): dsviper.ValueOptional {
         return this[VALUE] as dsviper.ValueOptional;
@@ -692,13 +701,16 @@ function bind<V extends View, I, N extends string>(view: new (value: dsviper.Val
             }
 
             let built: dsviper.Value;
-            try {
+            if (given instanceof dsviper.Value) {
+                try {
+                    built = build(typeOf(), given);
+                } catch (refusal) {
+                    throw new TypeError(`this value is not a ${typeOf().representation()}`,
+                                        { cause: refusal });
+                }
+            } else {
                 built = build(typeOf(), given);
-            } catch (refusal) {
-                throw new TypeError(`this value is not a ${typeOf().representation()}`,
-                                    { cause: refusal });
             }
-
             if (!built.type().equals(typeOf())) {
                 throw new TypeError(`this value is not a ${typeOf().representation()} `
                                     + `but a ${built.type().representation()}`);

@@ -83,9 +83,14 @@ A `CommitStore` holds that thread for an application, with undo and redo.
 
 ## Errors
 
-The package raises what a Python developer expects: `TypeError` for a value of the wrong
-type, `KeyError` for a missing map key, `ValueError` for an unknown case name or a variant
-read as an alternative it does not hold. What the runtime refuses raises `dsviper.ViperError`.
+The package follows the binding's three layers. An argument of another kind raises
+`TypeError` — a Viper value of another type, a key of another concept. Native content that
+does not fit the type raises `dsviper.ViperError`, naming the element at fault: `300` for a
+`uint8`, a string for a `float` field, a structure of another type in a list. An operation the
+runtime refuses raises `dsviper.ViperError` too: `remove` of an element a vector does not hold,
+`unwrap()` of a nil optional. A read keeps Python's names: `IndexError` past the end,
+`KeyError` for a missing map key; and `ValueError` for an unknown case name or a variant read
+as an alternative it does not hold.
 
 ## The runtime
 
