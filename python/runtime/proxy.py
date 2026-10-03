@@ -142,23 +142,10 @@ def _holds_generated(value: object) -> bool:
     return hasattr(value, "_unwrap")
 
 
-KeyT = typing.TypeVar("KeyT", bound="Key")
-
-
 class Key(Proxy[dsviper.ValueKey]):
     __slots__ = ()
 
     _value: dsviper.ValueKey
-
-    @classmethod
-    def from_any_concept_key(cls: type[KeyT], key: Proxy[dsviper.ValueKey] | dsviper.ValueKey) -> KeyT | None:
-        raise NotImplementedError
-
-    def as_(self, cls: type[KeyT]) -> KeyT | None:
-        return cls.from_any_concept_key(self)
-
-    def to_concept_key(self) -> Key:
-        return typing.cast("Key", wrap(self._value.to_concept_key()))
 
     def _held(self) -> str:
         concept = self._value.type_concept()

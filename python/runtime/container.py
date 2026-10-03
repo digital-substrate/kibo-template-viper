@@ -565,19 +565,9 @@ _DECLARED: dict[str, type] = {}
 
 
 def _holds(container: typing.Any, element: object) -> bool:
-    probe = _unwrap_deep(element)
-    container_type = container.type()
-    element_type = (container_type.key_type() if hasattr(container_type, "key_type")
-                    else container_type.element_type() if hasattr(container_type, "element_type") else None)
-    if isinstance(probe, dsviper.ValueKey) and element_type is not None and element_type.type_code() == "key":
-        try:
-            probe = probe.to_key(dsviper.TypeKey.cast(element_type))
-        except dsviper.ViperError:
-            return False
-    try:
-        return probe in container
-    except dsviper.ViperError:
-        return False
+    # As strict as the container: an element of another type raises, a child key included --
+    # widen it first with to_parent_key(), as storing it requires.
+    return _unwrap_deep(element) in container
 
 
 def _unwrap_deep(value: typing.Any) -> typing.Any:

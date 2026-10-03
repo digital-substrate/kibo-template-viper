@@ -104,19 +104,19 @@ migrating.
 - **What the annotations allow, the runtime takes**: a tuple keys a map of vectors, a
   structure's `dict` source holds generated values, a default club key reads back, and a
   removed xarray position reads `None`. `Key` is exported; a concept key built from another
-  view's key points to `from_key()`. A TypeScript `Mapping` iterates its `[key, value]`
+  view's key points to `to_parent_key()` and `from_any_concept_key()`. A TypeScript `Mapping` iterates its `[key, value]`
   entries, as a `Map` does.
 - **The generated Python is fully annotated**, its runtime included: it passes mypy with
   `--disallow-untyped-defs`, and an attachment's `get`, `has` and `keys` take a `Database` as
   well as an `AttachmentGetting`. A TypeScript proxy or view is not extensible, so assigning a
   misspelt field throws at the line, in plain JavaScript too.
-- **A key gives back its instance's own key**: `to_concept_key()` (`toConceptKey()`), the
-  runtime's name, returns the generated class of the instance's concept from any view.
 - **A document is written as a field is**: `set` and `diff` take the document's input — its
   class, or what the runtime decodes into it (`{1, 2}` for a `set<int8>`, any value for an
   `any`). `AnyValue` is built from a value. A club key's constructor takes its members' keys.
-- **Membership always answers.** `in` (Python) and `has` (TypeScript) find a key through any
-  view of its instance, and answer false for an element of another type instead of raising.
+- **Membership is as strict as storing.** `in` and `contains` (Python) and `has`
+  (TypeScript) look an element up as the type the container holds: a key of another view is
+  widened first, with `to_parent_key()` or `to_any_concept_key()`, as storing it requires, and
+  an element of another type raises, as the runtime does.
 - **A variant takes a native the runtime decodes into one of its alternatives**: in
   TypeScript, `u.f_variant = 7` picks `uint8` as `Value.create` does, instead of being refused
   as a `double`.
@@ -161,12 +161,17 @@ migrating.
   every one is checked where the container is built.
 - **Keys follow the runtime's model: one instance, many views.** A key is a static type
   (`key<Concept>`, `key<Club>`, `key<any_concept>`), the concept of its instance and an
-  instance id. A key class's constructor takes a key of exactly its static type; every
-  conversion is named and goes through the runtime, which keeps the instance:
-  `to_parent_key()`, `from_any_concept_key()` (a descendant's key included, `None` when the
-  instance is not one), `from_key()` (raises instead), `as_(cls)`, and, for the descendants
+  instance id. The Python and TypeScript keys
+  follow the C++ ones, operation for operation. A key class's constructor takes a key of
+  exactly its static type, an instance id, or an instance id and the runtime id of a concept
+  that is its own or descends from it; with no argument it gives the invalid key, as in C++,
+  and `create()` a fresh one. Every conversion is named and goes through the runtime, which
+  keeps the instance: `to_parent_key()`, `to_any_concept_key()`, `from_any_concept_key()` (a
+  descendant's key included, `None` when the instance is not one), and, for the descendants
   declared in the same namespace, `to_<descendant>_key()` and `from_<descendant>_key()`; a
-  club converts to and from its members the same way. A field or a document reads back the
+  club converts to and from its members the same way. In C++, a parent key narrows to a
+  descendant declared in the same namespace with `as<Descendant>Key()`, and
+  `toAnyConceptKey()` names `toAny()`, as in 1.2. A field or a document reads back the
   key class of its static type. Keys of one instance compare equal and hash alike whatever
   the view, in both languages; in TypeScript, key classes are nominal, so a key of one concept
   is not accepted where another is announced.

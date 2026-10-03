@@ -51,6 +51,12 @@ bool <c.name>Key::isKnown() const { return <u.model.namespace>::codec::isKnown(t
 <endif>
 
 <u.model.namespace>::AnyConceptKey <c.name>Key::toAny() const noexcept { return {_instanceId, _runtimeId}; }
+<u.model.namespace>::AnyConceptKey <c.name>Key::toAnyConceptKey() const noexcept { return toAny(); }
+<c.strictDescendantsInNamespace:{d|<if(d.isLocal)>
+
+std::optional\<<d.nameInNamespace>Key> <c.name>Key::as<d.asNameInNamespace>Key() const noexcept {
+    return <d.nameInNamespace>Key::from(toAny());
+\}<endif>}>
 
 <narrowing_doc()>
 <from(c, u, "conceptType")>
@@ -80,6 +86,7 @@ std::string <c.name>Key::description() const { return <u.model.namespace>::codec
 bool <c.name>Key::isKnown() const { return <u.model.namespace>::codec::isKnown(toAny()); }
 
 <u.model.namespace>::AnyConceptKey <c.name>Key::toAny() const noexcept { return {_instanceId, _runtimeId}; }
+<u.model.namespace>::AnyConceptKey <c.name>Key::toAnyConceptKey() const noexcept { return toAny(); }
 
 <narrowing_doc()>
 <from(c, u, "clubType")>

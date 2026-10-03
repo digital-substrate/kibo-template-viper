@@ -3,7 +3,7 @@
 
 import dsviper from "@digitalsubstrate/dsviper";
 
-import { isKnown, wrap } from "./registry.js";
+import { isKnown } from "./registry.js";
 
 export abstract class Proxy<V extends dsviper.Value> {
     readonly vprValue: V;
@@ -43,21 +43,9 @@ export abstract class Proxy<V extends dsviper.Value> {
     }
 }
 
-export interface KeyClass<K> {
-    fromAnyConceptKey(key: Key | dsviper.ValueKey): K | undefined;
-}
-
 export abstract class Key extends Proxy<dsviper.ValueKey> {
     override hashKey(): bigint {
         return this.vprValue.toAnyConceptKey().hashKey();
-    }
-
-    as<K>(target: KeyClass<K>): K | undefined {
-        return target.fromAnyConceptKey(this);
-    }
-
-    toConceptKey(): Key {
-        return wrap(this.vprValue.toConceptKey()) as Key;
     }
 
     protected held(): string {

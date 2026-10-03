@@ -59,24 +59,19 @@ concept(c, u) ::= <<
 <descendant_to(d, c)>
 
 <descendant_from(d, c)><endif>}>
-<if(!c.hasForeignDescendants)>
-
-    def to_concept_key(self) -> <concept_union(c)>:
-        return typing.cast("<concept_union(c)>", super().to_concept_key())
-<endif>
 >>
-
-concept_union(c) ::= <%<c.name>Key<c.strictDescendantsInNamespace:{d|<if(d.isLocal)> | <d.bindingInNamespace><endif>}><if(c.hasForeignDescendants)> | Key<endif>%>
 
 descendant_to(d, c) ::= <<
     def to_<d.asNameInNamespace;format="snake">_key(self) -> <d.bindingInNamespace> | None:
-        return self.as_(<d.bindingInNamespace>)
+        return <d.bindingInNamespace>.from_any_concept_key(self)
 >>
 
 descendant_from(d, c) ::= <<
     @classmethod
     def from_<d.asNameInNamespace;format="snake">_key(cls, key: <d.bindingInNamespace>) -> <c.name>Key:
-        return cls.from_key(key)
+        if not isinstance(key, <d.bindingInNamespace>):
+            raise TypeError(f"{key!r} is not a <d.bindingInNamespace>")
+        return cls(key._value.to_member_key(cls.concept()))
 >>
 
 club(c, u) ::= <<
@@ -95,7 +90,15 @@ class <c.name>Key(Key):
     def type(cls) -> dsviper.Type:
         return dsviper.TypeKey(cls.club())
 
-    def __init__(self, key: <c.name>Key | <c.membersInNamespace:{m|<m.bindingInNamespace> | }>dsviper.ValueKey) -> None:
+    def __init__(self, key: <c.name>Key | <c.membersInNamespace:{m|<m.bindingInNamespace> | }>dsviper.ValueKey | dsviper.ValueUUId | str,
+                 runtime_id: dsviper.ValueUUId | str | NotGiven = NOT_GIVEN) -> None:
+        """A key of a member, or an instance identifier and the runtime id of a member."""
+        if isinstance(key, (dsviper.ValueUUId, str)):
+            if isinstance(runtime_id, NotGiven):
+                raise TypeError("an instance identifier needs the runtime id of a member of <u.name>::<c.name>")
+            key = dsviper.ValueKey.create(definitions().check_concept(dsviper.ValueUUId(runtime_id)), key)
+        elif not isinstance(runtime_id, NotGiven):
+            raise TypeError("a key carries its runtime id")
         value = key._value if isinstance(key, Proxy) else key
         if not isinstance(value, dsviper.ValueKey):
             raise TypeError("this value is not a key")
@@ -152,17 +155,34 @@ class <c.name>Key(Key):
     def type(cls) -> dsviper.Type:
         return dsviper.TypeKey(cls.concept())
 
-    def __init__(self, identifier: dsviper.ValueKey | dsviper.ValueUUId | str | NotGiven = NOT_GIVEN) -> None:
+    def __init__(self, identifier: dsviper.ValueKey | dsviper.ValueUUId | str | NotGiven = NOT_GIVEN,
+                 runtime_id: dsviper.ValueUUId | str | NotGiven = NOT_GIVEN) -> None:
+        """No argument gives the invalid key, an instance identifier the key of that instance, an
+        instance identifier and a runtime id the key of a concept that is a <c.name> or descends
+        from it. A key of another concept is converted with its to_parent_key() or
+        to_any_concept_key(), and back with from_any_concept_key()."""
         if isinstance(identifier, Proxy):
-            raise TypeError(f"{identifier!r} is not a <u.name>::<c.name>Key: convert it with from_key()")
+            raise TypeError(f"{identifier!r} is not a <u.name>::<c.name>Key: "
+                            "widen it with to_parent_key(), or narrow it with from_any_concept_key()")
         if isinstance(identifier, dsviper.ValueKey):
+            if not isinstance(runtime_id, NotGiven):
+                raise TypeError("a key carries its runtime id")
             if identifier.type() != self.type():
                 raise TypeError(f"this value is not a <u.name>::<c.name>Key: {identifier.detail_type_representation()}")
             super().__init__(identifier)
         elif isinstance(identifier, NotGiven):
-            super().__init__(dsviper.ValueKey.create(self.concept(), None))
+            if not isinstance(runtime_id, NotGiven):
+                raise TypeError("a runtime id needs an instance identifier")
+            super().__init__(dsviper.ValueKey.create(self.concept(), dsviper.ValueUUId.INVALID))
         elif isinstance(identifier, (dsviper.ValueUUId, str)):
-            super().__init__(dsviper.ValueKey.create(self.concept(), identifier))
+            if isinstance(runtime_id, NotGiven):
+                super().__init__(dsviper.ValueKey.create(self.concept(), identifier))
+                return
+            concept = definitions().check_concept(dsviper.ValueUUId(runtime_id))
+            key = dsviper.ValueKey.create(concept, identifier)
+            if not key.is_member(self.concept()):
+                raise TypeError(f"{concept.representation()} is not a <u.name>::<c.name>")
+            super().__init__(key.to_member_key(self.concept()))
         else:
             raise TypeError(f"{identifier!r} is not an instance identifier")
 
@@ -186,13 +206,6 @@ class <c.name>Key(Key):
     def from_any_concept_key(cls, key: AnyConceptKey | Proxy[dsviper.ValueKey] | dsviper.ValueKey) -> <c.name>Key | None:
         value = key._value if isinstance(key, Proxy) else key
         return cls(value.to_member_key(cls.concept())) if value.is_member(cls.concept()) else None
-
-    @classmethod
-    def from_key(cls, key: Proxy[dsviper.ValueKey] | dsviper.ValueKey) -> <c.name>Key:
-        value = key._value if isinstance(key, Proxy) else key
-        if not value.is_member(cls.concept()):
-            raise TypeError(f"{value.detail_type_representation()} does not designate a <u.name>::<c.name>")
-        return cls(value.to_member_key(cls.concept()))
 
     def description(self) -> str:
         return f"{self._value.instance_id().encoded()}:<u.name>::<c.name>Key{self._held()}"
@@ -327,7 +340,7 @@ registered_key(v) ::= <%<v.name;format="usnake">: <v.name>Key%>
 
 club_to(cm, c) ::= <<
     def to_<cm.asNameInNamespace;format="snake">_key(self) -> <cm.bindingInNamespace> | None:
-        return self.as_(<cm.bindingInNamespace>)
+        return <cm.bindingInNamespace>.from_any_concept_key(self)
 >>
 
 club_from(cm, c) ::= <<

@@ -29,6 +29,8 @@ unit(u) ::= <<
 
 namespace <u.model.namespace>::<u.name;format="lsc"> {
 
+<u.concepts:{c|class <c.name>Key;};separator="\n">
+
 <u.concepts:concept();separator="\n\n">
 
 <u.clubs:club(u);separator="\n\n">
@@ -70,8 +72,11 @@ public:
 
     <c.parentNameInNamespace>Key toParentKey() const noexcept;
 <endif>
+<c.strictDescendantsInNamespace:{d|<if(d.isLocal)>
+    <concept_descendant_getter(d)><endif>}>
 
     <u.model.namespace>::AnyConceptKey toAny() const noexcept;
+    <u.model.namespace>::AnyConceptKey toAnyConceptKey() const noexcept;
     static std::optional\<<c.name>Key> from(<u.model.namespace>::AnyConceptKey const & key) noexcept;
 
 private:
@@ -107,6 +112,7 @@ public:
     bool isValid() const noexcept;
 
     <u.model.namespace>::AnyConceptKey toAny() const noexcept;
+    <u.model.namespace>::AnyConceptKey toAnyConceptKey() const noexcept;
     <club_from(c)>
 
 private:
@@ -128,6 +134,8 @@ club_getter(cm, c) ::= <<
     <club_getter_body(cm)>
 >>
 club_getter_body(cm) ::= <%std::optional\<<cm.nameInNamespace>Key> as<cm.asNameInNamespace>Key() const noexcept;%>
+
+concept_descendant_getter(d) ::= <%std::optional\<<d.nameInNamespace>Key> as<d.asNameInNamespace>Key() const noexcept;%>
 
 club_from(c) ::= <%static std::optional\<<c.name>Key> from(<u.model.namespace>::AnyConceptKey const & key) noexcept;%>
 

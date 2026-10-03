@@ -5,22 +5,10 @@ import dsviper from "@digitalsubstrate/dsviper";
 
 import { unwrap, unwrapDeep, wrap } from "./registry.js";
 
+// As strict as the container: an element of another type throws, a child key included --
+// widen it first with toParentKey(), as storing it requires.
 function holds(container: dsviper.Value, element: unknown): boolean {
-    let probe = unwrapDeep(element);
-    const type = container.type() as unknown as { keyType?(): dsviper.Type; elementType?(): dsviper.Type };
-    const elementType = type.keyType?.() ?? type.elementType?.();
-    if (probe instanceof dsviper.ValueKey && elementType !== undefined && elementType.typeCode() === "key") {
-        try {
-            probe = probe.toKey(dsviper.TypeKey.cast(elementType));
-        } catch {
-            return false;
-        }
-    }
-    try {
-        return (container as unknown as { contains(value: dsviper.InputValue): boolean }).contains(probe);
-    } catch {
-        return false;
-    }
+    return (container as unknown as { contains(value: dsviper.InputValue): boolean }).contains(unwrapDeep(element));
 }
 
 /** A live view over the runtime container it wraps, which `vprValue` returns. */
