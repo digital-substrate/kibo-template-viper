@@ -557,12 +557,13 @@ export class Optional<E> extends View<dsviper.ValueOptional> {
 /** An any. `clear()` empties it; read from a field, it empties that field. */
 export class AnyValue extends View<dsviper.ValueAny> {
     constructor(value?: unknown) {
-        super(new dsviper.ValueAny(value instanceof dsviper.ValueAny ? value : unwrapDeep(value)));
+        super(value instanceof dsviper.ValueAny ? value : new dsviper.ValueAny(unwrapDeep(value)));
     }
 
     /**
      * The any over a Viper value, without copying it: a change made through one shows in the
-     * other. The constructor builds a new any.
+     * other. The constructor boxes a ValueAny the same way; copy it explicitly
+     * (`new AnyValue(value.copy())`).
      */
     static wrapValue(value: dsviper.Value): AnyValue {
         return adopt(AnyValue, dsviper.ValueAny.cast(value));
@@ -635,25 +636,14 @@ type Bound<V, I> = {
     new (value?: V | I | (V extends View<infer R> ? R : never) | null): V;
     /**
      * The container over a Viper value of exactly its type, without copying it: a change made
-     * through one shows in the other. The constructor builds a new container.
+     * through one shows in the other. The constructor boxes a value of its type the same way;
+     * copy it explicitly (`new Cls(value.copy())`).
      */
     wrapValue(value: dsviper.Value): V;
     type(): dsviper.Type;
 };
 
 const bound = new Map<() => dsviper.Type, unknown>();
-
-const constructors: Record<string, (type: dsviper.Type, value: dsviper.Value) => dsviper.Value> = {
-    vector: (type, value) => new dsviper.ValueVector(type as dsviper.TypeVector, value as never),
-    set: (type, value) => new dsviper.ValueSet(type as dsviper.TypeSet, value as never),
-    map: (type, value) => new dsviper.ValueMap(type as dsviper.TypeMap, value as never),
-    optional: (type, value) => new dsviper.ValueOptional(type as dsviper.TypeOptional, value as never),
-    xarray: (type, value) => new dsviper.ValueXArray(type as dsviper.TypeXArray, value as never),
-    variant: (type, value) => new dsviper.ValueVariant(type as dsviper.TypeVariant, value as never),
-    tuple: (type, value) => new dsviper.ValueTuple(type as dsviper.TypeTuple, value as never),
-    vec: (type, value) => new dsviper.ValueVec(type as dsviper.TypeVec, value as never),
-    mat: (type, value) => new dsviper.ValueMat(type as dsviper.TypeMat, value as never),
-};
 
 export function declaredFor(type: dsviper.Type): { wrapValue(value: dsviper.Value): View } | undefined {
     for (const [typeOf, held] of bound) {
@@ -686,7 +676,7 @@ function bind<V extends View, I, N extends string>(view: new (value: dsviper.Val
         constructor(value?: unknown) {
             const given = unwrapDeep(value);
             if (given instanceof dsviper.Value && given.type().equals(typeOf())) {
-                super(constructors[given.typeCode()](typeOf(), given));
+                super(given);
                 return;
             }
 

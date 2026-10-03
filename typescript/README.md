@@ -40,9 +40,9 @@ bare `tsc --strict file.ts` uses other defaults and fails on the binding's impor
 
 ## The bridge, and what is shared
 
-A generated class wraps one Viper value and holds nothing else; every write reaches the
-runtime, so the runtime's fail-fast is inherited. The bindings follow Viper's reference
-semantics:
+A generated class is a box around one Viper value, with the API of the class it faces; it
+holds nothing else, and every write reaches the runtime, so the runtime's fail-fast is
+inherited. The bindings follow Viper's reference semantics:
 
 ```ts
 import dsviper from "@digitalsubstrate/dsviper";
@@ -54,12 +54,14 @@ const key = demo.ConceptAKey.create();
 
 const value = s.unwrapValue();                    // the Viper value, not a copy
 const same = demo.StructureS.wrapValue(value);    // over that value: a change shows in s
-const other = new demo.StructureS(value);         // a constructor builds a new value, a copy
+const boxed = new demo.StructureS(value);         // a constructor boxes a value too
+const copied = new demo.StructureS(value.copy());  // a copy is explicit
 ```
 
-A field read is live and a field write keeps the object it is given. Copied instead: a set
-element and a map key, a document crossing a database, and a value given to a constructor.
-`copy()` gives an independent copy.
+A field read is live, a field write keeps the object it is given, and a constructor given a
+Viper value boxes it. Copied instead: a set element and a map key, and a document crossing a
+database. Any other copy is yours to make, explicitly: `copy()`, or a constructor given
+`value.copy()`.
 
 A few things are TypeScript's own:
 

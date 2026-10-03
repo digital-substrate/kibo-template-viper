@@ -31,9 +31,11 @@ layers differs:
 - **Python / Node** (dynamic bindings) — the native object is a **thin handle that
   holds one runtime `Value` and delegates** every operation to it (`unwrap_value()` /
   `unwrapValue()`). No parallel native state: the object *is* a typed view onto the
-  `Value`. The bindings follow the runtime's reference semantics: `wrap_value` /
-  `wrapValue` takes a Viper value without copying it, as `Value.create` and `cast` do, and a
-  constructor builds a new value, copying one it is given, as the runtime's constructors do.
+  `Value`: a box, with the API of the class it faces. The bindings follow the runtime's
+  reference semantics and implement no value semantics: `wrap_value` / `wrapValue` and a
+  constructor given a Viper value both box it, without copying; natives given to a
+  constructor become a new value through the runtime's seamless conversion; a copy is the
+  user's, explicitly (`Cls(value.copy())`, `p.copy()`).
 - **C++** (the runtime is a native library) — the native object is a **real struct
   with native fields**, and an explicit **static codec** — a generated `write` / `read`
   per type over the runtime's static layer (§6) — crosses `struct ⇄ Value` at the
@@ -311,7 +313,7 @@ demands:
 | Concern | Python | TypeScript |
 |---|---|---|
 | Viper value | `unwrap_value()` over `_value`; `S.wrap_value(value)` | `unwrapValue()`; `S.wrapValue(value)` |
-| construct | `S(value \| dict \| None, **fields)` (a value is copied), `SKey(uuid \| str)` | `new S(value \| record?)` (a value is copied), `new SKey(uuid?)` |
+| construct | `S(value \| dict \| None, **fields)` (a value is boxed), `SKey(uuid \| str)` | `new S(value \| record?)` (a value is boxed), `new SKey(uuid?)` |
 | structure field | `@property` + setter | get/set accessors |
 | enumeration | `enum.Enum`, `from_str`, index via `E(i)` | literal union + object: `fromStr`, `index`, `unwrapValue` |
 | container | `Sequence` / `Mapping` / `Ordered`, dunder protocol | same views, `Symbol.iterator` + methods |

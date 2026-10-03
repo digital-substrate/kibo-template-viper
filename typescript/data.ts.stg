@@ -297,7 +297,7 @@ export class <s.name> extends Proxy\<dsviper.ValueStructure> {
             if (!value.type().equals(<s.name>.type())) {
                 throw new TypeError("this value is not a <u.name>::<s.name>");
             }
-            super(new dsviper.ValueStructure(<s.name>.type(), value));
+            super(value);
             return;
         }
         super(new dsviper.ValueStructure(<s.name>.type()));

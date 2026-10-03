@@ -545,12 +545,13 @@ class AnyValue(View[dsviper.ValueAny]):
     __slots__ = ()
 
     def __init__(self, value: typing.Any = None) -> None:
-        super().__init__(dsviper.ValueAny(value if isinstance(value, dsviper.ValueAny) else _unwrap_deep(value)))
+        super().__init__(value if isinstance(value, dsviper.ValueAny) else dsviper.ValueAny(_unwrap_deep(value)))
 
     @classmethod
     def wrap_value(cls, value: dsviper.Value) -> AnyValue:
         """The any over a Viper value, without copying it: a change made through one shows in
-        the other. The constructor builds a new any."""
+        the other. The constructor boxes a ValueAny the same way; copy it explicitly
+        (`AnyValue(value.copy())`)."""
         if not isinstance(value, dsviper.ValueAny):
             raise TypeError("this value is not an any")
         return _adopt(cls, value)
@@ -573,18 +574,6 @@ class AnyValue(View[dsviper.ValueAny]):
     def clear(self) -> None:
         self._value.clear()
 
-
-_CONSTRUCTORS: dict[str, typing.Callable[[typing.Any, typing.Any], dsviper.Value]] = {
-    "vector": dsviper.ValueVector,
-    "set": dsviper.ValueSet,
-    "map": dsviper.ValueMap,
-    "optional": dsviper.ValueOptional,
-    "xarray": dsviper.ValueXArray,
-    "variant": dsviper.ValueVariant,
-    "tuple": dsviper.ValueTuple,
-    "vec": dsviper.ValueVec,
-    "mat": dsviper.ValueMat,
-}
 
 _CASTS: dict[type, typing.Callable[[typing.Any], typing.Any]] = {
     Vector: dsviper.ValueVector.cast,
@@ -628,8 +617,8 @@ class Declared:
     @classmethod
     def wrap_value(cls, value: dsviper.Value) -> typing.Self:
         """The container over a Viper value, which must be of exactly this type, without copying
-        it: a change made through one shows in the other. The constructor builds a new
-        container."""
+        it: a change made through one shows in the other. The constructor boxes a value of
+        this type the same way; copy it explicitly (`Cls(value.copy())`)."""
         if not isinstance(value, dsviper.Value) or value.type() != cls.type():
             raise TypeError(f"this value is not a {cls.type().representation()}")
         return _adopt(cls, value)
@@ -639,7 +628,7 @@ class Declared:
             value = value.unwrap_value()
         expected = type(self).type()
         if isinstance(value, dsviper.Value) and value.type() == expected:
-            View.__init__(typing.cast(View[typing.Any], self), _CONSTRUCTORS[value.type_code()](expected, value))
+            View.__init__(typing.cast(View[typing.Any], self), value)
             return
         view = next(base for base in type(self).__mro__ if base in _CASTS)
         try:

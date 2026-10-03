@@ -27,9 +27,9 @@ name its own way with `[names]` in its `kibo.toml`. A pool is imported by its pa
 
 ## The bridge, and what is shared
 
-A generated class wraps one Viper value and holds nothing else; every write reaches the
-runtime, so the runtime's fail-fast is inherited. The bindings follow Viper's reference
-semantics:
+A generated class is a box around one Viper value, with the API of the class it faces; it
+holds nothing else, and every write reaches the runtime, so the runtime's fail-fast is
+inherited. The bindings follow Viper's reference semantics:
 
 ```python
 import dsviper
@@ -43,12 +43,14 @@ key = demo.ConceptAKey.create()
 
 value = s.unwrap_value()                    # the Viper value, not a copy
 same = demo.StructureS.wrap_value(value)    # over that value: a change shows in s
-other = demo.StructureS(value)              # a constructor builds a new value, a copy
+boxed = demo.StructureS(value)              # a constructor boxes a value too
+copied = demo.StructureS(value.copy())      # a copy is explicit
 ```
 
-A field read is live and a field write keeps the object it is given. Copied instead: a set
-element and a map key, a document crossing a database, and a value given to a constructor.
-`copy()` gives an independent copy. A Viper feature — `Value.encode`, JSON, a hexdigest — is
+A field read is live, a field write keeps the object it is given, and a constructor given a
+Viper value boxes it. Copied instead: a set element and a map key, and a document crossing a
+database. Any other copy is yours to make, explicitly: `copy()`, or a constructor given
+`value.copy()`. A Viper feature — `Value.encode`, JSON, a hexdigest — is
 called on `unwrap_value()`; `Cls.wrap_value(Value.decode(blob, Cls.type(),
 features.definitions()))` reads one back.
 

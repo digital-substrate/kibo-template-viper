@@ -7,14 +7,15 @@ import { isKnown } from "./registry.js";
 import { VALUE, adopt } from "./value.js";
 
 /**
- * A generated class over the Viper value it wraps, which `unwrapValue()` returns.
+ * A box around one Viper value, with the API of the class it faces; `unwrapValue()` returns
+ * the value.
  *
  * It follows Viper's reference semantics. A field read hands back what the value holds:
  * changing a nested structure or container read from a field changes this object. A field
- * write keeps the object it is given: changing that object afterwards shows here too. Copied
- * instead: a set element and a map key; a document crossing a Database or a CommitDatabase, on
- * set as on get; and a value or proxy given to a constructor, shallowly. `copy()` gives an
- * independent copy.
+ * write keeps the object it is given: changing that object afterwards shows here too, and a
+ * constructor given a Viper value boxes it. Copied instead: a set element and a map key, and a
+ * document crossing a Database or a CommitDatabase, on set as on get. A copy is otherwise
+ * explicit: `copy()`, or `new Cls(value.copy())`.
  */
 export abstract class Proxy<V extends dsviper.Value> {
     readonly [VALUE]: V;

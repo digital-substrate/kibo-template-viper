@@ -75,7 +75,7 @@ GraphEditor and RaptorEditor migrated to.
 | `AttachmentRuntimeIds.Demo_ConceptA_Properties` | `pkg.demo.attachments.ConceptA.properties.runtime_id` |
 | `<ns>_<concept>_<att>_get(getting, key)`, `_set`, `_has`, `_keys`, `_diff` | `pkg.<ns>.attachments.<Concept>.<att>.get(getting, key)`, … |
 | `database_attachments.<ns>_<concept>_<att>_set(db, …)`, `_get`, `_del` | the same attachment, given the `Database`: `.set(db, …)`, `.get(db, …)`, `.delete(db, key)` |
-| `p.vpr_value`; `Cls(value)` to view a stored value | `p.unwrap_value()`; `Cls.wrap_value(value)` (a constructor copies) |
+| `p.vpr_value`; `Cls(value)` to view a stored value | `p.unwrap_value()`; `Cls.wrap_value(value)` or `Cls(value)`, both boxing it |
 | `p.encode()`; `Cls.decode(blob)` | `Value.encode(p.unwrap_value())`; `Cls.wrap_value(Value.decode(blob, Cls.type(), pkg.definitions()))` |
 | `value_type.type_X()` | `Cls.type()`, `containers.type_X()` |
 | a field `f_uint_8`, `channel_0`, an enumeration case `A_0` | `f_uint8`, `channel0`, `A0` (kibo's snake_case rule; a project fixes a name with `[names]` in `kibo.toml`) |
@@ -85,7 +85,7 @@ GraphEditor and RaptorEditor migrated to.
 | `functionPoolRemotes.Tools`, `attachmentFunctionPoolRemotes.PlayerModel` | `tools.Remote`, `player_model.Remote`, from `pkg/pools` |
 | `x.compareTo(y)` | `x.unwrapValue().compare(y.unwrapValue())` |
 | an enumeration as a proxy class: `e.name()`, `e.vprValue` | a string-literal union with a companion: `e` is the case name, `E.unwrapValue(e)`, `E.index(e)` |
-| `new X(value)` over a stored value | `X.wrapValue(value)` (a constructor copies) |
+| `new X(value)` over a stored value | `X.wrapValue(value)` or `new X(value)`, both boxing it |
 | **C++** | |
 | `NS::Demo::StructureS`, `NS::definitions()` | `ns::demo::StructureS`, `ns::codec::definitions()` |
 | `ValueEncoder::encode_X(v)`, `ValueDecoder::decode_X(val)` | `ns::codec::encode(v)`, `ns::codec::decode<T>(val)` |
@@ -171,10 +171,12 @@ packager's to add.
   `Cls.wrap_value(value)` / `Cls.wrapValue(value)` over a Viper value of exactly its type
   and `p.unwrap_value()` / `p.unwrapValue()` giving it back — both without copying, so a
   change made through one shows in the other, as the runtime's reference semantics have it —
-  the equality, hash and display its language expects, and `copy()`. A constructor builds a
-  new value: from fields or natives, and from a Viper value or another proxy of its type by
-  copying it, shallowly, as the runtime's own constructors do (`ValueVector(type, v)`), where
-  `wrap_value` takes it as `Value.create` and `cast` do. A runtime feature is called through
+  the equality, hash and display its language expects, and `copy()`. A proxy is a box around
+  a Viper value with the API of the class it faces, and implements no value semantics: a
+  constructor given a Viper value of its type boxes it, as `wrap_value` does — `wrap_value`
+  says explicitly that a Viper value goes in the box — and given fields or natives builds a
+  new one through the runtime's seamless conversion. A copy is the user's, explicitly:
+  `Cls(value.copy())`, `p.copy()`. A runtime feature is called through
   the bridge: `Value.encode(p.unwrap_value())`,
   `Cls.wrap_value(Value.decode(blob, Cls.type(), definitions()))`, and the same for JSON, XML
   or a hexdigest, or an order (`a.unwrapValue().compare(b.unwrapValue())`). A TypeScript

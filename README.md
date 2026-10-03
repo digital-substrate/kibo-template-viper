@@ -96,8 +96,9 @@ is copied:
   `Value` through the generated codec. It is the base reference: the other targets offer
   what it offers, with its restrictions.
 - [`python/README.md`](python/README.md) — a package over `dsviper`, following the runtime's
-  reference semantics: `Cls.wrap_value(value)` / `p.unwrap_value()` share the Viper value, a
-  constructor copies.
+  reference semantics: a generated class is a box around a Viper value, with the API of the
+  class it faces; `Cls.wrap_value(value)`, a constructor given a value, and `p.unwrap_value()`
+  share it, and a copy is explicit.
 - [`typescript/README.md`](typescript/README.md) — the same over `@digitalsubstrate/dsviper`,
   with `wrapValue` / `unwrapValue`, and how a project imports the runtime and type-checks.
 
