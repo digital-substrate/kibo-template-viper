@@ -99,7 +99,7 @@ export class <c.name>Key extends Key {
         return new <c.name>Key(dsviper.ValueUUId.create());
     }
 
-    /** The key a Viper value of exactly this type holds; a key of another type throws TypeError. */
+    /** The key a Viper value of exactly this type holds; another type throws TypeError. */
     static wrapValue(value: dsviper.Value): <c.name>Key {
         if (!(value instanceof dsviper.Value) || !value.type().equals(<c.name>Key.type())) {
             throw new TypeError(`this value is not a ${<c.name>Key.type().representation()}`);
@@ -192,7 +192,7 @@ export class <c.name>Key extends Key {
         super(value.toClubKey(<c.name>Key.club()));
     }
 
-    /** The key a Viper value of exactly this type holds; a key of another type throws TypeError. */
+    /** The key a Viper value of exactly this type holds; another type throws TypeError. */
     static wrapValue(value: dsviper.Value): <c.name>Key {
         if (!(value instanceof dsviper.Value) || !value.type().equals(<c.name>Key.type())) {
             throw new TypeError(`this value is not a ${<c.name>Key.type().representation()}`);

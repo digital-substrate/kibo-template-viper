@@ -96,6 +96,7 @@ export class AnyConceptKey extends Key {
         return new AnyConceptKey(key);
     }
 
+    /** The key a Viper value of exactly this type holds; another type throws TypeError. */
     static wrapValue(value: dsviper.Value): AnyConceptKey {
         if (!(value instanceof dsviper.Value) || !value.type().equals(AnyConceptKey.type())) {
             throw new TypeError(`this value is not a ${AnyConceptKey.type().representation()}`);

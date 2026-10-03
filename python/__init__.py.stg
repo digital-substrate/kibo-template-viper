@@ -10,9 +10,9 @@ import zlib as _zlib
 import dsviper as _dsviper
 
 from . import resources
-from ._codegen import AnyConceptKey, AnyValue, Key
+from ._codegen import AnyConceptKey, AnyValue, AttachmentProxy, Key
 
-__all__ = ["AnyConceptKey", "AnyValue", "Key", "containers", "definitions", <m.nameSpaces:{u|"<u.name;format="snake">"};separator=", ">]
+__all__ = ["AnyConceptKey", "AnyValue", "AttachmentProxy", "Key", "containers", "definitions", <m.nameSpaces:{u|"<u.name;format="snake">"};separator=", ">]
 
 @_functools.cache
 def definitions() -> _dsviper.DefinitionsConst:

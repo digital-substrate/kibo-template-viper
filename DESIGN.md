@@ -333,7 +333,9 @@ one open gap (§9).
 
 The rows were measured, not recalled: every public member of the two packages of each
 laboratory site, names compared without case or underscores, and whether each carries
-documentation. What is left once these rows are set aside is drift.
+documentation. What is left once these rows are set aside is drift, and the laboratory's
+`check.py` fails on it (`tools/parity.py`, which holds these idioms as data: a new one is
+added there with its row here).
 
 ### What a template reads about a type, and what it never computes
 

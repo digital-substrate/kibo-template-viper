@@ -208,7 +208,8 @@ packager's to add.
   structure and a club on its class, as Python does, not on the `…Init` interface; its
   proxies and containers have one hash, `hashKey()`, the key of a native `Map` or `Set`.
   Python's `containers` keeps its type functions private, as TypeScript does: a type is
-  `Cls.type()`. An enumeration's `wrap_value` is documented.
+  `Cls.type()`; its package root exports `AttachmentProxy`, for a helper over any attachment,
+  as TypeScript's does. An enumeration's `wrap_value` is documented.
 - **Containers declare what each kind does, in both languages.** Python: a vector is a `Vector`
   (`append`, `insert`, `extend`, `pop`, `remove`, `count`, `index`, `exchange`, `front`,
   `back`, `[i] =`, `del`, `+`, `+=`), a set a `SetView` (`add`, `remove`, `discard`, `pop`,
