@@ -10,6 +10,8 @@ unit(u) ::= <<
 #include "<u.include.model>"
 #include "<u.model.include.codec>"
 
+#include \<utility>
+
 namespace <u.model.namespace>::<u.name;format="lsc"> {
 
 <u.concepts:concept(u);separator="\n\n">
@@ -142,7 +144,15 @@ void hash(Viper::StaticHash::Hasher & h, <c.name>Key const & value) noexcept {
 }
 >>
 
+field_parameter(f) ::= <%<f.typeInNamespace><if(!f.isMovable)><f.passBy><endif> <f.name>%>
+field_initialization(f) ::= <%<f.name>{<if(f.isMovable)>std::move(<f.name>)<else><f.name><endif>}%>
+
 structure(s, u) ::= <<
+<if(s.fields)>
+
+<s.name>::<s.name>(<s.fields:field_parameter();separator=", ">)
+: <s.fields:field_initialization();separator=", "> {}
+<endif>
 
 bool operator==(<s.name> const & l, <s.name> const & r) noexcept {
     return <s.fields:field_equal();separator="\n        && ">;

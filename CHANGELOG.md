@@ -180,7 +180,10 @@ migrating.
   value or dict), `new graph.Position({ x: 1.0, y: 2.0 })` in TypeScript (a generated
   `<Structure>Init` interface). An omitted field keeps the model's default. The checker
   flags an unknown name or a wrong type; at run time an unknown name raises `TypeError`, and
-  a wrong type is refused by the runtime.
+  a wrong type is refused by the runtime. A C++ structure keeps the constructors 1.2 gave
+  it: the default one, and one taking every field in declaration order, so
+  `Color(1, 1, 1)` builds one in C++17 as `Color{1, 1, 1}` does, and a one-field structure
+  converts from its field.
 - **The generated C++ crosses to a `Value`, and hashes, through the runtime's static layer**
   (`Viper_StaticType`, `Viper_StaticWriter`, `Viper_StaticReader`, `Viper_StaticHash`), found
   by argument-dependent lookup. A key hashes through `std::hash`; a child key widens

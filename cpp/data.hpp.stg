@@ -143,7 +143,10 @@ structure(s) ::= <<
 <if(s.documentation)>/** <s.documentation> */
 <endif>struct <s.name> final {
 <s.fields:field();separator="\n">
-};
+
+    <s.name>() = default;
+<if(s.fields)>    <s.name>(<s.fields:field_parameter();separator=", ">);
+<endif>};
 
 bool operator==(<s.name> const &, <s.name> const &) noexcept;
 bool operator!=(<s.name> const &, <s.name> const &) noexcept;
@@ -153,6 +156,7 @@ void hash(Viper::StaticHash::Hasher & h, <s.name> const & value) noexcept;
 >>
 
 field(f) ::= <<    <f.typeInNamespace> <f.name><f.defaultValue>;>>
+field_parameter(f) ::= <%<f.typeInNamespace><if(!f.isMovable)><f.passBy><endif> <f.name>%>
 
 enumeration(e) ::= <<
 <if(e.documentation)>/** <e.documentation> */
