@@ -522,8 +522,12 @@ export class Optional<E> extends View<dsviper.ValueOptional> {
         this.optional.wrap(unwrap(element));
     }
 
-    get(fallback?: E): E | undefined {
-        if (this.isNil()) {
+    /**
+     * The wrapped element, or `fallback` when nil; a nil optional with no fallback throws, as
+     * the runtime's `get` does.
+     */
+    get(fallback?: E): E {
+        if (this.isNil() && fallback !== undefined) {
             return fallback;
         }
         return this.unwrap();

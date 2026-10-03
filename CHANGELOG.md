@@ -88,7 +88,8 @@ migrating.
   (`containers.Optional_of_T`), and an attachment's `get` returns `Optional[D]` (Python) /
   `Optional<D>` (TypeScript) — the runtime's own answer — rather than the document or
   `None`. The optional's truth is presence: an empty document, `0` or `""` is present, and
-  a nil document is told apart from no document. A write still takes what the runtime
+  a nil document is told apart from no document. Its `get()` answers as the runtime's does:
+  the element, the default when nil, and raises when nil with no default. A write still takes what the runtime
   decodes: an optional field accepts its declared class, its element, or `None`
   (`undefined`).
   A variant reads as its declared class (`containers.Variant_of_A_or_B`), which tells, reads

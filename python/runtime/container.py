@@ -497,8 +497,10 @@ class Optional(View[dsviper.ValueOptional], typing.Generic[E]):
     def wrap(self, element: E) -> None:
         self._value.wrap(unwrap(element))
 
-    def get(self, default: E | None = None) -> E | None:
-        return default if self.is_nil() else self.unwrap()
+    def get(self, default: E | None = None) -> E:
+        """The wrapped element, or default when nil; a nil optional with no default raises,
+        as the runtime's get does."""
+        return default if self.is_nil() and default is not None else self.unwrap()
 
     def clear(self) -> None:
         self._value.clear()
