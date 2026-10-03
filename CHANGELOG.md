@@ -145,6 +145,10 @@ migrating.
   argument; a TypeScript attachment deletes with `del`, as in C++ and 1.2 (Python keeps
   `delete`, `del` being its keyword). A C++ pool's identity is public again, as in 1.2:
   `<namespace>::<pool>::poolName` and `poolId`, shared by the pool and its `Remote`.
+- **Each language raises its own idiom's error, and says so.** Python: a missing map key raises
+  `KeyError`, an alternative a variant does not hold `ValueError`, an unknown case name
+  `ValueError`; TypeScript: the runtime's `ViperError`, and `TypeError` for an alternative a
+  variant does not hold.
 - **Containers declare what each kind does, in both languages.** Python: a vector is a `Vector`
   (`append`, `insert`, `extend`, `pop`, `remove`, `count`, `index`, `exchange`, `front`,
   `back`, `[i] =`, `del`, `+`, `+=`), a set a `SetView` (`add`, `remove`, `discard`, `pop`,

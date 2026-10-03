@@ -317,6 +317,7 @@ class Matrix(View[dsviper.ValueMat], typing.Generic[E]):
 
 
 class Mapping(View[dsviper.ValueMap], typing.Generic[K, E]):
+    """A map. `m[key]` raises KeyError for a key it does not hold; `get(key)` answers None."""
     __slots__ = ()
 
     def __len__(self) -> int:
@@ -511,6 +512,8 @@ class Optional(View[dsviper.ValueOptional], typing.Generic[E]):
 
 
 class Variant(View[dsviper.ValueVariant], typing.Generic[E]):
+    """A variant. Reading an alternative it does not hold (`get_x()`) raises ValueError;
+    `is_x()` asks first."""
     __slots__ = ()
 
     def unwrap(self) -> E:

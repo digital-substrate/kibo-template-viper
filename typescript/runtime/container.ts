@@ -313,6 +313,7 @@ export class Matrix<E> extends View<dsviper.ValueMat> {
     }
 }
 
+/** A map. `at(key)` throws ViperError for a key it does not hold; `get(key)` answers undefined. */
 export class Mapping<K, V> extends View<dsviper.ValueMap> {
     private get map(): dsviper.ValueMap {
         return this[VALUE] as dsviper.ValueMap;
@@ -587,6 +588,7 @@ export class AnyValue extends View<dsviper.ValueAny> {
     }
 }
 
+/** A variant. Reading an alternative it does not hold (`getX()`) throws TypeError; `isX()` asks first. */
 export class Variant<E> extends View<dsviper.ValueVariant> {
     private get variant(): dsviper.ValueVariant {
         return this[VALUE] as dsviper.ValueVariant;
@@ -607,7 +609,7 @@ export class Variant<E> extends View<dsviper.ValueVariant> {
     protected as<T>(type: dsviper.Type): T {
         const held = this.variant.unwrap(false) as dsviper.Value;
         if (!held.type().equals(type)) {
-            throw new RangeError(`the variant holds a ${held.type().representation()}, `
+            throw new TypeError(`the variant holds a ${held.type().representation()}, `
                                  + `not a ${type.representation()}`);
         }
         return wrap(held);
