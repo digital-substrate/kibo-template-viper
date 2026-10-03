@@ -69,6 +69,13 @@ export class <c.name>Key extends Key {
         if (identifier === null) {
             throw new TypeError("null is not an instance identifier");
         }
+        if (identifier instanceof <c.name>Key) {
+            throw new TypeError(`${identifier} is a <u.name>::<c.name>Key already: use it as it is`);
+        }
+        if (identifier instanceof Proxy) {
+            throw new TypeError(`${identifier} is not a <u.name>::<c.name>Key: `
+                                + "widen it with toParentKey(), or narrow it with fromAnyConceptKey()");
+        }
         if (identifier instanceof dsviper.ValueKey) {
             if (runtimeId !== undefined) {
                 throw new TypeError("a key carries its runtime id");

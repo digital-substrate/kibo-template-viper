@@ -214,7 +214,9 @@ packager's to add.
   proxies and containers have one hash, `hashKey()`, the key of a native `Map` or `Set`.
   Python's `containers` keeps its type functions private, as TypeScript does: a type is
   `Cls.type()`; its package root exports `AttachmentProxy`, for a helper over any attachment,
-  as TypeScript's does. An enumeration's `wrap_value` is documented.
+  as TypeScript's does. An enumeration's `wrap_value` is documented. A concept key's
+  constructor given a key of another concept says how to convert it, in both languages, and
+  given a key of its own concept says to use it as it is.
 - **Containers declare what each kind does, in both languages.** Python: a vector is a `Vector`
   (`append`, `insert`, `extend`, `pop`, `remove`, `count`, `index`, `exchange`, `front`,
   `back`, `[i] =`, `del`, `+`, `+=`), a set a `SetView` (`add`, `remove`, `discard`, `pop`,

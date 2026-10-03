@@ -162,6 +162,8 @@ class <c.name>Key(Key):
         instance identifier and a runtime id the key of a concept that is a <c.name> or descends
         from it. A key of another concept is converted with its to_parent_key() or
         to_any_concept_key(), and back with from_any_concept_key()."""
+        if isinstance(identifier, <c.name>Key):
+            raise TypeError(f"{identifier!r} is a <u.name>::<c.name>Key already: use it as it is")
         if isinstance(identifier, Proxy):
             raise TypeError(f"{identifier!r} is not a <u.name>::<c.name>Key: "
                             "widen it with to_parent_key(), or narrow it with from_any_concept_key()")
