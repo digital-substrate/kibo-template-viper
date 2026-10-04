@@ -63,6 +63,11 @@ export abstract class Proxy<V extends dsviper.Value> {
     }
 }
 
+/**
+ * A key of a concept or a club. The keys of one instance are equal (`equals()`) and share their
+ * `hashKey()` whatever the view - the key itself, its parent's, its club's, the any-concept
+ * key; a native Map or Set compares objects by identity, so key it by `hashKey()`.
+ */
 export abstract class Key extends Proxy<dsviper.ValueKey> {
     /**
      * A bigint equal for equal keys, whatever the view (parent, club, any concept): key a
