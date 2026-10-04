@@ -326,6 +326,9 @@ export class <s.name> extends Proxy\<dsviper.ValueStructure> {
     }
 
     constructor(value?: dsviper.ValueStructure | <s.name>Init) {
+        if (value instanceof Proxy) {
+            throw new TypeError(`${value} is a generated value, not a source: copy() it, or pass an object or a Viper value`);
+        }
         if (value instanceof dsviper.ValueStructure) {
             if (!value.type().equals(<s.name>.type())) {
                 throw new TypeError("this value is not a <u.name>::<s.name>");

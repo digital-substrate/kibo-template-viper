@@ -327,7 +327,9 @@ class <s.name>(Proxy[dsviper.ValueStructure]):
             source = dsviper.ValueStructure(self.type())
         elif isinstance(source, dict):
             source = dsviper.ValueStructure(self.type(), _unwrap_deep(source))
-        elif source.type() != self.type():
+        elif isinstance(source, Proxy):
+            raise TypeError(f"{source!r} is a generated value, not a source: copy() it, or pass a dict or a Viper value")
+        elif not isinstance(source, dsviper.ValueStructure) or source.type() != self.type():
             raise TypeError("this value is not a <u.name>::<s.name>")
         super().__init__(source)
         <s.fields:{f|if not isinstance(<f.name;format="snake">, NotGiven):

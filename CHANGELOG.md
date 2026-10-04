@@ -201,7 +201,8 @@ packager's to add.
   `<namespace>::<pool>::poolName` and `poolId`, shared by the pool and its `Remote`.
 - **Errors follow the binding's three layers, in both languages, and are documented.**
   `wrap_value` or a constructor given an argument of another kind raises `TypeError` — a
-  Viper value of another type, a key of another concept. Content that does not fit the type,
+  Viper value of another type, a key of another concept, a generated object given as a
+  structure's source, of its type or another (a copy is asked for with `copy()`). Content that does not fit the type,
   native or generated, raises the runtime's `ViperError`, naming the element at fault,
   whether it reaches a container's constructor, an `append`, a field or an attachment: the
   package leaves that check to the runtime, and a TypeScript attachment no longer checks a
