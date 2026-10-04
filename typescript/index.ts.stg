@@ -19,12 +19,12 @@ model(m) ::= <<
  *
  * ```ts
  * import dsviper from "@digitalsubstrate/dsviper";
- * import { definitions, <first(m.nameSpaces):{u|<u.name;format="snake">}> } from "<m.namespace;format="snake">";
+ * import { definitions, <if(m.attachments)><first(m.attachments):{a|<a.namespace;format="snake">}><else><first(m.nameSpaces):{u|<u.name;format="snake">}><endif> } from "<m.namespace;format="snake">";
  *
  * const db = dsviper.Database.createInMemory();   // a CommitDatabase keeps every commit
  * db.extendDefinitions(definitions());
  * db.beginTransaction();
- * <first(m.nameSpaces):{u|<u.name;format="snake">}>.attachments.Concept.attachment.set(db, key, document);
+ * <if(m.attachments)><first(m.attachments):{a|<a.namespace;format="snake">.attachments.<a.conceptScope>.<a.name;format="lf">}><else><first(m.nameSpaces):{u|<u.name;format="snake">}>.attachments.Concept.attachment<endif>.set(db, key, document);
  * db.commit();
  * ```
  *

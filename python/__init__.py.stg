@@ -19,7 +19,7 @@ through an attachment, given the database or a state:
     db = dsviper.Database.create_in_memory()     # a CommitDatabase keeps every commit
     db.extend_definitions(<m.namespace;format="snake">.definitions())
     db.begin_transaction()
-    <m.namespace;format="snake">.<first(m.nameSpaces):{u|<u.name;format="snake">}>.attachments.Concept.attachment.set(db, key, document)
+    <if(m.attachments)><first(m.attachments):{a|<m.namespace;format="snake">.<a.namespace;format="snake">.attachments.<a.conceptScope>.<a.name;format="snake">}><else><m.namespace;format="snake">.<first(m.nameSpaces):{u|<u.name;format="snake">}>.attachments.Concept.attachment<endif>.set(db, key, document)
     db.commit()
 
 A generated object is a box around a Viper value: `p.unwrap_value()` gives it, and
