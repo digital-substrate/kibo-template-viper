@@ -321,7 +321,9 @@ class Matrix(View[dsviper.ValueMat], typing.Generic[E]):
         return tuple(wrap(self._value.at(index, row)) for row in range(self.rows()))
 
     def size(self) -> int:
-        return len(self._value)
+        """The number of elements, columns times rows, as the runtime counts them; len() is the
+        number of columns, as iteration and m[column] go."""
+        return typing.cast("int", self._value.size())
 
     def to_tuple(self) -> tuple[tuple[E, ...], ...]:
         return tuple(self)

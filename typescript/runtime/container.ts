@@ -288,6 +288,8 @@ export class Matrix<E> extends View<dsviper.ValueMat> {
         return this[VALUE] as dsviper.ValueMat;
     }
 
+    /** The number of elements, columns times rows, as the runtime counts them; `columns` is the
+     *  number of columns, as iteration and `column(index)` go. */
     get size(): number {
         return this.mat.size();
     }

@@ -115,15 +115,7 @@ export class AttachmentProxy<K, D, KS = SetView<K>, DI = D> {
     set(setting: Mutating, key: K, value: DI): void;
     set(setting: dsviper.Database, key: K, value: DI): boolean;
     set(setting: Setting, key: K, value: DI): unknown {
-        const document = unwrap(value);
-        if (document instanceof dsviper.Value
-            && !document.type().equals(this.descriptor.documentType())) {
-            throw new TypeError(
-                `a document of type ${document.type().representation()} for `
-                + `${this.descriptor.representation()}, which expects `
-                + `${this.descriptor.documentType().representation()}`);
-        }
-        return setting.set(this.descriptor, unwrap(key) as dsviper.ValueKey, document);
+        return setting.set(this.descriptor, unwrap(key) as dsviper.ValueKey, unwrap(value));
     }
 
     diff(mutating: Mutating, key: K, value: DI, recursive = false): void {

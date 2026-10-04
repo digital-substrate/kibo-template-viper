@@ -194,11 +194,13 @@ packager's to add.
   argument; a TypeScript attachment deletes with `del`, as in C++ and 1.2 (Python keeps
   `delete`, `del` being its keyword). A C++ pool's identity is public again, as in 1.2:
   `<namespace>::<pool>::poolName` and `poolId`, shared by the pool and its `Remote`.
-- **Errors follow the binding's three layers, in both languages, and are documented.** An
-  argument of another kind raises `TypeError` — a Viper value of another type, a key of
-  another concept. Native content that does not fit the type raises the runtime's
-  `ViperError`, naming the element at fault, whether it reaches a container's constructor,
-  an `append` or a field. An operation the runtime refuses raises `ViperError`: `remove` of an
+- **Errors follow the binding's three layers, in both languages, and are documented.**
+  `wrap_value` or a constructor given an argument of another kind raises `TypeError` — a
+  Viper value of another type, a key of another concept. Content that does not fit the type,
+  native or generated, raises the runtime's `ViperError`, naming the element at fault,
+  whether it reaches a container's constructor, an `append`, a field or an attachment: the
+  package leaves that check to the runtime, and a TypeScript attachment no longer checks a
+  document's type itself. An operation the runtime refuses raises `ViperError`: `remove` of an
   element a vector does not hold, `unwrap()` of a nil optional. A read keeps each language's
   idiom: Python raises `IndexError` past the end, `KeyError` for a missing map key,
   `ValueError` for an unknown case name or an alternative a variant does not hold; TypeScript
@@ -229,7 +231,7 @@ packager's to add.
   `back`, `[i] =`, `del`, `+`, `+=`), a set a `SetView` (`add`, `remove`, `discard`, `pop`,
   `min`, `max`, the set operations, their `_update` forms and operators), a vec or a tuple a
   `Fixed` (`set`, `[i] =`; a tuple's `get_<i>()` typed by its member), a mat a `Matrix`
-  (`at`, `set`, `m[c, r]`, `m[c]`); a map adds `popitem`, `min`, `max`, an xarray
+  (`at`, `set`, `m[c, r]`, `m[c]`; `len` its columns, `size()` its elements, as the runtime); a map adds `popitem`, `min`, `max`, an xarray
   `disable_position`, `extend`, `contains`; no view forwards an undeclared name through
   `__getattr__`, so mypy refuses a method the kind does not have. TypeScript: A vector is a `Vector` (`append`,
   `insert`, `set`, `extend`, `concat`, `pop`, `remove`, `clear`, `count`, `index`,

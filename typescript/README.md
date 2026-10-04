@@ -94,11 +94,12 @@ a `CommitMutableState` and are stored once it is committed (`commitMutations`), 
 
 ## Errors
 
-The package follows the binding's three layers. An argument of another kind throws
-`TypeError` — a Viper value of another type, a key of another concept, a variant read as an
-alternative it does not hold. Native content that does not fit the type throws `ViperError`,
-naming the element at fault: `300` for a `uint8`, a string for a `float` field, a structure of
-another type in a list. An operation the runtime refuses throws `ViperError` too: `remove` of
+The package follows the binding's three layers, and leaves the checking to the runtime.
+`wrapValue` or a constructor given an argument of another kind throws `TypeError` — a Viper
+value of another type, a key of another concept — and so does a variant read as an
+alternative it does not hold. Content that does not fit the type throws `ViperError`, naming
+the element at fault, whether native or generated and wherever it goes: `300` for a `uint8`, a
+string for a `float` field, a structure of another type in a list, a field or an attachment. An operation the runtime refuses throws `ViperError` too: `remove` of
 an element a vector does not hold, `unwrap()` of a nil optional. An index past the end throws
 the binding's `RangeError` named `ViperError`, which is not an instance of `ViperError`.
 
