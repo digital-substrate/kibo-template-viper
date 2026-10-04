@@ -62,7 +62,7 @@ migrating.
 
 What a 1.2 client writes, and what it writes against 2.0. The Python and TypeScript rows were
 run against the laboratory's packages; the C++ rows follow the generated headers and what
-GraphEditor and RaptorEditor migrated to.
+two internal applications migrated to.
 
 | 1.2 | 2.0 |
 |---|---|
@@ -81,8 +81,12 @@ GraphEditor and RaptorEditor migrated to.
 | a field `f_uint_8`, `channel_0`, an enumeration case `A_0` | `f_uint8`, `channel0`, `A0` (kibo's snake_case rule; a project fixes a name with `[names]` in `kibo.toml`) |
 | an `any` read as the runtime `ValueAny` | `AnyValue`; `unwrap()` gives the runtime value, as before |
 | **TypeScript** | |
+| `Demo_Vector3`, `Demo_Level`, at the package root | `demo.Vector3`, `demo.Level`, from the unit `demo` (also the subpath `pkg/demo`) |
 | `Vector_uint8`, `Map_A_to_B`, … | `Vector_of_uint8`, `Map_of_A_to_B`, …, at the package root |
+| `attachments.player_Property.get(…)` | `demo.attachments.Player.property.get(…)` |
 | `functionPoolRemotes.Tools`, `attachmentFunctionPoolRemotes.PlayerModel` | `tools.Remote`, `player_model.Remote`, from `pkg/pools` |
+| a pool function `add_vector`, `has_player` | `addVector`, `hasPlayer`, as the DSM spells them |
+| `p.vprValue` | `p.unwrapValue()` |
 | `x.compareTo(y)` | `x.compare(y)` |
 | an enumeration as a proxy class: `e.name()`, `e.vprValue` | a string-literal union with a companion: `e` is the case name, `E.unwrapValue(e)`, `E.index(e)` |
 | `new X(value)` over a stored value | `X.wrapValue(value)` or `new X(value)`, both boxing it |
@@ -90,11 +94,12 @@ GraphEditor and RaptorEditor migrated to.
 | `NS::Demo::StructureS`, `NS::definitions()` | `ns::demo::StructureS`, `ns::codec::definitions()` |
 | `ValueEncoder::encode_X(v)`, `ValueDecoder::decode_X(val)` | `ns::codec::encode(v)`, `ns::codec::decode<T>(val)` |
 | `Writer{enc}.write_X(v)`, `Reader{dec, defs}.read_X()` | `write(w, v)` on a `Viper::StaticWriter::Writer`, `read(r, tag<T>{})` on a `Viper::StaticReader::Reader` — the same bytes |
-| `NS::Attachments::Concept_Att::get(…)`, `DatabaseAttachments::…` | `ns::demo::attachments::Concept::att::get(…)`, the `Database` overloads included |
+| `NS::Demo::Attachments::Concept_Att::get(…)`, `NS::Demo::DatabaseAttachments::…` | `ns::demo::attachments::Concept::att::get(…)`, the `Database` overloads included |
 | `NS::Database::create(…)` (the model registered for you) | `Viper::Database::create(…)` then `extendDefinitions(ns::codec::definitions())` |
 | `AttachmentRuntimeIds::C_a` | `ns::demo::attachments::C::a::runtimeId` |
 | `NS::FunctionPools::tools()`, `FunctionPoolBridges::Tools::add_vector` | `ns::tools::pool()`, `ns::tools::addVector` |
-| `NS::AttachmentFunctionPools::attachments()` | gone (see Removed) |
+| `NS::AttachmentFunctionPools::playerModel()`, a pool the model declares | `ns::player_model::pool()` |
+| `NS::AttachmentFunctionPools::attachments()`, the generated one | gone (see Removed) |
 
 A third-party template that used `value_type` (`mt.attachment_<ns>_<id>()`) reads an
 attachment from the generated class instead: `….attachments.<Concept>.<att>.descriptor`, or
