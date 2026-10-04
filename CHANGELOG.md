@@ -76,7 +76,7 @@ GraphEditor and RaptorEditor migrated to.
 | `<ns>_<concept>_<att>_get(getting, key)`, `_set`, `_has`, `_keys`, `_diff` | `pkg.<ns>.attachments.<Concept>.<att>.get(getting, key)`, … |
 | `database_attachments.<ns>_<concept>_<att>_set(db, …)`, `_get`, `_del` | the same attachment, given the `Database`: `.set(db, …)`, `.get(db, …)`, `.delete(db, key)` |
 | `p.vpr_value`; `Cls(value)` to view a stored value | `p.unwrap_value()`; `Cls.wrap_value(value)` or `Cls(value)`, both boxing it |
-| `p.encode()`; `Cls.decode(blob)` | `Value.encode(p.unwrap_value())`; `Cls.wrap_value(Value.decode(blob, Cls.type(), pkg.definitions()))` |
+| `p.encode()`; `Cls.decode(blob)` | `Value.encode(p.unwrap_value())`; `Cls.wrap_value(Value.decode(blob, Cls.type(), pkg.definitions(), encoded=False))` |
 | `value_type.type_X()` | `Cls.type()`: `demo.StructureS.type()`, `containers.Vector_of_uint8.type()` |
 | a field `f_uint_8`, `channel_0`, an enumeration case `A_0` | `f_uint8`, `channel0`, `A0` (kibo's snake_case rule; a project fixes a name with `[names]` in `kibo.toml`) |
 | an `any` read as the runtime `ValueAny` | `AnyValue`; `unwrap()` gives the runtime value, as before |
@@ -179,7 +179,8 @@ packager's to add.
   the container's kind. A TypeScript tuple's or variant's `wrapValue` is typed as its own class,
   with its named accessors, as Python's returns `Self`. A copy is the user's, explicitly: `Cls(value.copy())`, `p.copy()`. A runtime feature is called through
   the bridge: `Value.encode(p.unwrap_value())`,
-  `Cls.wrap_value(Value.decode(blob, Cls.type(), definitions()))`, and the same for JSON, XML
+  `Cls.wrap_value(Value.decode(blob, Cls.type(), definitions(), encoded=False))` (Python asks
+  for the Viper value rather than natives), and the same for JSON, XML
   or a hexdigest. Every `wrap_value` / `wrapValue` refuses a value of another type with
   `TypeError`, whatever its kind. The per-proxy `encode`,
   `decode`, `hexdigest`, the stream `write` / `read` and the TypeScript `compareTo` (keys,

@@ -25,9 +25,10 @@ through an attachment, given the database or a state:
 A generated object is a box around a Viper value: `p.unwrap_value()` gives it, and
 `Cls.wrap_value(value)` boxes one. A runtime feature is called on that value: bytes are
 `dsviper.Value.encode(p.unwrap_value())`, read back with
-`Cls.wrap_value(dsviper.Value.decode(blob, Cls.type(), definitions()))`. A Viper value of
-another type raises TypeError; native content that does not fit the type, and what the
-runtime refuses, raise dsviper.ViperError.
+`Cls.wrap_value(dsviper.Value.decode(blob, Cls.type(), definitions(), encoded=False))`, which
+asks for the Viper value rather than natives. A Viper value of another type raises TypeError;
+native content that does not fit the type, and what the runtime refuses, raise
+dsviper.ViperError.
 """
 
 import base64 as _base64

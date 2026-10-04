@@ -52,7 +52,8 @@ Viper value boxes it. Copied instead: a set element and a map key, and a documen
 database. Any other copy is yours to make, explicitly: `copy()`, or a constructor given
 `value.copy()`. A Viper feature — `Value.encode`, JSON, a hexdigest — is
 called on `unwrap_value()`; `Cls.wrap_value(Value.decode(blob, Cls.type(),
-features.definitions()))` reads one back.
+features.definitions(), encoded=False))` reads one back, `encoded=False` asking for the Viper
+value rather than natives.
 
 ## Storing documents
 
