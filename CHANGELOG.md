@@ -266,7 +266,8 @@ packager's to add.
   keeps the instance: `to_parent_key()`, `to_any_concept_key()`, `from_any_concept_key()` (a
   descendant's key included, `None` when the instance is not one), and, for the descendants
   declared in the same namespace, `to_<descendant>_key()` and `from_<descendant>_key()`; a
-  club converts to and from its members the same way. In C++, a parent key narrows to a
+  club converts to and from its members the same way, and takes the key of an instance whose
+  concept descends from a member, as the runtime and the C++ key do. In C++, a parent key narrows to a
   descendant declared in the same namespace with `as<Descendant>Key()`, and
   `toAnyConceptKey()` names `toAny()`, as in 1.2. A field or a document reads back the
   key class of its static type. Keys of one instance compare equal and hash alike whatever

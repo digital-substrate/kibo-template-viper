@@ -204,7 +204,7 @@ export class <c.name>Key extends Key {
             super(value);
             return;
         }
-        if (!<c.name>Key.club().isMember(value.typeConcept())) {
+        if (!<c.name>Key.designatesMember(value.typeConcept())) {
             throw new TypeError("this key does not designate a member of <u.name>::<c.name>");
         }
         super(value.toClubKey(<c.name>Key.club()));
@@ -244,7 +244,11 @@ export class <c.name>Key extends Key {
 
     static fromAnyConceptKey(key: Proxy\<dsviper.ValueKey> | dsviper.ValueKey): <c.name>Key | undefined {
         const value = key instanceof Proxy ? key.unwrapValue() : key;
-        return <c.name>Key.club().isMember(value.typeConcept()) ? new <c.name>Key(value) : undefined;
+        return <c.name>Key.designatesMember(value.typeConcept()) ? new <c.name>Key(value) : undefined;
+    }
+
+    private static designatesMember(concept: dsviper.TypeConcept): boolean {
+        return <c.name>Key.club().members().some((member) => concept.isMember(member));
     }
 
 <c.membersInNamespace:club_from(c);separator="\n\n">

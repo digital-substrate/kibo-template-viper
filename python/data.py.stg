@@ -112,7 +112,7 @@ class <c.name>Key(Key):
         if value.type() == self.type():
             super().__init__(value)
             return
-        if not self.club().is_member(value.type_concept()):
+        if not self._designates_member(value.type_concept()):
             raise TypeError("this key does not designate a member of <u.name>::<c.name>")
         super().__init__(value.to_club_key(self.club()))
 
@@ -131,7 +131,11 @@ class <c.name>Key(Key):
     @classmethod
     def from_any_concept_key(cls, key: AnyConceptKey | Proxy[dsviper.ValueKey] | dsviper.ValueKey) -> <c.name>Key | None:
         value = key._value if isinstance(key, Proxy) else key
-        return cls(value) if cls.club().is_member(value.type_concept()) else None
+        return cls(value) if cls._designates_member(value.type_concept()) else None
+
+    @classmethod
+    def _designates_member(cls, concept: dsviper.TypeConcept) -> bool:
+        return any(concept.is_member(member) for member in cls.club().members())
 
     def description(self) -> str:
         return f"{self._value.instance_id().encoded()}:<u.name>::<c.name>Key{self._held()}"
