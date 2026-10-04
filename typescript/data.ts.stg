@@ -177,9 +177,20 @@ export class <c.name>Key extends Key {
         return (<c.name;format="snake">Type ??= new dsviper.TypeKey(<c.name>Key.club()));
     }
 
-    /** A key of a member, or an instance identifier and the runtime id of a member. */
-    constructor(key: <c.name>Key | <c.membersInNamespace:{m|<m.bindingInNamespace> | }>dsviper.ValueKey | dsviper.ValueUUId | string,
+    /** No argument gives the invalid key; else a key of a member, or an instance identifier and
+     *  the runtime id of a member. */
+    constructor(key?: <c.name>Key | <c.membersInNamespace:{m|<m.bindingInNamespace> | }>dsviper.ValueKey | dsviper.ValueUUId | string,
                 runtimeId?: dsviper.ValueUUId | string) {
+        if (key === null) {
+            throw new TypeError("null is not a key or an instance identifier");
+        }
+        if (key === undefined) {
+            if (runtimeId !== undefined) {
+                throw new TypeError("a runtime id needs an instance identifier");
+            }
+            super(dsviper.ValueKey.cast(dsviper.Value.create(<c.name>Key.type())));
+            return;
+        }
         if (!(key instanceof Proxy) && !(key instanceof dsviper.ValueKey)) {
             if (runtimeId === undefined) {
                 throw new TypeError("an instance identifier needs the runtime id of a member of <u.name>::<c.name>");

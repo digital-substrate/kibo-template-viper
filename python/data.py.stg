@@ -91,9 +91,15 @@ class <c.name>Key(Key):
     def type(cls) -> dsviper.Type:
         return dsviper.TypeKey(cls.club())
 
-    def __init__(self, key: <c.name>Key | <c.membersInNamespace:{m|<m.bindingInNamespace> | }>dsviper.ValueKey | dsviper.ValueUUId | str,
+    def __init__(self, key: <c.name>Key | <c.membersInNamespace:{m|<m.bindingInNamespace> | }>dsviper.ValueKey | dsviper.ValueUUId | str | NotGiven = NOT_GIVEN,
                  runtime_id: dsviper.ValueUUId | str | NotGiven = NOT_GIVEN) -> None:
-        """A key of a member, or an instance identifier and the runtime id of a member."""
+        """No argument gives the invalid key; else a key of a member, or an instance identifier
+        and the runtime id of a member."""
+        if isinstance(key, NotGiven):
+            if not isinstance(runtime_id, NotGiven):
+                raise TypeError("a runtime id needs an instance identifier")
+            super().__init__(dsviper.ValueKey.cast(dsviper.Value.create(self.type())))
+            return
         if isinstance(key, (dsviper.ValueUUId, str)):
             if isinstance(runtime_id, NotGiven):
                 raise TypeError("an instance identifier needs the runtime id of a member of <u.name>::<c.name>")
