@@ -175,8 +175,8 @@ packager's to add.
   a Viper value with the API of the class it faces, and implements no value semantics: a
   constructor given a Viper value of its type boxes it, as `wrap_value` does — `wrap_value`
   says explicitly that a Viper value goes in the box — and given fields or natives builds a
-  new one through the runtime's seamless conversion. A copy is the user's, explicitly:
-  `Cls(value.copy())`, `p.copy()`. A runtime feature is called through
+  new one through the runtime's seamless conversion, keeping the elements it is given, whatever
+  the container's kind. A copy is the user's, explicitly: `Cls(value.copy())`, `p.copy()`. A runtime feature is called through
   the bridge: `Value.encode(p.unwrap_value())`,
   `Cls.wrap_value(Value.decode(blob, Cls.type(), definitions()))`, and the same for JSON, XML
   or a hexdigest. Every `wrap_value` / `wrapValue` refuses a value of another type with

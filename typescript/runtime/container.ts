@@ -762,7 +762,7 @@ export const matrixOf = <E, I = never, N extends string = string>(typeOf: () => 
                        (t, v) => dsviper.Value.create(t, v as dsviper.InputValue));
 export const mappingOf = <K, V, I = never, N extends string = string>(typeOf: () => dsviper.Type, name?: string) =>
     bind<Mapping<K, V>, I, N>(Mapping as never, typeOf, name,
-                           (t, v) => new dsviper.ValueMap(t as dsviper.TypeMap, v as dsviper.InputValue));
+                           (t, v) => dsviper.Value.create(t, v as dsviper.InputValue));
 export const orderedOf = <E, I = never, N extends string = string>(typeOf: () => dsviper.Type, name?: string) =>
     bind<Ordered<E>, I, N>(Ordered as never, typeOf, name,
                         (t, v) => new dsviper.ValueXArray(t as dsviper.TypeXArray, v as dsviper.InputValue)) as
