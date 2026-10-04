@@ -53,7 +53,9 @@ export interface Mutating extends Setting {
  * new dsviper.CommitMutableState(dsviper.CommitStateBuilder.initialState(db)) for the first
  * commit, CommitStateBuilder.state(db, commitId) to carry on from the commit id the last one
  * returned. Nothing is stored until that state is committed - db.commitMutations(label,
- * state), or a CommitStore's dispatch, which keeps that thread and commits for you. A Database has no AttachmentMutating, so diff and the field
+ * state), or a CommitStore's dispatch, which keeps that thread and commits for you. A field
+ * operation on a key that holds no document does nothing and throws nothing: set the document
+ * first. A Database has no AttachmentMutating, so diff and the field
  * operations are a commit database's only; del is a Database's only, a commit never removing
  * a key.
  */

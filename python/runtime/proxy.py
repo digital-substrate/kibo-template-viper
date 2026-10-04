@@ -174,8 +174,9 @@ def _holds_generated(value: object) -> bool:
 
 class Key(Proxy[dsviper.ValueKey]):
     """A key of a concept or a club. The keys of one instance are equal and hash alike whatever
-    the view - the key itself, its parent's, its club's, the any-concept key - so a set or a
-    dict holds the instance once."""
+    the view - the key itself, its parent's, its club's, the any-concept key - so a native set
+    or dict holds the instance once. A declared container (Set_of_..., Map_of_...) holds keys of
+    exactly its own type: convert one first, with to_parent_key() or from_any_concept_key()."""
     __slots__ = ()
 
     _value: dsviper.ValueKey

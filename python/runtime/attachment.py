@@ -33,9 +33,10 @@ class AttachmentProxy(typing.Generic[K, D, KS, DI]):
     commit, CommitStateBuilder.state(db, commit_id) to carry on from the commit_id the last
     one returned. Nothing is stored until that state is committed -
     db.commit_mutations(label, state), or a CommitStore's dispatch, which keeps that thread
-    and commits for you. A Database has no AttachmentMutating,
-    so diff and the field operations are a commit database's only; delete is a Database's
-    only, a commit never removing a key.
+    and commits for you. A Database has no AttachmentMutating, so diff and the field
+    operations are a commit database's only; delete is a Database's only, a commit never
+    removing a key. A field operation on a key that holds no document does nothing and raises
+    nothing: set the document first.
     """
 
     def __init__(self, runtime_id: dsviper.ValueUUId,
