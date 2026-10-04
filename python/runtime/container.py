@@ -408,7 +408,8 @@ class Mapping(View[dsviper.ValueMap], typing.Generic[K, E]):
 
 class Ordered(View[dsviper.ValueXArray], typing.Generic[E]):
     """An xarray. x[position] is None for a removed position; a position the array never
-    created raises KeyError, an index out of range IndexError."""
+    created raises KeyError from x[position] and dsviper.ViperError from at(position), an
+    index out of range IndexError."""
     __slots__ = ()
 
     END = dsviper.ValueXArray.END

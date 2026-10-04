@@ -116,7 +116,11 @@ export class Sequence<E, V extends dsviper.Value = dsviper.Value> extends View<V
     }
 }
 
-/** A vector. `at(i)` past the end throws ViperError; `remove(e)` of an element it does not hold throws ViperError. */
+/**
+ * A vector. `at(i)` and `pop()` past the end throw a RangeError named ViperError, as the
+ * binding's reads do (not an instance of ViperError); `remove(e)` of an element it does not
+ * hold throws ViperError.
+ */
 export class Vector<E> extends Sequence<E, dsviper.ValueVector> {
     private get vector(): dsviper.ValueVector {
         return this[VALUE] as dsviper.ValueVector;
