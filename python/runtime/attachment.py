@@ -28,9 +28,12 @@ class AttachmentProxy(typing.Generic[K, D, KS, DI]):
     Either database needs the model first: db.extend_definitions(definitions()). Writing
     then goes one of two ways. On a Database, set and delete write the current state
     directly, inside a transaction. On a CommitDatabase, set, diff and the field operations write to
-    an AttachmentMutating, which a CommitMutableState gives (attachment_mutating());
-    nothing is stored until that state is committed - db.commit_mutations(label, state), or
-    a CommitStore's dispatch, which commits for you. A Database has no AttachmentMutating,
+    an AttachmentMutating, which a CommitMutableState gives (attachment_mutating()):
+    dsviper.CommitMutableState(dsviper.CommitStateBuilder.initial_state(db)) for the first
+    commit, CommitStateBuilder.state(db, commit_id) to carry on from the commit_id the last
+    one returned. Nothing is stored until that state is committed -
+    db.commit_mutations(label, state), or a CommitStore's dispatch, which keeps that thread
+    and commits for you. A Database has no AttachmentMutating,
     so diff and the field operations are a commit database's only; delete is a Database's
     only, a commit never removing a key.
     """

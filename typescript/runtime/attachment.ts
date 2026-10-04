@@ -49,9 +49,11 @@ export interface Mutating extends Setting {
  * Either database needs the model first: db.extendDefinitions(definitions()). Writing then
  * goes one of two ways. On a Database, set and del write the current state directly, inside a
  * transaction. On a CommitDatabase, set, diff and the field operations write to an
- * AttachmentMutating, which a CommitMutableState gives (attachmentMutating()); nothing is
- * stored until that state is committed - db.commitMutations(label, state), or a CommitStore's
- * dispatch, which commits for you. A Database has no AttachmentMutating, so diff and the field
+ * AttachmentMutating, which a CommitMutableState gives (attachmentMutating()):
+ * new dsviper.CommitMutableState(dsviper.CommitStateBuilder.initialState(db)) for the first
+ * commit, CommitStateBuilder.state(db, commitId) to carry on from the commit id the last one
+ * returned. Nothing is stored until that state is committed - db.commitMutations(label,
+ * state), or a CommitStore's dispatch, which keeps that thread and commits for you. A Database has no AttachmentMutating, so diff and the field
  * operations are a commit database's only; del is a Database's only, a commit never removing
  * a key.
  */
