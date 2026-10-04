@@ -80,6 +80,15 @@ tuple_class(v) ::= <<
 const <v.bindingType.proxy>_base = fixedOf\<<v.members:{t|<t.bindingType.qualified>};separator=" | ">, <v.bindingType.constructorInput>, "<v.bindingType.proxy>"\>(type<v.typeSuffix>);
 
 export class <v.bindingType.proxy> extends <v.bindingType.proxy>_base {
+    /**
+     * The container over a Viper value of exactly its type, without copying it: a change made
+     * through one shows in the other. The constructor boxes a value of its type the same way;
+     * copy it explicitly (`new Cls(value.copy())`).
+     */
+    static override wrapValue(value: dsviper.Value): <v.bindingType.proxy> {
+        return super.wrapValue(value) as <v.bindingType.proxy>;
+    }
+
     <v.members:{t|<tuple_getter(t, i0)>};separator="\n\n">
 }
 
@@ -96,6 +105,15 @@ variant_class(v) ::= <<
 const <v.bindingType.proxy>_base = variantOf\<<v.members:{t|<t.bindingType.qualified>};separator=" | ">, <v.bindingType.constructorInput>, "<v.bindingType.proxy>"\>(type<v.typeSuffix>);
 
 export class <v.bindingType.proxy> extends <v.bindingType.proxy>_base {
+    /**
+     * The container over a Viper value of exactly its type, without copying it: a change made
+     * through one shows in the other. The constructor boxes a value of its type the same way;
+     * copy it explicitly (`new Cls(value.copy())`).
+     */
+    static override wrapValue(value: dsviper.Value): <v.bindingType.proxy> {
+        return super.wrapValue(value) as <v.bindingType.proxy>;
+    }
+
     <v.members:alternative();separator="\n\n">
 }
 
