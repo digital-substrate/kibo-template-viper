@@ -8,8 +8,10 @@ model(m) ::= <<
  * Each DSM namespace is a namespace of this module holding its structures, enumerations and
  * keys, and its attachments as `attachments`:
  * <m.nameSpaces:{u|`<u.name;format="snake">`};separator=", ">.
- * The containers the model's structures use are exported here, and `definitions()` is the
- * model.<if(m.functionPools || m.attachmentFunctionPools)>
+ * One class per container shape the model uses, in a structure, an attachment or a pool, is
+ * exported here; another shape is built with the runtime, from Viper values:
+ * `dsviper.Value.create(new dsviper.TypeSet(Key.type()), keys.map((k) => k.unwrapValue()))`.
+ * `definitions()` is the model.<if(m.functionPools || m.attachmentFunctionPools)>
  * The pools, rendered with the Pool feature, are imported from `<m.namespace;format="snake">/pools`:
  * <[m.functionPools, m.attachmentFunctionPools]:{p|`<p.name;format="snake">`};separator=", ">.<endif>
 
