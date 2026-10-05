@@ -51,6 +51,8 @@ version as either one.
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-10-05
+
 ### Fixed
 
 - **The generated Python is fully annotated down to Python 3.10**, the oldest its
