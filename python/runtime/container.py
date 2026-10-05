@@ -12,6 +12,10 @@ from .proxy import _adopt, unwrap, wrap
 E = typing.TypeVar("E")
 K = typing.TypeVar("K")
 V = typing.TypeVar("V", bound=dsviper.Value, covariant=True)
+_W = typing.TypeVar("_W", bound="View[typing.Any]")
+_Vec = typing.TypeVar("_Vec", bound="Vector[typing.Any]")
+_Set = typing.TypeVar("_Set", bound="SetView[typing.Any]")
+_D = typing.TypeVar("_D", bound="Declared")
 
 
 class View(typing.Generic[V]):
@@ -43,7 +47,7 @@ class View(typing.Generic[V]):
     def type(self) -> dsviper.Type:
         return typing.cast("dsviper.Type", self._value.type())
 
-    def copy(self) -> typing.Self:
+    def copy(self: _W) -> _W:
         return _adopt(type(self), self._value.copy())
 
     def __eq__(self, other: object) -> bool:
@@ -157,10 +161,10 @@ class Vector(Sequence[dsviper.ValueVector, E]):
     def back(self) -> E:
         return typing.cast("E", wrap(self._value.back()))
 
-    def __add__(self, other: Vector[E] | typing.Iterable[E]) -> typing.Self:
+    def __add__(self: _Vec, other: Vector[E] | typing.Iterable[E]) -> _Vec:
         return type(self)(self._value + _unwrap_deep(other))
 
-    def __iadd__(self, other: Vector[E] | typing.Iterable[E]) -> typing.Self:
+    def __iadd__(self: _Vec, other: Vector[E] | typing.Iterable[E]) -> _Vec:
         self._value += _unwrap_deep(other)
         return self
 
@@ -198,16 +202,16 @@ class SetView(Sequence[dsviper.ValueSet, E]):
         for element in elements:
             self._value.add(unwrap(element))
 
-    def union(self, other: SetView[E] | typing.Iterable[E]) -> typing.Self:
+    def union(self: _Set, other: SetView[E] | typing.Iterable[E]) -> _Set:
         return type(self)(self._value.union(_unwrap_deep(other)))
 
-    def intersection(self, other: SetView[E] | typing.Iterable[E]) -> typing.Self:
+    def intersection(self: _Set, other: SetView[E] | typing.Iterable[E]) -> _Set:
         return type(self)(self._value.intersection(_unwrap_deep(other)))
 
-    def difference(self, other: SetView[E] | typing.Iterable[E]) -> typing.Self:
+    def difference(self: _Set, other: SetView[E] | typing.Iterable[E]) -> _Set:
         return type(self)(self._value.difference(_unwrap_deep(other)))
 
-    def symmetric_difference(self, other: SetView[E] | typing.Iterable[E]) -> typing.Self:
+    def symmetric_difference(self: _Set, other: SetView[E] | typing.Iterable[E]) -> _Set:
         return type(self)(self._value.symmetric_difference(_unwrap_deep(other)))
 
     def update(self, other: SetView[E] | typing.Iterable[E]) -> None:
@@ -231,31 +235,31 @@ class SetView(Sequence[dsviper.ValueSet, E]):
     def isdisjoint(self, other: SetView[E] | typing.Iterable[E]) -> bool:
         return typing.cast("bool", self._value.isdisjoint(_unwrap_deep(other)))
 
-    def __or__(self, other: SetView[E] | typing.Iterable[E]) -> typing.Self:
+    def __or__(self: _Set, other: SetView[E] | typing.Iterable[E]) -> _Set:
         return self.union(other)
 
-    def __and__(self, other: SetView[E] | typing.Iterable[E]) -> typing.Self:
+    def __and__(self: _Set, other: SetView[E] | typing.Iterable[E]) -> _Set:
         return self.intersection(other)
 
-    def __sub__(self, other: SetView[E] | typing.Iterable[E]) -> typing.Self:
+    def __sub__(self: _Set, other: SetView[E] | typing.Iterable[E]) -> _Set:
         return self.difference(other)
 
-    def __xor__(self, other: SetView[E] | typing.Iterable[E]) -> typing.Self:
+    def __xor__(self: _Set, other: SetView[E] | typing.Iterable[E]) -> _Set:
         return self.symmetric_difference(other)
 
-    def __ior__(self, other: SetView[E] | typing.Iterable[E]) -> typing.Self:
+    def __ior__(self: _Set, other: SetView[E] | typing.Iterable[E]) -> _Set:
         self.update(other)
         return self
 
-    def __iand__(self, other: SetView[E] | typing.Iterable[E]) -> typing.Self:
+    def __iand__(self: _Set, other: SetView[E] | typing.Iterable[E]) -> _Set:
         self.intersection_update(other)
         return self
 
-    def __isub__(self, other: SetView[E] | typing.Iterable[E]) -> typing.Self:
+    def __isub__(self: _Set, other: SetView[E] | typing.Iterable[E]) -> _Set:
         self.difference_update(other)
         return self
 
-    def __ixor__(self, other: SetView[E] | typing.Iterable[E]) -> typing.Self:
+    def __ixor__(self: _Set, other: SetView[E] | typing.Iterable[E]) -> _Set:
         self.symmetric_difference_update(other)
         return self
 
@@ -630,7 +634,7 @@ class Declared:
         raise NotImplementedError
 
     @classmethod
-    def wrap_value(cls, value: dsviper.Value) -> typing.Self:
+    def wrap_value(cls: typing.Type[_D], value: dsviper.Value) -> _D:
         """The container over a Viper value, which must be of exactly this type, without copying
         it: a change made through one shows in the other. The constructor boxes a value of
         this type the same way; copy it explicitly (`Cls(value.copy())`)."""

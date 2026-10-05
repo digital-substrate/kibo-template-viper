@@ -51,6 +51,15 @@ version as either one.
 
 ## [Unreleased]
 
+### Fixed
+
+- **The generated Python is fully annotated down to Python 3.10**, the oldest its
+  `pyproject.toml` declares. The runtime annotated the methods returning their own class with
+  `typing.Self`, which Python 3.11 introduced, so `mypy --strict --python-version 3.10`
+  reported 19 errors in every package. They are now annotated with a TypeVar bound to their
+  class. Nothing changes at run time: the package postpones its annotations, and its tests
+  already passed under 3.10.
+
 ## [2.0.0] - 2026-10-05
 
 Requires **kibo 2** and its Template Model 2; these templates do not render against an

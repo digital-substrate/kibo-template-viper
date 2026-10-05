@@ -8,6 +8,7 @@ import typing
 import dsviper
 
 V = typing.TypeVar("V", bound=dsviper.Value, covariant=True)
+_P = typing.TypeVar("_P", bound="Proxy[typing.Any]")
 T = typing.TypeVar("T")
 
 
@@ -39,7 +40,7 @@ class Proxy(typing.Generic[V]):
         raise NotImplementedError
 
     @classmethod
-    def wrap_value(cls, value: dsviper.Value) -> typing.Self:
+    def wrap_value(cls: typing.Type[_P], value: dsviper.Value) -> _P:
         """The generated object over a Viper value, which must be of exactly this type, without
         copying it: a change made through one shows in the other. A constructor boxes a Viper
         value the same way; copy it explicitly (`Cls(value.copy())`)."""
@@ -59,7 +60,7 @@ class Proxy(typing.Generic[V]):
     def __hash__(self) -> int:
         return typing.cast("int", self._value.hash())
 
-    def copy(self) -> typing.Self:
+    def copy(self: _P) -> _P:
         return _adopt(type(self), self._value.copy())
 
     def __lt__(self, other: Proxy[dsviper.Value]) -> bool:
@@ -75,7 +76,7 @@ class Proxy(typing.Generic[V]):
         return typing.cast("bool", self._value >= unwrap(other))
 
     @classmethod
-    def _wrap(cls, value: typing.Any) -> typing.Self:
+    def _wrap(cls: typing.Type[_P], value: typing.Any) -> _P:
         return cls.wrap_value(value)
 
     def _unwrap(self) -> V:
