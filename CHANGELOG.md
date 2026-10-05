@@ -51,6 +51,19 @@ version as either one.
 
 ## [Unreleased]
 
+### Fixed
+
+- **`from pkg.containers import *` brings the declared containers only.** The module had no
+  `__all__`, so a star import also brought the runtime's view classes and the modules it uses,
+  and its `Optional` and `Mapping` replaced `typing.Optional` and `typing.Mapping` in the
+  importing module. The view classes stay reachable as `containers.Optional`, … .
+
+### Documented
+
+- **A map's `keys()`, `values()` and `items()` return lists** (`entries()` arrays in
+  TypeScript): a snapshot, so the map can change while one is iterated. This is what they
+  did; the map's documentation now says so.
+
 ## [2.0.1] - 2026-10-05
 
 ### Fixed

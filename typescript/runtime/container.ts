@@ -333,7 +333,12 @@ export class Matrix<E> extends View<dsviper.ValueMat> {
     }
 }
 
-/** A map. `at(key)` throws ViperError for a key it does not hold; `get(key)` answers undefined. */
+/**
+ * A map. `at(key)` throws ViperError for a key it does not hold; `get(key)` answers undefined.
+ *
+ * `keys()`, `values()` and `entries()` return arrays, a snapshot of the map: it can change
+ * while one is iterated.
+ */
 export class Mapping<K, V> extends View<dsviper.ValueMap> {
     private get map(): dsviper.ValueMap {
         return this[VALUE] as dsviper.ValueMap;
