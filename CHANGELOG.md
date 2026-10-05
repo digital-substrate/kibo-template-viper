@@ -49,7 +49,9 @@ output from different template versions, and what a generated file reports —
 that repackages both into a single artefact should not read that artefact's
 version as either one.
 
-## [Unreleased] — 2.0.0
+## [Unreleased]
+
+## [2.0.0] - 2026-10-05
 
 Requires **kibo 2** and its Template Model 2; these templates do not render against an
 earlier generator. The runtimes they target stay on the 1.2 line, with floors:
