@@ -1,7 +1,7 @@
 # kibo-template-viper
 
-> This is the kibo 2 line. The kibo 1 line — the 1.2 pack, for kibo 1 and Template Model 1, on the `LTS-1.2` branch — is
-> deprecated: it receives fixes only, for the life of the LTS-1.2 line.
+> This is the kibo 2 line. The 1.2 pack, for kibo 1 (Template Model 1), lives on the `LTS-1.2` branch and is deprecated:
+> it receives fixes only, for the life of the LTS-1.2 line.
 
 First-party templated features targeting the Viper ecosystem: the Viper C++ runtime, and
 its [dsviper](https://docs.digitalsubstrate.io/dsviper/) Python and Node.js bindings.
