@@ -54,6 +54,19 @@ version as either one.
 
 ### Fixed
 
+- **The generated TypeScript did not compile against `@digitalsubstrate/dsviper`
+  1.2.13 or later**: 123 errors in `data.ts`. Those releases declare that a
+  structure field or a tuple element reads as `OutputValue | Value`, and every
+  generated `wrap` took an `OutputValue` only. `wrap` now takes either, as its
+  body already cast, and a tuple's `at` states the `OutputValue` the default read
+  returns. Nothing changes at run time.
+
+- **A negative index on a TypeScript xarray threw `RangeError`** since
+  `@digitalsubstrate/dsviper` 1.2.13 refuses one in `position()`. `get`, `set`
+  and `position` answer `undefined` for it, as they do for an index past the
+  end. The Python xarray follows `dsviper`, where a negative index counts from
+  the end since 1.2.28.
+
 - **A pool's or a function's documentation broke the generated C++ when it held
   a quote or spanned lines.** `FunctionPools` and `AttachmentFunctionPools`
   wrote it raw into a string literal; a quote ended the literal early and a

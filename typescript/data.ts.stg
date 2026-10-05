@@ -57,7 +57,7 @@ export class AnyConceptKey extends Proxy\<dsviper.ValueKey> {
         super(value);
     }
 
-    static wrap(value: dsviper.OutputValue): AnyConceptKey {
+    static wrap(value: dsviper.OutputValue | dsviper.Value): AnyConceptKey {
         return new AnyConceptKey(dsviper.ValueKey.cast(value as dsviper.Value));
     }
 
@@ -150,7 +150,7 @@ export class <e.pythonType.proxy> extends Proxy\<dsviper.ValueEnumeration> {
         super(value);
     }
 
-    static wrap(value: dsviper.OutputValue): <e.pythonType.proxy> {
+    static wrap(value: dsviper.OutputValue | dsviper.Value): <e.pythonType.proxy> {
         return new <e.pythonType.proxy>(dsviper.ValueEnumeration.cast(value as dsviper.Value));
     }
 
@@ -206,7 +206,7 @@ export class <s.pythonType.proxy> extends Proxy\<dsviper.ValueStructure> {
         }
     }
 
-    static wrap(value: dsviper.OutputValue): <s.pythonType.proxy> {
+    static wrap(value: dsviper.OutputValue | dsviper.Value): <s.pythonType.proxy> {
         return new <s.pythonType.proxy>(dsviper.ValueStructure.cast(value as dsviper.Value));
     }
 
@@ -251,7 +251,7 @@ export class <c.pythonType.proxy>Key extends Proxy\<dsviper.ValueKey> {
         }
     }
 
-    static wrap(value: dsviper.OutputValue): <c.pythonType.proxy>Key {
+    static wrap(value: dsviper.OutputValue | dsviper.Value): <c.pythonType.proxy>Key {
         return new <c.pythonType.proxy>Key(dsviper.ValueKey.cast(value as dsviper.Value));
     }
 
@@ -346,7 +346,7 @@ export class <c.pythonType.proxy>Key extends Proxy\<dsviper.ValueKey> {
         super(value);
     }
 
-    static wrap(value: dsviper.OutputValue): <c.pythonType.proxy>Key {
+    static wrap(value: dsviper.OutputValue | dsviper.Value): <c.pythonType.proxy>Key {
         return new <c.pythonType.proxy>Key(dsviper.ValueKey.cast(value as dsviper.Value));
     }
 
@@ -427,7 +427,7 @@ export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueVec> {
         }
     }
 
-    static wrap(value: dsviper.OutputValue): <v.pythonType.proxy> {
+    static wrap(value: dsviper.OutputValue | dsviper.Value): <v.pythonType.proxy> {
         return new <v.pythonType.proxy>(dsviper.ValueVec.cast(value as dsviper.Value));
     }
 
@@ -480,7 +480,7 @@ export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueMat> {
         }
     }
 
-    static wrap(value: dsviper.OutputValue): <v.pythonType.proxy> {
+    static wrap(value: dsviper.OutputValue | dsviper.Value): <v.pythonType.proxy> {
         return new <v.pythonType.proxy>(dsviper.ValueMat.cast(value as dsviper.Value));
     }
 
@@ -543,7 +543,7 @@ export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueTuple> {
         }
     }
 
-    static wrap(value: dsviper.OutputValue): <v.pythonType.proxy> {
+    static wrap(value: dsviper.OutputValue | dsviper.Value): <v.pythonType.proxy> {
         return new <v.pythonType.proxy>(dsviper.ValueTuple.cast(value as dsviper.Value));
     }
 
@@ -552,7 +552,7 @@ export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueTuple> {
     }
 
     at(index: number): dsviper.OutputValue {
-        return this.vprValue.at(index);
+        return this.vprValue.at(index) as dsviper.OutputValue;
     }
 
     *[Symbol.iterator]() {
@@ -590,7 +590,7 @@ export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueOptional> {
         }
     }
 
-    static wrap(value: dsviper.OutputValue): <v.pythonType.proxy> {
+    static wrap(value: dsviper.OutputValue | dsviper.Value): <v.pythonType.proxy> {
         return new <v.pythonType.proxy>(dsviper.ValueOptional.cast(value as dsviper.Value));
     }
 
@@ -637,7 +637,7 @@ export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueVector> {
         }
     }
 
-    static wrap(value: dsviper.OutputValue): <v.pythonType.proxy> {
+    static wrap(value: dsviper.OutputValue | dsviper.Value): <v.pythonType.proxy> {
         return new <v.pythonType.proxy>(dsviper.ValueVector.cast(value as dsviper.Value));
     }
 
@@ -728,7 +728,7 @@ export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueSet> {
         }
     }
 
-    static wrap(value: dsviper.OutputValue): <v.pythonType.proxy> {
+    static wrap(value: dsviper.OutputValue | dsviper.Value): <v.pythonType.proxy> {
         return new <v.pythonType.proxy>(dsviper.ValueSet.cast(value as dsviper.Value));
     }
 
@@ -849,7 +849,7 @@ export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueMap> {
         }
     }
 
-    static wrap(value: dsviper.OutputValue): <v.pythonType.proxy> {
+    static wrap(value: dsviper.OutputValue | dsviper.Value): <v.pythonType.proxy> {
         return new <v.pythonType.proxy>(dsviper.ValueMap.cast(value as dsviper.Value));
     }
 
@@ -953,7 +953,7 @@ export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueXArray> {
         }
     }
 
-    static wrap(value: dsviper.OutputValue): <v.pythonType.proxy> {
+    static wrap(value: dsviper.OutputValue | dsviper.Value): <v.pythonType.proxy> {
         return new <v.pythonType.proxy>(dsviper.ValueXArray.cast(value as dsviper.Value));
     }
 
@@ -975,13 +975,13 @@ export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueXArray> {
     }
 
     get(key: number | dsviper.ValueUUId): <v.pythonElementType:tsType()> | undefined {
-        const position = typeof key === "number" ? this.vprValue.position(key) : key;
+        const position = typeof key === "number" ? this.position(key) : key;
         if (position === undefined) { return undefined; }
         return this.at(position);
     }
 
     set(key: number | dsviper.ValueUUId, value: <v.pythonElementType:tsType()>): void {
-        const position = typeof key === "number" ? this.vprValue.position(key) : key;
+        const position = typeof key === "number" ? this.position(key) : key;
         if (position === undefined) { return; }
         this.vprValue.set(position, <v.pythonElementType:unwrap("value")>);
     }
@@ -1014,7 +1014,7 @@ export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueXArray> {
     }
 
     position(index: number): dsviper.ValueUUId | undefined {
-        return this.vprValue.position(index);
+        return index \< 0 ? undefined : this.vprValue.position(index);
     }
 
     hasPosition(position: dsviper.ValueUUId): boolean {
@@ -1072,7 +1072,7 @@ export class <v.pythonType.proxy> extends Proxy\<dsviper.ValueVariant> {
         }
     }
 
-    static wrap(value: dsviper.OutputValue): <v.pythonType.proxy> {
+    static wrap(value: dsviper.OutputValue | dsviper.Value): <v.pythonType.proxy> {
         return new <v.pythonType.proxy>(dsviper.ValueVariant.cast(value as dsviper.Value));
     }
 
