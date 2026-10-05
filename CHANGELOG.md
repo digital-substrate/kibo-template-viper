@@ -51,6 +51,8 @@ version as either one.
 
 ## [Unreleased]
 
+## [2.0.2] - 2026-10-05
+
 ### Fixed
 
 - **`from pkg.containers import *` brings the declared containers only.** The module had no

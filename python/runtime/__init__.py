@@ -1,4 +1,4 @@
-# The runtime of the kibo-template-viper 2.0.1 Python templates (MIT), copied into every
+# The runtime of the kibo-template-viper 2.0.2 Python templates (MIT), copied into every
 # generated package. Do not edit by hand.
 
 from .attachment import AttachmentProxy

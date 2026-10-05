@@ -1,4 +1,4 @@
-// The runtime of the kibo-template-viper 2.0.1 TypeScript templates (MIT), copied into
+// The runtime of the kibo-template-viper 2.0.2 TypeScript templates (MIT), copied into
 // every generated package. Do not edit by hand.
 
 import dsviper from "@digitalsubstrate/dsviper";
