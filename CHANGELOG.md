@@ -26,6 +26,11 @@ version as either one.
 
 ## [Unreleased]
 
+### Deprecated
+
+- **This line, kibo 1.** It receives fixes only, for the life of the LTS-1.2 line; new
+  projects use kibo 2, on `main`. Nothing it generates changes.
+
 ## [1.2.5] - 2026-10-05
 
 Pool functions travel under their DSM names, a remote function that only reads takes
