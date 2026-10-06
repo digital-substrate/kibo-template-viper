@@ -511,9 +511,10 @@ class Ordered(View[dsviper.ValueXArray], typing.Generic[E]):
         return len(self._value)
 
 
-class Optional(View[dsviper.ValueOptional], typing.Generic[E]):
-    """An optional. `clear()` empties it; read from a field, it empties that field.
-    `unwrap()` of a nil optional raises dsviper.ViperError; `get(default)` answers default."""
+class Option(View[dsviper.ValueOptional], typing.Generic[E]):
+    """An optional: a box holding a value or nothing, not `typing.Optional`. `unwrap()` opens it,
+    and raises dsviper.ViperError when it is nil; `get(default)` answers default. `clear()`
+    empties it; read from a field, it empties that field."""
     __slots__ = ()
 
     def __bool__(self) -> bool:
@@ -605,7 +606,7 @@ _CASTS: dict[type, typing.Callable[[typing.Any], typing.Any]] = {
     Matrix: dsviper.ValueMat.cast,
     Mapping: dsviper.ValueMap.cast,
     Ordered: dsviper.ValueXArray.cast,
-    Optional: dsviper.ValueOptional.cast,
+    Option: dsviper.ValueOptional.cast,
     Variant: dsviper.ValueVariant.cast,
 }
 

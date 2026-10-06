@@ -60,6 +60,13 @@ version as either one.
   2, 3 ]`, `Map_of_uint8_to_string(2) { 0 => 'Zero' }`), a key's instance id; it showed the
   symbol holding the Viper value. `String()` and `toJSON()` are unchanged.
 
+### Changed
+
+- **The Python optional's base class is `Option`**, no longer `Optional`: an attachment's `get`
+  was annotated `Optional[D]`, read as `typing.Optional`, a document or None, where it is a box
+  to open with `unwrap()`. The declared `Optional_of_…` classes, their methods and TypeScript
+  are unchanged.
+
 ### Fixed
 
 - A field operation (`union_f_set`, `update_f_map`, `insert_f_xarray`…) takes what the field's

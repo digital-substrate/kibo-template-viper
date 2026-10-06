@@ -9,7 +9,7 @@ from typing import Callable
 
 import dsviper
 
-from .container import Optional
+from .container import Option
 from .proxy import Proxy, unwrap as _unwrap, wrap as _wrap
 
 
@@ -68,10 +68,11 @@ class AttachmentProxy(typing.Generic[K, D, KS, DI]):
         """Return True if a document is stored at key."""
         return getting.has(self.descriptor, key.unwrap_value())
 
-    def get(self, getting: dsviper.AttachmentGetting | dsviper.Database, key: K) -> Optional[D]:
-        """Return the stored document as an optional. It is a copy: changing it does not
-        change what is stored; write it back with `set`."""
-        return typing.cast("Optional[D]", _wrap(getting.get(self.descriptor, key.unwrap_value())))
+    def get(self, getting: dsviper.AttachmentGetting | dsviper.Database, key: K) -> Option[D]:
+        """Return the stored document in an Option, empty when none is stored: `unwrap()` opens
+        it, `is_nil()` tells it is empty. It is a copy: changing it does not change what is
+        stored; write it back with `set`."""
+        return typing.cast("Option[D]", _wrap(getting.get(self.descriptor, key.unwrap_value())))
 
     def enumerate(self, getting: dsviper.AttachmentGetting | dsviper.Database) -> list[tuple[K, D]]:
         """Return every (key, document) pair stored. Each document is a copy, as `get` returns
