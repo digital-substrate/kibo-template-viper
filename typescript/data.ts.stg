@@ -33,7 +33,7 @@ import { definitions } from "../definitions.js";
 <u.sortedStructures:structure(u);separator="\n\n">
 <endif>
 
-register(<u.concepts:registered_key();separator=", "><if(u.clubs)>, <u.clubs:registered_key();separator=", "><endif><if(u.enumerations)>, <u.enumerations:registered();separator=", "><endif><if(u.structures)>, <u.structures:registered();separator=", "><endif>);
+register(<[u.concepts:registered_key(), u.clubs:registered_key(), u.enumerations:registered(), u.structures:registered()];separator=", ">);
 
 >>
 

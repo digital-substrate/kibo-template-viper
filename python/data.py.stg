@@ -37,7 +37,7 @@ if typing.TYPE_CHECKING:
 
 <endif>
 
-register({<u.concepts:registered_key();separator=", "><if(u.clubs)>, <u.clubs:registered_key();separator=", "><endif><if(u.enumerations)>, <u.enumerations:registered();separator=", "><endif><if(u.structures)>, <u.structures:registered();separator=", "><endif>})
+register({<[u.concepts:registered_key(), u.clubs:registered_key(), u.enumerations:registered(), u.structures:registered()];separator=", ">})
 
 __all__ = [<[[u.concepts, u.clubs]:exported_key(), [u.enumerations, u.structures]:exported(), [u.concepts, u.clubs, u.enumerations, u.structures]:exported_id()];separator=", ">]
 
