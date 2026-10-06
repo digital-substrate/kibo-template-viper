@@ -442,9 +442,10 @@ container is the C++ spelling (`std::set<…>`), not a binding's.
    site and runs every suite; never hand-edit generated output to compensate. It does not
    cover an outside consumer (`pip install`, `tsc --strict`): check those by hand when the
    packaging changes. `python tools/bump_version.py --check` keeps the stamp consistent.
-   kibo-project runs the pack's `validation` on every generation; the laboratory's
-   `tools/edge_names.py` renders the hostile names (keywords, builtins, the pack's own
-   names) and must report no silent case.
+   kibo-project runs the pack's `validation` on every generation. When a change touches
+   names — a name the pack's code takes, a body's internal name, the validation —
+   `check.py --edge-names` also renders the hostile names (keywords, builtins, the pack's
+   own names), and must report no silent case.
 5. If templates move, re-measure `requires` in `features.json`: it was measured from the
    `#include` graph of the generated C++, not decided.
 6. A change that alters the generated **surface** — names, module shape, imports, a
