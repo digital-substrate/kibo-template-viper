@@ -261,14 +261,54 @@ straight back to a line of DSM.
   Concepts and clubs add `Key` (`MaterialKey`).
 - **Python:** fields, methods and attachments in snake_case (`f_bool`, `set_f_bool`,
   `properties_int_8`); enumeration cases in UPPER_SNAKE, whose values are the DSM names;
-  runtime-id constants in UPPER_SNAKE.
+  runtime-id constants in UPPER_SNAKE, as in TypeScript — a type whose name already is upper
+  snake case (`RGB`) takes `_ID` (`RGB_ID`), so that the constant never takes the class's
+  name (`nameIsUpperSnake`).
 - **TypeScript:** fields keep the model's name with a lower-case first letter; methods and
   attachments in lowerCamel (`setF_bool`, `propertiesInt8`, `instanceId`).
 - **C++:** operations in lowerCamel (`instanceId`, `toAny`, `setF_bool`), fields and
-  attachments as written in the model, enumeration cases with an upper-case first letter; a
-  keyword gets a trailing underscore (`union_`).
+  attachments as written in the model, enumeration cases with an upper-case first letter.
+  The pack's own operation `union` is spelled `union_`, `union` being a C++ keyword.
 - **Attachment groups:** the concept's name, or `<Namespace>_<Concept>` when the concept is
   declared in another namespace, so that adding an attachment never renames another.
+
+### A name the target cannot take
+
+A model is valid by the DSM's rules alone, which know no programming language: `class`,
+`type` or `self` are valid names. The pack never escapes or renames one on its own — a
+renamed name is a name the user did not write and cannot find. It identifies the problem,
+says which directive corrects it, and the project corrects it, for that target only. Three
+cases, three owners:
+
+- **A name the pack's own code takes** — a member every generated class inherits from the
+  proxy (`wrap_value`, `copy`, `type`; `wrapValue`, `equals`, `toJSON`), a module at the
+  package's root (`containers`, `definitions`, `resources`, `pools`). `features.json`
+  declares them in `reserved`, per target and per family of names; a tool driving kibo passes
+  them (`--reserve field:wrap_value`), and kibo refuses a DSM name meeting one, naming the
+  element, the target and the directive to write: `[names.<target>.rename]` in kibo-project,
+  `--spell` to kibo. A name added to the proxy's public surface is added to `reserved` in the
+  same change.
+- **A name a generated body uses internally** — a constructor's or a pool function's own
+  parameters, a helper, a builtin it calls. Those are spelled so that no DSM name can take
+  them: a DSM identifier starts with a letter, so a name starting with `_` is out of the
+  model's reach. That is why `__init__` takes `_self` and `_source`, and a pool function
+  `_self` (a field named `self` would repeat a parameter, a SyntaxError at import), why the
+  constructor's body is `_init_structure` in the runtime, and why it calls
+  `_builtins.isinstance` (a field named `isinstance` would shadow it, silently). Properties
+  and setters keep `self`: none of their parameters comes from the model. This case is the
+  pack's alone, and never reaches the project.
+- **A word the language reserves** — a field `class` in C++. C++ refuses it at compilation,
+  and says where. Python and TypeScript are silent: a name can produce code that imports and
+  does something else. So `features.json` declares, in `validation`, the checks a tool runs
+  once a target is written — Python imported, every structure built (`python/validate.py`),
+  then `mypy --strict`; TypeScript `tsc --noEmit` — and a check whose tool is missing fails
+  rather than passes. The project corrects with the same directive. One exception predates
+  the rule: kibo's snake_case writes a Python keyword with a trailing underscore (`def` →
+  `def_`), as the 1.2 line did; it is kept so that no generated name changes.
+
+A respelled name is the target's only: the Template Model's `name` is the target's spelling,
+`dsmName` the model's, and what is sent to the runtime uses `dsmName` (below), so the
+targets still meet on the wire.
 
 ## 6. The C++ surface: the runtime's static layer, found by ADL
 
@@ -376,6 +416,12 @@ into every template that needs it.
 **In a type position — a signature, an annotation, a declaration — use the target's
 spelling** from `bindingType`. That is the code the reader writes and calls.
 
+**Wherever a name is sent to the runtime — a field read or written by name, a pool function
+registered or called, its parameters — use `dsmName`.** `name` is the target's spelling,
+which a project may change for one target (`[names.<target>.rename]`); the runtime knows the
+model's name only, and two targets speaking to one database or one service must send the
+same one.
+
 **In a `repr`, a description or an exception message — use the DSM name**
 (`<Namespace>::<Name>`, or the runtime type's `representation()`). Every such message
 guards a **runtime** type comparison, and a runtime type is a DSM type; the DSM name is what
@@ -396,17 +442,19 @@ container is the C++ spelling (`std::set<…>`), not a binding's.
    site and runs every suite; never hand-edit generated output to compensate. It does not
    cover an outside consumer (`pip install`, `tsc --strict`): check those by hand when the
    packaging changes. `python tools/bump_version.py --check` keeps the stamp consistent.
+   kibo-project runs the pack's `validation` on every generation; the laboratory's
+   `tools/edge_names.py` renders the hostile names (keywords, builtins, the pack's own
+   names) and must report no silent case.
 5. If templates move, re-measure `requires` in `features.json`: it was measured from the
    `#include` graph of the generated C++, not decided.
 6. A change that alters the generated **surface** — names, module shape, imports, a
    returned type — is a breaking change of this pack (see
    [`README.md`](README.md#public-contract)) and is recorded in the CHANGELOG.
+7. A new name in generated code is either public — a proxy member, a root module — and then
+   declared in `reserved`, or internal and then spelled with a leading `_` (§5).
 
 ## 9. Open directions
 
-- **The `.d.ts` surface has not been judged from outside.** No `exports` map, no ESM/CJS
-  decision, and `tsc --strict` has only been run on code generated and consumed inside the
-  laboratory.
 - **Function-pool parity.** Python emits a local `Pool` beside `Remote`; TypeScript emits
   `Remote` only. Either TypeScript gains the local side or the reason it does not is stated
   here.

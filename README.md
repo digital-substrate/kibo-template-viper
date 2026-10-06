@@ -126,10 +126,21 @@ In Python, `resolve.templates("cpp", ["MyReport"], extra=["path/to/my-templates/
 A feature name the pack already declares is refused.
 
 Besides the features, `features.json` declares what a tool driving kibo needs to know of this
-pack, so that it carries no knowledge of its own: `generator.kibo`, the oldest kibo exposing the
-Template Model these templates consume, and `layout`, per target, where the templates render,
-which runtime is copied beside them, and how the definitions are embedded.
-[kibo-project](https://github.com/digital-substrate/kibo-project) reads both.
+pack, so that it carries no knowledge of its own:
+
+- `generator.kibo` — the oldest kibo exposing the Template Model these templates consume;
+- `layout`, per target — where the templates render, which runtime is copied beside them, and
+  how the definitions are embedded;
+- `reserved`, per target and per family of names — the names this pack's code takes: the
+  members every generated class inherits, which a field would mask, and the modules at the
+  package's root, which a namespace or a pool would replace. A DSM name meeting one stops the
+  generation, saying how to spell it otherwise for that target;
+- `validation`, per target — the checks run once a target is written: Python imported, every
+  structure built and `mypy --strict`; TypeScript `tsc --noEmit`. C++ needs none: its compiler
+  refuses invalid code and says why.
+
+[kibo-project](https://github.com/digital-substrate/kibo-project) reads all four. Why names
+are refused rather than renamed: [`DESIGN.md`](DESIGN.md#a-name-the-target-cannot-take).
 
 ## License
 
