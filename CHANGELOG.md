@@ -62,6 +62,10 @@ version as either one.
 
 ### Changed
 
+- **The TypeScript package declares `@digitalsubstrate/dsviper` as a peer dependency**, no
+  longer a dependency: the project owns the runtime and imports it as its own, npm installs
+  one copy and refuses a version outside the range, where it could install a second copy the
+  native binding refuses to load.
 - **The Python optional's base class is `Option`**, no longer `Optional`: an attachment's `get`
   was annotated `Optional[D]`, read as `typing.Optional`, a document or None, where it is a box
   to open with `unwrap()`. The declared `Optional_of_…` classes, their methods and TypeScript

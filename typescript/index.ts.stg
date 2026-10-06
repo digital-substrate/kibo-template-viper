@@ -39,8 +39,9 @@ model(m) ::= <<
  * field, a container or an attachment.
  *
  * This package and the code that opens a database must reach one installation of the
- * runtime: make `@digitalsubstrate/dsviper` a dependency of the project, in the range this
- * package declares. A second copy of the native binding refuses to load.
+ * runtime, so the package declares `@digitalsubstrate/dsviper` as a peer dependency: the
+ * project owns it and imports it as its own, npm installs one copy and refuses a range this
+ * package does not accept. A second copy of the native binding refuses to load.
  *
  * @packageDocumentation
  */
