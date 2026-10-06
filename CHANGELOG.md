@@ -51,6 +51,10 @@ version as either one.
 
 ## [Unreleased]
 
+## [2.0.3] - 2026-10-06
+
+Requires kibo 2.0.2.
+
 ### Fixed
 
 - A namespace with types and no concept registers them: Python and TypeScript wrote a malformed

@@ -1,6 +1,6 @@
 banner(m) ::= <<
 // <m.generated>. Do not edit by hand.
-// Templates: kibo-template-viper 2.0.2 (MIT), Template Model 2.
+// Templates: kibo-template-viper 2.0.3 (MIT), Template Model 2.
 // Runtime: this file imports `@digitalsubstrate/dsviper` >=1.2.14 \<1.3.0,
 // distributed under LicenseRef-DigitalSubstrate-Commercial-1.2.
 // Commercial use requires a Commercial Licence from Digital Substrate.
@@ -8,5 +8,5 @@ banner(m) ::= <<
 
 configuration_banner(m) ::= <<
 // <m.generated>. Do not edit by hand.
-// Templates: kibo-template-viper 2.0.2 (MIT), Template Model 2.
+// Templates: kibo-template-viper 2.0.3 (MIT), Template Model 2.
 >>
