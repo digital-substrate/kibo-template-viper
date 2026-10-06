@@ -211,5 +211,39 @@
     "typescript": ["wrapValue", "unwrapValue", "compare", "equals", "hashKey", "toJSON", "toString",
                    "copy", "type", "constructor",
                    "containers", "definitions", "index", "pools", "resources"]
+  },
+  "validation": {
+    "_comment": [
+      "How a tool driving kibo checks what this pack generated, per target, once written. C++ needs",
+      "nothing: its compilation refuses invalid code and says why. The script targets are silent:",
+      "Python imports a class whose field masks a method, TypeScript run by stripping its types is",
+      "never checked. A step runs `run` in the target's output, with `env` added; `tools` must be",
+      "found, or the validation fails; `with` names the feature it applies to. Tokens: {python},",
+      "{output}, {infrastructure}, {pack} (this pack's directory), {tmp} (a scratch directory),",
+      "and each tool's own name."
+    ],
+    "python": [
+      {
+        "name": "import, build every structure",
+        "with": "Base",
+        "tools": ["python"],
+        "env": {"PYTHONPATH": "{output}", "PYTHONDONTWRITEBYTECODE": "1"},
+        "run": ["{python}", "-W", "error::SyntaxWarning", "{pack}/python/validate.py", "{infrastructure}"]
+      },
+      {
+        "name": "mypy --strict",
+        "with": "Base",
+        "tools": ["mypy"],
+        "run": ["{python}", "-m", "mypy", "--strict", "--cache-dir", "{tmp}/mypy", "{infrastructure}"]
+      }
+    ],
+    "typescript": [
+      {
+        "name": "tsc --noEmit",
+        "with": "Package",
+        "tools": ["tsc"],
+        "run": ["{tsc}", "-p", "tsconfig.json", "--noEmit"]
+      }
+    ]
   }
 }
