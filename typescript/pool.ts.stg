@@ -8,8 +8,8 @@ export class Remote {
 
     /**
      * The pool as a service carries it: service is a dsviper.ServiceRemote.connect(host, port,
-     * new dsviper.Definitions()). isAvailable() says whether the service declares this pool;
-     * the connection's own state is service.isClosed().
+     * new dsviper.Definitions()), the port given as a string ("54321"). isAvailable() says
+     * whether the service declares this pool; the connection's own state is service.isClosed().
      */
     constructor(service: dsviper.ServiceRemote) {
         this.service = service;
@@ -32,11 +32,12 @@ export class Remote {
 
     /**
      * The pool as a service carries it: service is a dsviper.ServiceRemote.connect(host, port,
-     * new dsviper.Definitions()). isAvailable() says whether the service declares this pool;
-     * the connection's own state is service.isClosed(). A function that mutates takes an
-     * AttachmentMutating, one that reads an AttachmentGetting, as an attachment's operations
-     * do: the AttachmentProxy documentation says where each comes from. The state knows the
-     * model: one a CommitDatabase extended with the package's definitions() gives, or new
+     * new dsviper.Definitions()), the port given as a string ("54321"). isAvailable() says
+     * whether the service declares this pool; the connection's own state is
+     * service.isClosed(). A function that mutates takes an AttachmentMutating, one that reads
+     * an AttachmentGetting, as an attachment's operations do: the AttachmentProxy
+     * documentation says where each comes from. The state knows the model: one a
+     * CommitDatabase extended with the package's definitions() gives, or new
      * dsviper.CommitMutableState(new dsviper.CommitState(definitions())); over other
      * definitions a call fails on an unregistered attachment. The service reads and writes
      * that state in place; nothing is stored until it is committed.

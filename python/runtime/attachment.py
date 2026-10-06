@@ -60,9 +60,12 @@ class AttachmentProxy(typing.Generic[K, D, KS, DI]):
 
 
     def keys(self, getting: dsviper.AttachmentGetting | dsviper.Database) -> KS:
+        """Return the keys that hold a document. The set is taken now: a later write does not
+        reach it."""
         return typing.cast("KS", _wrap(getting.keys(self.descriptor)))
 
     def has(self, getting: dsviper.AttachmentGetting | dsviper.Database, key: K) -> bool:
+        """Return True if a document is stored at key."""
         return getting.has(self.descriptor, key.unwrap_value())
 
     def get(self, getting: dsviper.AttachmentGetting | dsviper.Database, key: K) -> Optional[D]:
@@ -71,6 +74,8 @@ class AttachmentProxy(typing.Generic[K, D, KS, DI]):
         return typing.cast("Optional[D]", _wrap(getting.get(self.descriptor, key.unwrap_value())))
 
     def enumerate(self, getting: dsviper.AttachmentGetting | dsviper.Database) -> list[tuple[K, D]]:
+        """Return every (key, document) pair stored. Each document is a copy, as `get` returns
+        it."""
         source = getting.attachment_getting() if isinstance(getting, dsviper.Database) else getting
         return typing.cast("list[tuple[K, D]]", [
             (_wrap(key), _wrap(document) if isinstance(document, dsviper.Value) else document)
@@ -91,12 +96,14 @@ class AttachmentProxy(typing.Generic[K, D, KS, DI]):
     def set(self, mutating: dsviper.Database, key: K, value: DI) -> bool: ...
 
     def set(self, mutating: dsviper.AttachmentMutating | dsviper.Database, key: K, value: DI) -> bool | None:
-        """Write the document; on a Database, True once written (a refusal raises), on an
-        AttachmentMutating, None. The document is copied in: changing it afterwards does not
-        reach what was written."""
+        """Write the document; on a Database, inside a transaction, True once written (a
+        refusal raises), on an AttachmentMutating, None. The document is copied in: changing it
+        afterwards does not reach what was written."""
         return mutating.set(self.descriptor, key.unwrap_value(), _unwrap(value))
 
     def delete(self, database: dsviper.Database, key: K) -> bool:
+        """Delete the document at key, inside a transaction; True if one was there. A
+        CommitDatabase has no delete: a commit never removes a key."""
         return database.delete(self.descriptor, key.unwrap_value())
 
     def diff(self, mutating: dsviper.AttachmentMutating, key: K, value: DI, *, recursive: bool = False) -> None:

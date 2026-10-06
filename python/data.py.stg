@@ -324,11 +324,11 @@ class <s.name>(Proxy[dsviper.ValueStructure]):
     def type(cls) -> dsviper.TypeStructure:
         return definitions().check_structure(<id_name(s)>)
 
-    def __init__(_self, _source: dsviper.ValueStructure | dict[str, typing.Any] | None = None, /, *,
+    def __init__(_self, _source: dsviper.Value | dict[str, typing.Any] | None = None, /, *,
                  <s.fields:{f|<f.name;format="snake">: <input_hint(f)> | NotGiven = NOT_GIVEN};separator=",\n">) -> None:
         """Fields by keyword, in snake_case; or a source: a Viper ValueStructure of this
         type, boxed and not copied, or a dict keyed by the DSM field names, as the runtime
-        takes it."""
+        takes it. A Viper value of another type raises TypeError."""
         _init_structure(_self, _self.type(), _source, "<u.dsmName>::<s.dsmName>")
         <s.fields:{f|if not _builtins.isinstance(<f.name;format="snake">, _NotGiven):
     _self.<f.name;format="snake"> = <f.name;format="snake">};separator="\n">

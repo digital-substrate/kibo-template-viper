@@ -336,8 +336,9 @@ class Matrix(View[dsviper.ValueMat], typing.Generic[E]):
 class Mapping(View[dsviper.ValueMap], typing.Generic[K, E]):
     """A map. `m[key]` raises KeyError for a key it does not hold; `get(key)` answers None.
 
-    `keys()`, `values()` and `items()` return lists, a snapshot of the map: it can change
-    while one is iterated."""
+    `keys()`, `values()` and `items()` return lists taken now: a list does not follow the map,
+    which can change while one is iterated. A value in it is the map's own, as an element read
+    is; a key is a copy."""
     __slots__ = ()
 
     def __len__(self) -> int:
@@ -616,7 +617,7 @@ def _holds(container: typing.Any, element: object) -> bool:
 
 
 def _init_structure(proxy: Proxy[dsviper.ValueStructure], type_: dsviper.TypeStructure,
-                    source: dsviper.ValueStructure | dict[str, typing.Any] | None, name: str) -> None:
+                    source: dsviper.Value | dict[str, typing.Any] | None, name: str) -> None:
     if source is None:
         source = dsviper.ValueStructure(type_)
     elif isinstance(source, dict):

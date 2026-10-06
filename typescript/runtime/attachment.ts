@@ -80,10 +80,12 @@ export class AttachmentProxy<K, D, KS = SetView<K>, DI = D> {
         return (this.resolved ??= this.definitions().checkAttachment(this.runtimeId));
     }
 
+    /** Return the keys that hold a document. The set is taken now: a later write does not reach it. */
     keys(getting: Getting): KS {
         return wrap(getting.keys(this.descriptor)) as KS;
     }
 
+    /** Return every [key, document] pair stored. Each document is a copy, as `get` returns it. */
     enumerate(getting: dsviper.AttachmentGetting | dsviper.Database): [K, D][] {
         const reader = getting instanceof dsviper.Database ? getting.attachmentGetting() : getting;
         return reader.enumerate(this.descriptor)
@@ -97,6 +99,7 @@ export class AttachmentProxy<K, D, KS = SetView<K>, DI = D> {
         return groups.map((group) => wrap(group)) as unknown as [KS, KS, KS, KS];
     }
 
+    /** Return true if a document is stored at key. */
     has(getting: Getting, key: K): boolean {
         return getting.has(this.descriptor, unwrap(key) as dsviper.ValueKey);
     }
@@ -110,9 +113,9 @@ export class AttachmentProxy<K, D, KS = SetView<K>, DI = D> {
     }
 
     /**
-     * Write the document; on a Database, true once written (a refusal throws), on a mutating
-     * state, nothing. The document is copied in: changing it afterwards does not reach what was
-     * written.
+     * Write the document; on a Database, inside a transaction, true once written (a refusal
+     * throws), on a mutating state, nothing. The document is copied in: changing it afterwards
+     * does not reach what was written.
      */
     set(setting: Mutating, key: K, value: DI): void;
     set(setting: dsviper.Database, key: K, value: DI): boolean;
@@ -124,6 +127,10 @@ export class AttachmentProxy<K, D, KS = SetView<K>, DI = D> {
         mutating.diff(this.descriptor, unwrap(key) as dsviper.ValueKey, unwrap(value), recursive);
     }
 
+    /**
+     * Delete the document at key, inside a transaction; true if one was there. A CommitDatabase
+     * has no delete: a commit never removes a key.
+     */
     del(database: dsviper.Database, key: K): boolean {
         return database.delete(this.descriptor, unwrap(key) as dsviper.ValueKey);
     }

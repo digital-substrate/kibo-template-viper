@@ -51,6 +51,20 @@ version as either one.
 
 ## [Unreleased]
 
+## [Unreleased]
+
+### Fixed
+
+- A field operation (`union_f_set`, `update_f_map`, `insert_f_xarray`…) takes what the field's
+  setter takes: a native collection as well as the declared container, in Python and
+  TypeScript. The annotations refused what the runtime accepts.
+- A Python structure's constructor is annotated with `dsviper.Value`, as `wrap_value` is: a
+  value `Value.decode` returns type-checks. Another type still raises TypeError.
+- `keys`, `has`, `enumerate` and `delete` say what they return; `set` and `delete` on a
+  Database say they need a transaction.
+- A map's `values()` and `items()` say their values are the map's own, their keys copies; a
+  pool's `Remote` says the port is given as a string.
+
 ## [2.0.3] - 2026-10-06
 
 Requires kibo 2.0.2.

@@ -61,29 +61,29 @@ def set_<sf.name;format="snake">(self, mutating: dsviper.AttachmentMutating, key
 document(a, s) ::= <%<if(a.documentType.field.isSet)><set_ops(a.documentType.field, s, "None", "", false)><elseif(a.documentType.field.isMap)><map_ops(a.documentType.field, s, "None", "", false)><elseif(a.documentType.field.isXArray)><xarray_ops(a.documentType.field, s, "None", "", false)><endif>%>
 
 set_ops(t, s, path, suffix, label) ::= <<
-def union<suffix>(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, value: <t.bindingType.qualified>) -> None:
+def union<suffix>(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, value: <t.bindingType.inputQualified>) -> None:
     self._union_in_set(mutating, key, <path>, value)
 
-def subtract<suffix>(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, value: <t.bindingType.qualified>) -> None:
+def subtract<suffix>(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, value: <t.bindingType.inputQualified>) -> None:
     self._subtract_in_set(mutating, key, <path>, value)
 >>
 
 map_ops(t, s, path, suffix, label) ::= <<
-def union<suffix>(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, value: <t.bindingType.qualified>) -> None:
+def union<suffix>(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, value: <t.bindingType.inputQualified>) -> None:
     self._union_in_map(mutating, key, <path>, value)
 
-def subtract<suffix>(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, value: <t.bindingKeySetType.qualified>) -> None:
+def subtract<suffix>(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, value: <t.bindingKeySetType.inputQualified>) -> None:
     self._subtract_in_map(mutating, key, <path>, value)
 
-def update<suffix>(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, value: <t.bindingType.qualified>) -> None:
+def update<suffix>(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, value: <t.bindingType.inputQualified>) -> None:
     self._update_in_map(mutating, key, <path>, value)
 >>
 
 xarray_ops(t, s, path, suffix, label) ::= <<
-def insert<suffix>(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, before_position: dsviper.ValueUUId, new_position: dsviper.ValueUUId, value: <t.bindingElementType.qualified>) -> None:
+def insert<suffix>(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, before_position: dsviper.ValueUUId, new_position: dsviper.ValueUUId, value: <t.bindingElementType.inputQualified>) -> None:
     self._insert_in_xarray(mutating, key, <path>, before_position, new_position, value)
 
-def update<suffix>(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, position: dsviper.ValueUUId, value: <t.bindingElementType.qualified>) -> None:
+def update<suffix>(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, position: dsviper.ValueUUId, value: <t.bindingElementType.inputQualified>) -> None:
     self._update_in_xarray(mutating, key, <path>, position, value)
 
 def remove<suffix>(self, mutating: dsviper.AttachmentMutating, key: <s.keyType.bindingType.qualified>, position: dsviper.ValueUUId) -> None:

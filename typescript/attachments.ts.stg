@@ -59,35 +59,35 @@ document(a, s) ::= <%<if(a.documentType.field.isSet)><set_ops(a.documentType.fie
 key(s) ::= <%<s.keyType.bindingType.qualified>%>
 
 set_ops(t, s, path, suffix, label) ::= <<
-union<suffix>(mutating: Mutating, key: <key(s)>, value: <t.bindingType.qualified>): void {
+union<suffix>(mutating: Mutating, key: <key(s)>, value: <t.bindingType.inputQualified>): void {
     this.unionInSet(mutating, key, <path>, value);
 }
 
-subtract<suffix>(mutating: Mutating, key: <key(s)>, value: <t.bindingType.qualified>): void {
+subtract<suffix>(mutating: Mutating, key: <key(s)>, value: <t.bindingType.inputQualified>): void {
     this.subtractInSet(mutating, key, <path>, value);
 }
 >>
 
 map_ops(t, s, path, suffix, label) ::= <<
-union<suffix>(mutating: Mutating, key: <key(s)>, value: <t.bindingType.qualified>): void {
+union<suffix>(mutating: Mutating, key: <key(s)>, value: <t.bindingType.inputQualified>): void {
     this.unionInMap(mutating, key, <path>, value);
 }
 
-subtract<suffix>(mutating: Mutating, key: <key(s)>, value: <t.bindingKeySetType.qualified>): void {
+subtract<suffix>(mutating: Mutating, key: <key(s)>, value: <t.bindingKeySetType.inputQualified>): void {
     this.subtractInMap(mutating, key, <path>, value);
 }
 
-update<suffix>(mutating: Mutating, key: <key(s)>, value: <t.bindingType.qualified>): void {
+update<suffix>(mutating: Mutating, key: <key(s)>, value: <t.bindingType.inputQualified>): void {
     this.updateInMap(mutating, key, <path>, value);
 }
 >>
 
 xarray_ops(t, s, path, suffix, label) ::= <<
-insert<suffix>(mutating: Mutating, key: <key(s)>, beforePosition: dsviper.ValueUUId, newPosition: dsviper.ValueUUId, value: <t.bindingElementType.qualified>): void {
+insert<suffix>(mutating: Mutating, key: <key(s)>, beforePosition: dsviper.ValueUUId, newPosition: dsviper.ValueUUId, value: <t.bindingElementType.inputQualified>): void {
     this.insertInXArray(mutating, key, <path>, beforePosition, newPosition, value);
 }
 
-update<suffix>(mutating: Mutating, key: <key(s)>, position: dsviper.ValueUUId, value: <t.bindingElementType.qualified>): void {
+update<suffix>(mutating: Mutating, key: <key(s)>, position: dsviper.ValueUUId, value: <t.bindingElementType.inputQualified>): void {
     this.updateInXArray(mutating, key, <path>, position, value);
 }
 
