@@ -3,8 +3,8 @@
 
 import dsviper from "@digitalsubstrate/dsviper";
 
-import { isKnown } from "./registry.js";
-import { VALUE, adopt } from "./value.js";
+import { isKnown, wrap } from "./registry.js";
+import { INSPECT, type Inspect, type InspectOptions, VALUE, adopt, shown } from "./value.js";
 
 /**
  * A box around one Viper value, with the API of the class it faces; `unwrapValue()` returns
@@ -61,6 +61,19 @@ export abstract class Proxy<V extends dsviper.Value> {
     toString(): string {
         return this[VALUE].toString();
     }
+
+    /** `console.log` shows the class and the fields, as Node shows an object's. */
+    [INSPECT](depth: number, options: InspectOptions, inspect: Inspect): string {
+        const value: dsviper.Value = this[VALUE];
+        if (!(value instanceof dsviper.ValueStructure)) {
+            return shown(this.constructor.name, this.toString(), depth, options, inspect, true);
+        }
+        const fields: Record<string, unknown> = {};
+        for (const field of value.typeStructure().fields()) {
+            fields[field.name()] = wrap(value.at(field.name()));
+        }
+        return shown(this.constructor.name, fields, depth, options, inspect);
+    }
 }
 
 /**
@@ -85,6 +98,12 @@ export abstract class Key extends Proxy<dsviper.ValueKey> {
             return "";
         }
         return `(${concept.representation()}Key)`;
+    }
+
+    /** `console.log` shows the instance id, and the concept of the instance when it is not the view's. */
+    override [INSPECT](_depth: number, options: InspectOptions): string {
+        const concept = this.held() ? `, ${this[VALUE].typeConcept().representation()}` : "";
+        return `${this.constructor.name}(${options.stylize(this[VALUE].instanceId().encoded(), "special")}${concept})`;
     }
 }
 

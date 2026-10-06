@@ -4,7 +4,7 @@
 import dsviper from "@digitalsubstrate/dsviper";
 
 import { unwrap, unwrapDeep, wrap } from "./registry.js";
-import { VALUE, adopt } from "./value.js";
+import { INSPECT, type Inspect, type InspectOptions, VALUE, adopt, shown } from "./value.js";
 
 function holds(container: dsviper.Value, element: unknown): boolean {
     return (container as unknown as { contains(value: dsviper.InputValue): boolean }).contains(unwrapDeep(element));
@@ -23,6 +23,16 @@ function holds(container: dsviper.Value, element: unknown): boolean {
  * TypeError.
  */
 export class View<V extends dsviper.Value = dsviper.Value> {
+    /** The name `console.log` shows: the declared class's, else the runtime type's. */
+    protected shownName(): string {
+        const name = this.constructor.name;
+        return UNDECLARED.has(name) ? this[VALUE].type().representation() : name;
+    }
+
+    [INSPECT](_depth: number, _options: InspectOptions, _inspect: Inspect): string {
+        return `${this.shownName()}(${this.toString()})`;
+    }
+
     readonly [VALUE]: V;
 
     constructor(value: dsviper.Value) {
@@ -85,6 +95,10 @@ interface Suite extends Iterable<dsviper.OutputValue> {
 }
 
 export class Sequence<E, V extends dsviper.Value = dsviper.Value> extends View<V> {
+    override [INSPECT](depth: number, options: InspectOptions, inspect: Inspect): string {
+        return shown(this.shownName(), [...this], depth, options, inspect);
+    }
+
     protected get suite(): Suite {
         return this[VALUE] as unknown as Suite;
     }
@@ -122,6 +136,10 @@ export class Sequence<E, V extends dsviper.Value = dsviper.Value> extends View<V
  * hold throws ViperError.
  */
 export class Vector<E> extends Sequence<E, dsviper.ValueVector> {
+    override [INSPECT](depth: number, options: InspectOptions, inspect: Inspect): string {
+        return shown(`${this.shownName()}(${this.size})`, [...this], depth, options, inspect);
+    }
+
     private get vector(): dsviper.ValueVector {
         return this[VALUE] as dsviper.ValueVector;
     }
@@ -188,6 +206,10 @@ function setOperand<E>(other: SetOperand<E>): dsviper.InputValue[] | dsviper.Val
 
 /** A set, in sorted order. `remove(e)` throws ViperError when the set does not hold e; `discard(e)` does not. */
 export class SetView<E> extends Sequence<E, dsviper.ValueSet> {
+    override [INSPECT](depth: number, options: InspectOptions, inspect: Inspect): string {
+        return shown(`${this.shownName()}(${this.size})`, new Set(this), depth, options, inspect);
+    }
+
     private get set(): dsviper.ValueSet {
         return this[VALUE] as dsviper.ValueSet;
     }
@@ -284,6 +306,10 @@ export class Fixed<E> extends Sequence<E, dsviper.ValueVec | dsviper.ValueTuple>
  * element at at(column, row), a column by column(index).
  */
 export class Matrix<E> extends View<dsviper.ValueMat> {
+    override [INSPECT](depth: number, options: InspectOptions, inspect: Inspect): string {
+        return shown(this.shownName(), [...this], depth, options, inspect);
+    }
+
     private get mat(): dsviper.ValueMat {
         return this[VALUE] as dsviper.ValueMat;
     }
@@ -341,6 +367,10 @@ export class Matrix<E> extends View<dsviper.ValueMat> {
  * read is; a key is a copy.
  */
 export class Mapping<K, V> extends View<dsviper.ValueMap> {
+    override [INSPECT](depth: number, options: InspectOptions, inspect: Inspect): string {
+        return shown(`${this.shownName()}(${this.size})`, new Map(this.entries()), depth, options, inspect);
+    }
+
     private get map(): dsviper.ValueMap {
         return this[VALUE] as dsviper.ValueMap;
     }
@@ -435,6 +465,10 @@ export class Mapping<K, V> extends View<dsviper.ValueMap> {
  * end; a position the array never created throws ViperError.
  */
 export class Ordered<E> extends View<dsviper.ValueXArray> {
+    override [INSPECT](depth: number, options: InspectOptions, inspect: Inspect): string {
+        return shown(`${this.shownName()}(${this.size})`, [...this], depth, options, inspect);
+    }
+
     private get ordered(): dsviper.ValueXArray {
         return this[VALUE] as dsviper.ValueXArray;
     }
@@ -551,6 +585,13 @@ export class Ordered<E> extends View<dsviper.ValueXArray> {
  * nil optional throws ViperError; `get(fallback)` answers the fallback.
  */
 export class Optional<E> extends View<dsviper.ValueOptional> {
+    override [INSPECT](depth: number, options: InspectOptions, inspect: Inspect): string {
+        if (this.isNil()) {
+            return `${this.shownName()}(nil)`;
+        }
+        return shown(this.shownName(), this.unwrap(), depth, options, inspect, true);
+    }
+
     private get optional(): dsviper.ValueOptional {
         return this[VALUE] as dsviper.ValueOptional;
     }
@@ -585,6 +626,13 @@ export class Optional<E> extends View<dsviper.ValueOptional> {
 
 /** An any. `clear()` empties it; read from a field, it empties that field. */
 export class AnyValue extends View<dsviper.ValueAny> {
+    override [INSPECT](depth: number, options: InspectOptions, inspect: Inspect): string {
+        if (this.isNil()) {
+            return "AnyValue(nil)";
+        }
+        return shown("AnyValue", this.unwrap(), depth, options, inspect, true);
+    }
+
     constructor(value?: unknown) {
         super(value instanceof dsviper.ValueAny ? value : new dsviper.ValueAny(unwrapDeep(value)));
     }
@@ -629,6 +677,10 @@ export class AnyValue extends View<dsviper.ValueAny> {
 
 /** A variant. Reading an alternative it does not hold (`getX()`) throws TypeError; `isX()` asks first. */
 export class Variant<E> extends View<dsviper.ValueVariant> {
+    override [INSPECT](depth: number, options: InspectOptions, inspect: Inspect): string {
+        return shown(this.shownName(), this.unwrap(), depth, options, inspect, true);
+    }
+
     private get variant(): dsviper.ValueVariant {
         return this[VALUE] as dsviper.ValueVariant;
     }
@@ -661,6 +713,10 @@ export class Variant<E> extends View<dsviper.ValueVariant> {
 
 /** A declared container's own name, at the type level only (nothing is emitted): two classes of
  *  one shape (`Vector_of_int8`, `Vector_of_uint8`) are not interchangeable. */
+// The classes a container is an instance of when the model declares no class for its shape.
+const UNDECLARED = new Set(["BoundView", "View", "Sequence", "Vector", "SetView", "Fixed", "Matrix",
+                            "Mapping", "Ordered", "Optional", "Variant"]);
+
 export declare const kind: unique symbol;
 export type Kind<N extends string> = { readonly [kind]: N };
 

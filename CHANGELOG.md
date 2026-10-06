@@ -53,6 +53,13 @@ version as either one.
 
 ## [Unreleased]
 
+### Added
+
+- **`console.log` shows a TypeScript generated object as Node shows its own**: the class and
+  the fields (`StructureS { f_float: 1.5 }`), a container's elements (`Vector_of_uint8(3) [ 1,
+  2, 3 ]`, `Map_of_uint8_to_string(2) { 0 => 'Zero' }`), a key's instance id; it showed the
+  symbol holding the Viper value. `String()` and `toJSON()` are unchanged.
+
 ### Fixed
 
 - A field operation (`union_f_set`, `update_f_map`, `insert_f_xarray`…) takes what the field's
