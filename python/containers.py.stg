@@ -1,5 +1,9 @@
 import "banner.stg"
 
+// The constant of a type's runtime id: the type's name in upper snake case, or with _ID
+// when the name is already that, so that the constant does not take the type's own name.
+id_name(v) ::= <%<v.name;format="usnake"><if(v.nameIsUpperSnake)>_ID<endif>%>
+
 model(m) ::= <<
 <banner(m)>
 
@@ -72,10 +76,10 @@ def _type_AnyConceptKey() -> dsviper.TypeKey: return dsviper.TypeKey(dsviper.Typ
 >>
 
 named(u, m) ::= <<
-<u.concepts:{c|def _type_<u.name>_<c.name>Key() -> dsviper.Type: return dsviper.TypeKey(definitions().check_concept(<u.name;format="snake">.data.<c.name;format="usnake">))};separator="\n">
-<u.clubs:{c|def _type_<u.name>_<c.name>Key() -> dsviper.Type: return dsviper.TypeKey(definitions().check_club(<u.name;format="snake">.data.<c.name;format="usnake">))};separator="\n">
-<u.enumerations:{e|def _type_<u.name>_<e.name>() -> dsviper.Type: return definitions().check_enumeration(<u.name;format="snake">.data.<e.name;format="usnake">)};separator="\n">
-<u.structures:{s|def _type_<u.name>_<s.name>() -> dsviper.Type: return definitions().check_structure(<u.name;format="snake">.data.<s.name;format="usnake">)};separator="\n">
+<u.concepts:{c|def _type_<u.name>_<c.name>Key() -> dsviper.Type: return dsviper.TypeKey(definitions().check_concept(<u.name;format="snake">.data.<id_name(c)>))};separator="\n">
+<u.clubs:{c|def _type_<u.name>_<c.name>Key() -> dsviper.Type: return dsviper.TypeKey(definitions().check_club(<u.name;format="snake">.data.<id_name(c)>))};separator="\n">
+<u.enumerations:{e|def _type_<u.name>_<e.name>() -> dsviper.Type: return definitions().check_enumeration(<u.name;format="snake">.data.<id_name(e)>)};separator="\n">
+<u.structures:{s|def _type_<u.name>_<s.name>() -> dsviper.Type: return definitions().check_structure(<u.name;format="snake">.data.<id_name(s)>)};separator="\n">
 >>
 
 vec(v) ::= <%@functools.cache<\n>def _type<v.typeSuffix>() -> dsviper.Type: return dsviper.<v.viperType>(_type<v.elementTypeSuffix>(), <v.size>)%>

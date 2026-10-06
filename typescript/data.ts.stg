@@ -1,5 +1,9 @@
 import "banner.stg"
 
+// The constant of a type's runtime id: the type's name in upper snake case, or with _ID
+// when the name is already that, so that the constant does not take the type's own name.
+id_name(v) ::= <%<v.name;format="usnake"><if(v.nameIsUpperSnake)>_ID<endif>%>
+
 unit(u) ::= <<
 <banner(u.model)>
 
@@ -37,9 +41,9 @@ register(<[u.concepts:registered_key(), u.clubs:registered_key(), u.enumerations
 
 >>
 
-runtime_id(v) ::= <%export const <v.name;format="usnake"> = dsviper.ValueUUId.create("<v.runtimeId>");%>
-registered(v) ::= <%[<v.name;format="usnake">, <v.name>]%>
-registered_key(v) ::= <%[<v.name;format="usnake">, <v.name>Key]%>
+runtime_id(v) ::= <%export const <id_name(v)> = dsviper.ValueUUId.create("<v.runtimeId>");%>
+registered(v) ::= <%[<id_name(v)>, <v.name>]%>
+registered_key(v) ::= <%[<id_name(v)>, <v.name>Key]%>
 
 concept(c, u) ::= <<
 let <c.name;format="snake">Concept: dsviper.TypeConcept | undefined;
@@ -52,7 +56,7 @@ export class <c.name>Key extends Key {
     declare private readonly <c.name;format="snake">KeyBrand: never;
 
     static concept(): dsviper.TypeConcept {
-        return (<c.name;format="snake">Concept ??= definitions().checkConcept(<c.name;format="usnake">));
+        return (<c.name;format="snake">Concept ??= definitions().checkConcept(<id_name(c)>));
     }
 
     static type(): dsviper.TypeKey {
@@ -170,7 +174,7 @@ export class <c.name>Key extends Key {
     declare private readonly <c.name;format="snake">KeyBrand: never;
 
     static club(): dsviper.TypeClub {
-        return (<c.name;format="snake">Club ??= definitions().checkClub(<c.name;format="usnake">));
+        return (<c.name;format="snake">Club ??= definitions().checkClub(<id_name(c)>));
     }
 
     static type(): dsviper.TypeKey {
@@ -273,7 +277,7 @@ export const <e.name> = {
 <e.members:enumeration_member();separator=",\n">,
 
     type(): dsviper.TypeEnumeration {
-        return (<e.name;format="snake">Type ??= definitions().checkEnumeration(<e.name;format="usnake">));
+        return (<e.name;format="snake">Type ??= definitions().checkEnumeration(<id_name(e)>));
     },
 
     /** The case a Viper value of exactly this enumeration holds; another type throws TypeError. */
@@ -322,7 +326,7 @@ export class <s.name> extends Proxy\<dsviper.ValueStructure> {
     declare private readonly <s.name;format="snake">Brand: never;
 
     static type(): dsviper.TypeStructure {
-        return (<s.name;format="snake">Type ??= definitions().checkStructure(<s.name;format="usnake">));
+        return (<s.name;format="snake">Type ??= definitions().checkStructure(<id_name(s)>));
     }
 
     constructor(value?: dsviper.ValueStructure | <s.name>Init) {

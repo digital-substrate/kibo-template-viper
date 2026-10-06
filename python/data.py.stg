@@ -1,5 +1,9 @@
 import "banner.stg"
 
+// The constant of a type's runtime id: the type's name in upper snake case, or with _ID
+// when the name is already that, so that the constant does not take the type's own name.
+id_name(v) ::= <%<v.name;format="usnake"><if(v.nameIsUpperSnake)>_ID<endif>%>
+
 unit(u) ::= <<
 <banner(u.model)>
 
@@ -45,10 +49,10 @@ __all__ = [<[[u.concepts, u.clubs]:exported_key(), [u.enumerations, u.structures
 
 >>
 
-runtime_id(v) ::= <%<v.name;format="usnake">: dsviper.ValueUUId = dsviper.ValueUUId.create("<v.runtimeId>")%>
+runtime_id(v) ::= <%<id_name(v)>: dsviper.ValueUUId = dsviper.ValueUUId.create("<v.runtimeId>")%>
 exported(v) ::= <%"<v.name>"%>
 exported_key(v) ::= <%"<v.name>Key"%>
-exported_id(v) ::= <%"<v.name;format="usnake">"%>
+exported_id(v) ::= <%"<id_name(v)>"%>
 
 concept(c, u) ::= <<
 <key(c, u, "concept")>
@@ -86,7 +90,7 @@ class <c.name>Key(Key):
     @classmethod
     @functools.cache
     def club(cls) -> dsviper.TypeClub:
-        return definitions().check_club(<c.name;format="usnake">)
+        return definitions().check_club(<id_name(c)>)
 
     @classmethod
     @functools.cache
@@ -161,7 +165,7 @@ class <c.name>Key(Key):
     @classmethod
     @functools.cache
     def concept(cls) -> dsviper.TypeConcept:
-        return definitions().check_<kind>(<c.name;format="usnake">)
+        return definitions().check_<kind>(<id_name(c)>)
 
     @classmethod
     @functools.cache
@@ -240,7 +244,7 @@ class <e.name>(enum.Enum):
     @classmethod
     @functools.cache
     def type(cls) -> dsviper.TypeEnumeration:
-        return definitions().check_enumeration(<e.name;format="usnake">)
+        return definitions().check_enumeration(<id_name(e)>)
 
     @classmethod
     def from_str(cls, name: str) -> <e.name>:
@@ -318,7 +322,7 @@ class <s.name>(Proxy[dsviper.ValueStructure]):
     @classmethod
     @functools.cache
     def type(cls) -> dsviper.TypeStructure:
-        return definitions().check_structure(<s.name;format="usnake">)
+        return definitions().check_structure(<id_name(s)>)
 
     def __init__(_self, _source: dsviper.ValueStructure | dict[str, typing.Any] | None = None, /, *,
                  <s.fields:{f|<f.name;format="snake">: <input_hint(f)> | NotGiven = NOT_GIVEN};separator=",\n">) -> None:
@@ -354,8 +358,8 @@ repr_field(f) ::= <%<f.name;format="snake">={self.<f.name;format="snake">}%>
 hint(f) ::= <%<f.bindingType.annotation>%>
 input_hint(f) ::= <%<f.bindingType.input>%>
 
-registered(v) ::= <%<v.name;format="usnake">: <v.name>%>
-registered_key(v) ::= <%<v.name;format="usnake">: <v.name>Key%>
+registered(v) ::= <%<id_name(v)>: <v.name>%>
+registered_key(v) ::= <%<id_name(v)>: <v.name>Key%>
 
 club_to(cm, c) ::= <<
     def to_<cm.asNameInNamespace;format="snake">_key(self) -> <cm.bindingInNamespace> | None:
