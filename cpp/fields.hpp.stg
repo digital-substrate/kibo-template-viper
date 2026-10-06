@@ -2,7 +2,8 @@ import "banner.stg"
 
 unit(u) ::= <<
 // <u.name> fields -- the name and path of every field of its structures, as constants, for
-// code that handles them through the dynamic API: `fields::Colour::r` completes, `"r"` does not.
+// code that handles them through the dynamic API: a constant completes and is checked by the
+// compiler, a string literal is not.
 //
 <banner(u.model)>
 
