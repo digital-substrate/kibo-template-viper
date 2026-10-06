@@ -44,14 +44,14 @@ export class <opsClass(a, s)> extends AttachmentProxy\<<generics(a, s)>\> {
 
 field(sf, s) ::= <<
 set<sf.name;format="uf">(mutating: Mutating, key: <key(s)>, value: <sf.bindingType.inputQualified>): void {
-    this.updateField(mutating, key, "<sf.name>", value);
+    this.updateField(mutating, key, "<sf.dsmName>", value);
 }<if(sf.field.isSet)>
 
-<set_ops(sf.field, s, {"<sf.name>"}, {<sf.name;format="uf">}, sf.name)><elseif(sf.field.isMap)>
+<set_ops(sf.field, s, {"<sf.dsmName>"}, {<sf.name;format="uf">}, sf.name)><elseif(sf.field.isMap)>
 
-<map_ops(sf.field, s, {"<sf.name>"}, {<sf.name;format="uf">}, sf.name)><elseif(sf.field.isXArray)>
+<map_ops(sf.field, s, {"<sf.dsmName>"}, {<sf.name;format="uf">}, sf.name)><elseif(sf.field.isXArray)>
 
-<xarray_ops(sf.field, s, {"<sf.name>"}, {<sf.name;format="uf">}, sf.name)><endif>
+<xarray_ops(sf.field, s, {"<sf.dsmName>"}, {<sf.name;format="uf">}, sf.name)><endif>
 >>
 
 document(a, s) ::= <%<if(a.documentType.field.isSet)><set_ops(a.documentType.field, s, "undefined", "", false)><elseif(a.documentType.field.isMap)><map_ops(a.documentType.field, s, "undefined", "", false)><elseif(a.documentType.field.isXArray)><xarray_ops(a.documentType.field, s, "undefined", "", false)><endif>%>

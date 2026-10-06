@@ -55,7 +55,7 @@ void write(Viper::StaticWriter::Writer & w, <e.name> value) {
 <e.members:{m|<m:enumeration_write(e, i0)>};separator="\n">
         default:
             throw Viper::TypeErrors::invalidEnumerationIndex(
-                "<u.name>", "<e.name>", __FUNCTION__, static_cast\<std::uint8_t>(value));
+                "<u.dsmName>", "<e.dsmName>", __FUNCTION__, static_cast\<std::uint8_t>(value));
     }
 }
 
@@ -63,7 +63,7 @@ void write(Viper::StaticWriter::Writer & w, <e.name> value) {
     switch (auto const index{r.streamReading->readUInt8()}) {
 <e.members:{m|<m:enumeration_read(e, i0)>};separator="\n">
         default:
-            throw Viper::TypeErrors::invalidEnumerationIndex("<u.name>", "<e.name>", __FUNCTION__, index);
+            throw Viper::TypeErrors::invalidEnumerationIndex("<u.dsmName>", "<e.dsmName>", __FUNCTION__, index);
     }
 }
 

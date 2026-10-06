@@ -7,7 +7,7 @@ class Pool:
 
     __slots__ = ("_funcs",)
 
-    NAME = "<p.name>"
+    NAME = "<p.dsmName>"
     UUID = dsviper.ValueUUId.create("<p.uuid>")
 
     def __init__(self, pool: dsviper.FunctionPool):
@@ -49,7 +49,7 @@ class Pool:
 
     __slots__ = ("_funcs",)
 
-    NAME = "<p.name>"
+    NAME = "<p.dsmName>"
     UUID = dsviper.ValueUUId.create("<p.uuid>")
 
     def __init__(self, pool: dsviper.AttachmentFunctionPool):
@@ -131,9 +131,9 @@ parameter(a) ::= <%<a.name;format="snake">: <hint(a.bindingType)>%>
 ret(f) ::= <%<if(f.isVoid)>None<else><hint(f.returnBindingType)><endif>%>
 argument(a) ::= <%<if(a.bindingType.useProxy)>_unwrap(<a.name;format="snake">)<else><a.name;format="snake"><endif>%>
 
-call(f) ::= <%<if(f.isVoid)>_self._funcs["<f.name>"](<f.parameters:argument();separator=", ">)<else>return <wrap(f)>_self._funcs["<f.name>"](<f.parameters:argument();separator=", ">)<unwrap(f)><endif>%>
+call(f) ::= <%<if(f.isVoid)>_self._funcs["<f.dsmName>"](<f.parameters:argument();separator=", ">)<else>return <wrap(f)>_self._funcs["<f.dsmName>"](<f.parameters:argument();separator=", ">)<unwrap(f)><endif>%>
 attachment_call(f) ::= <%<attachment_invoke(f, {attachment_<f.interfaceType;format="snake">})>%>
-attachment_invoke(f, context) ::= <%<if(f.isVoid)>_self._funcs["<f.name>"](<context><if(f.parameters)>, <endif><f.parameters:argument();separator=", ">)<else>return <wrap(f)>_self._funcs["<f.name>"](<context><if(f.parameters)>, <endif><f.parameters:argument();separator=", ">)<unwrap(f)><endif>%>
+attachment_invoke(f, context) ::= <%<if(f.isVoid)>_self._funcs["<f.dsmName>"](<context><if(f.parameters)>, <endif><f.parameters:argument();separator=", ">)<else>return <wrap(f)>_self._funcs["<f.dsmName>"](<context><if(f.parameters)>, <endif><f.parameters:argument();separator=", ">)<unwrap(f)><endif>%>
 wrap(f) ::= <%_cast("<ret(f)>", _wrap(%>
 unwrap(f) ::= <%))%>
 

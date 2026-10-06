@@ -64,7 +64,7 @@ import type * as containers from "../containers.js";
 import { AnyConceptKey, type AnyValue, unwrap, wrap } from "../_codegen/registry.js";
 <p.dependencies.functions:{d|import * as <d.name;format="snake"> from "../<d.name;format="snake">/data.js";};separator="\n">
 
-export const NAME = "<p.name>";
+export const NAME = "<p.dsmName>";
 export const UUID = dsviper.ValueUUId.create("<p.uuid>");
 >>
 
@@ -84,8 +84,8 @@ parameter(a) ::= <%<a.name;format="lf">: <a.bindingType.annotation>%>
 ret(f) ::= <%<if(f.isVoid)>void<else><f.returnBindingType.annotation><endif>%>
 argument(a) ::= <%unwrap(<a.name;format="lf">)%>
 
-call(f) ::= <%<if(f.isVoid)>this.service.functionPoolFunc(NAME, "<f.name>").call(<f.parameters:argument();separator=", ">);<else>return wrap(this.service.functionPoolFunc(NAME, "<f.name>").call(<f.parameters:argument();separator=", ">));<endif>%>
-attachment_call(f) ::= <%<if(f.isVoid)>this.service.attachmentFunctionPoolFunc(NAME, "<f.name>").call(state<if(f.parameters)>, <endif><f.parameters:argument();separator=", ">);<else>return wrap(this.service.attachmentFunctionPoolFunc(NAME, "<f.name>").call(state<if(f.parameters)>, <endif><f.parameters:argument();separator=", ">));<endif>%>
+call(f) ::= <%<if(f.isVoid)>this.service.functionPoolFunc(NAME, "<f.dsmName>").call(<f.parameters:argument();separator=", ">);<else>return wrap(this.service.functionPoolFunc(NAME, "<f.dsmName>").call(<f.parameters:argument();separator=", ">));<endif>%>
+attachment_call(f) ::= <%<if(f.isVoid)>this.service.attachmentFunctionPoolFunc(NAME, "<f.dsmName>").call(state<if(f.parameters)>, <endif><f.parameters:argument();separator=", ">);<else>return wrap(this.service.attachmentFunctionPoolFunc(NAME, "<f.dsmName>").call(state<if(f.parameters)>, <endif><f.parameters:argument();separator=", ">));<endif>%>
 
 doc(f) ::= <<
 <if(f.hasDocumentation)>    /** <f.documentation;format="comment"> */

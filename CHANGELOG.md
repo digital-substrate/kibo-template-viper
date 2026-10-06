@@ -51,6 +51,26 @@ version as either one.
 
 ## [Unreleased]
 
+### Fixed
+
+- A namespace with types and no concept registers them: Python and TypeScript wrote a malformed
+  `register(` line.
+- A type already in upper snake case (`RGB`, `E`) keeps its name; its runtime-id constant takes
+  `_ID` (`RGB_ID`). TypeScript did not compile, Python failed at import.
+- A field or a pool parameter named like a name the generated body uses (`self`, `source`,
+  `dict`, `isinstance`, `super`, `dsviper`, `typing`) no longer breaks or changes what a Python
+  constructor or pool function does: those bodies use only names no DSM name can take.
+
+### Added
+
+- `reserved` in `features.json`: the names this pack's code takes, per target and per family of
+  names — the proxy's members for a field, the root modules for a namespace or a pool. A DSM
+  name meeting one stops the generation, saying how to spell it otherwise for that target.
+- `validation` in `features.json`, run by kibo-project once a target is written: Python imported,
+  every structure built (`python/validate.py`) and `mypy --strict`; TypeScript `tsc --noEmit`.
+- Every name sent to the runtime is written from the Template Model's `dsmName`: a target may
+  spell a DSM name otherwise (`[names.<target>.rename]`), the wire keeps the DSM name.
+
 ## [2.0.2] - 2026-10-05
 
 ### Fixed

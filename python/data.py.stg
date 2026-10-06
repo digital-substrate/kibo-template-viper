@@ -108,7 +108,7 @@ class <c.name>Key(Key):
             return
         if isinstance(key, (dsviper.ValueUUId, str)):
             if isinstance(runtime_id, NotGiven):
-                raise TypeError("an instance identifier needs the runtime id of a member of <u.name>::<c.name>")
+                raise TypeError("an instance identifier needs the runtime id of a member of <u.dsmName>::<c.dsmName>")
             key = dsviper.ValueKey.create(definitions().check_concept(dsviper.ValueUUId(runtime_id)), key)
         elif not isinstance(runtime_id, NotGiven):
             raise TypeError("a key carries its runtime id")
@@ -119,7 +119,7 @@ class <c.name>Key(Key):
             super().__init__(value)
             return
         if not self._designates_member(value.type_concept()):
-            raise TypeError("this key does not designate a member of <u.name>::<c.name>")
+            raise TypeError("this key does not designate a member of <u.dsmName>::<c.dsmName>")
         super().__init__(value.to_club_key(self.club()))
 
     def instance_id(self) -> dsviper.ValueUUId:
@@ -144,7 +144,7 @@ class <c.name>Key(Key):
         return any(concept.is_member(member) for member in cls.club().members())
 
     def description(self) -> str:
-        return f"{self._value.instance_id().encoded()}:<u.name>::<c.name>Key{self._held()}"
+        return f"{self._value.instance_id().encoded()}:<u.dsmName>::<c.dsmName>Key{self._held()}"
 
     def is_known(self) -> bool:
         return is_known(self._value)
@@ -179,15 +179,15 @@ class <c.name>Key(Key):
         from it. A key of another concept is converted with its to_parent_key() or
         to_any_concept_key(), and back with from_any_concept_key()."""
         if isinstance(identifier, <c.name>Key):
-            raise TypeError(f"{identifier!r} is a <u.name>::<c.name>Key already: use it as it is")
+            raise TypeError(f"{identifier!r} is a <u.dsmName>::<c.dsmName>Key already: use it as it is")
         if isinstance(identifier, Proxy):
-            raise TypeError(f"{identifier!r} is not a <u.name>::<c.name>Key: "
+            raise TypeError(f"{identifier!r} is not a <u.dsmName>::<c.dsmName>Key: "
                             "widen it with to_parent_key(), or narrow it with from_any_concept_key()")
         if isinstance(identifier, dsviper.ValueKey):
             if not isinstance(runtime_id, NotGiven):
                 raise TypeError("a key carries its runtime id")
             if identifier.type() != self.type():
-                raise TypeError(f"this value is not a <u.name>::<c.name>Key: {identifier.detail_type_representation()}")
+                raise TypeError(f"this value is not a <u.dsmName>::<c.dsmName>Key: {identifier.detail_type_representation()}")
             super().__init__(identifier)
         elif isinstance(identifier, NotGiven):
             if not isinstance(runtime_id, NotGiven):
@@ -200,7 +200,7 @@ class <c.name>Key(Key):
             concept = definitions().check_concept(dsviper.ValueUUId(runtime_id))
             key = dsviper.ValueKey.create(concept, identifier)
             if not key.is_member(self.concept()):
-                raise TypeError(f"{concept.representation()} is not a <u.name>::<c.name>")
+                raise TypeError(f"{concept.representation()} is not a <u.dsmName>::<c.dsmName>")
             super().__init__(key.to_member_key(self.concept()))
         else:
             raise TypeError(f"{identifier!r} is not an instance identifier")
@@ -227,7 +227,7 @@ class <c.name>Key(Key):
         return cls(value.to_member_key(cls.concept())) if value.is_member(cls.concept()) else None
 
     def description(self) -> str:
-        return f"{self._value.instance_id().encoded()}:<u.name>::<c.name>Key{self._held()}"
+        return f"{self._value.instance_id().encoded()}:<u.dsmName>::<c.dsmName>Key{self._held()}"
 
     def is_known(self) -> bool:
         return is_known(self._value)
@@ -259,7 +259,7 @@ class <e.name>(enum.Enum):
     def _missing_(cls, value: object) -> typing.Any:
         if isinstance(value, dsviper.ValueEnumeration):
             if value.type_enumeration() != cls.type():
-                raise TypeError(f"{value!r} is not a case of <e.name>")
+                raise TypeError(f"{value!r} is not a case of <e.dsmName>")
             return cls(value.name())
         if isinstance(value, int) and not isinstance(value, bool):
             cases = list(cls)
@@ -268,7 +268,7 @@ class <e.name>(enum.Enum):
             return None
         if isinstance(value, str):
             return None
-        raise TypeError(f"{value!r} is neither a case of <e.name> nor an index")
+        raise TypeError(f"{value!r} is neither a case of <e.dsmName> nor an index")
 
     def index(self) -> int:
         return list(type(self)).index(self)
@@ -329,14 +329,14 @@ class <s.name>(Proxy[dsviper.ValueStructure]):
         """Fields by keyword, in snake_case; or a source: a Viper ValueStructure of this
         type, boxed and not copied, or a dict keyed by the DSM field names, as the runtime
         takes it."""
-        _init_structure(_self, _self.type(), _source, "<u.name>::<s.name>")
+        _init_structure(_self, _self.type(), _source, "<u.dsmName>::<s.dsmName>")
         <s.fields:{f|if not _builtins.isinstance(<f.name;format="snake">, _NotGiven):
     _self.<f.name;format="snake"> = <f.name;format="snake">};separator="\n">
 
 <s.fields:field(s);separator="\n\n">
 
     def __repr__(self) -> str:
-        return f"<u.name>::<s.name>(<s.fields:repr_field();separator=", ">)"
+        return f"<u.dsmName>::<s.dsmName>(<s.fields:repr_field();separator=", ">)"
 >>
 
 field(f, s) ::= <<
@@ -351,8 +351,8 @@ field(f, s) ::= <<
         <write(f)>
 >>
 
-read(f) ::= <%<if(f.bindingType.useProxy)>return typing.cast("<hint(f)>", wrap(self._value.at("<f.name>", encoded=False)))<else>return typing.cast("<hint(f)>", self._value.at("<f.name>"))<endif>%>
-write(f) ::= <%self._value.set("<f.name>", <if(f.bindingType.useProxy)>unwrap(value)<else>value<endif>)%>
+read(f) ::= <%<if(f.bindingType.useProxy)>return typing.cast("<hint(f)>", wrap(self._value.at("<f.dsmName>", encoded=False)))<else>return typing.cast("<hint(f)>", self._value.at("<f.dsmName>"))<endif>%>
+write(f) ::= <%self._value.set("<f.dsmName>", <if(f.bindingType.useProxy)>unwrap(value)<else>value<endif>)%>
 repr_field(f) ::= <%<f.name;format="snake">={self.<f.name;format="snake">}%>
 
 hint(f) ::= <%<f.bindingType.annotation>%>

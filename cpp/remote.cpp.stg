@@ -51,10 +51,10 @@ bool Remote::isAvailable() const {
 remote_call(f, p) ::= <<
 <remote_head(f)>
 <if(f.isVoid)>
-    _service->call(poolId, "<f.name>", {<f.parameters:{a|<p.model.namespace>::codec::encode(<a.name>)};separator=", ">});
+    _service->call(poolId, "<f.dsmName>", {<f.parameters:{a|<p.model.namespace>::codec::encode(<a.name>)};separator=", ">});
 <else>
     <remote_decode(f, p)>
-        _service->call(poolId, "<f.name>", {<f.parameters:{a|<p.model.namespace>::codec::encode(<a.name>)};separator=", ">}));
+        _service->call(poolId, "<f.dsmName>", {<f.parameters:{a|<p.model.namespace>::codec::encode(<a.name>)};separator=", ">}));
 <endif>
 }
 >>
@@ -77,10 +77,10 @@ bool Remote::isAvailable() const {
 attachment_remote_call(f, p) ::= <<
 <attachment_remote_head(f)>
 <if(f.isVoid)>
-    _service->call(attachment<f.interfaceType>, poolId, "<f.name>", {<f.parameters:{a|<p.model.namespace>::codec::encode(<a.name>)};separator=", ">});
+    _service->call(attachment<f.interfaceType>, poolId, "<f.dsmName>", {<f.parameters:{a|<p.model.namespace>::codec::encode(<a.name>)};separator=", ">});
 <else>
     <remote_decode(f, p)>
-        _service->call(attachment<f.interfaceType>, poolId, "<f.name>", {<f.parameters:{a|<p.model.namespace>::codec::encode(<a.name>)};separator=", ">}));
+        _service->call(attachment<f.interfaceType>, poolId, "<f.dsmName>", {<f.parameters:{a|<p.model.namespace>::codec::encode(<a.name>)};separator=", ">}));
 <endif>
 }
 >>

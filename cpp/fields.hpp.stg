@@ -31,6 +31,6 @@ namespace <u.model.namespace>::<u.name;format="lsc">::fields::<s.name> {
 } // namespace <u.model.namespace>::<u.name;format="lsc">::fields::<s.name>
 >>
 
-name(f) ::= <<inline constexpr std::string_view <f.name>{"<f.name>"};>>
+name(f) ::= <<inline constexpr std::string_view <f.name>{"<f.dsmName>"};>>
 
 path(f) ::= <<std::shared_ptr\<Viper::Path const> const & <f.name>Path();>>

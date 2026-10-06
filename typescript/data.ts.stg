@@ -197,7 +197,7 @@ export class <c.name>Key extends Key {
         }
         if (!(key instanceof Proxy) && !(key instanceof dsviper.ValueKey)) {
             if (runtimeId === undefined) {
-                throw new TypeError("an instance identifier needs the runtime id of a member of <u.name>::<c.name>");
+                throw new TypeError("an instance identifier needs the runtime id of a member of <u.dsmName>::<c.dsmName>");
             }
             key = dsviper.ValueKey.create(definitions().checkConcept(new dsviper.ValueUUId(runtimeId)), key);
         } else if (runtimeId !== undefined) {
@@ -209,7 +209,7 @@ export class <c.name>Key extends Key {
             return;
         }
         if (!<c.name>Key.designatesMember(value.typeConcept())) {
-            throw new TypeError("this key does not designate a member of <u.name>::<c.name>");
+            throw new TypeError("this key does not designate a member of <u.dsmName>::<c.dsmName>");
         }
         super(value.toClubKey(<c.name>Key.club()));
     }
@@ -335,7 +335,7 @@ export class <s.name> extends Proxy\<dsviper.ValueStructure> {
         }
         if (value instanceof dsviper.ValueStructure) {
             if (!value.type().equals(<s.name>.type())) {
-                throw new TypeError("this value is not a <u.name>::<s.name>");
+                throw new TypeError("this value is not a <u.dsmName>::<s.dsmName>");
             }
             super(value);
             return;
@@ -382,8 +382,8 @@ field(f, s) ::= <<
     }
 >>
 
-read(f) ::= <%<if(f.bindingType.useProxy)>return wrap(this.unwrapValue().at("<f.name>", false));<else>return this.unwrapValue().at("<f.name>") as <f.bindingType.annotation>;<endif>%>
-write(f) ::= <%setField(this.unwrapValue(), "<f.name>", value);%>
+read(f) ::= <%<if(f.bindingType.useProxy)>return wrap(this.unwrapValue().at("<f.dsmName>", false));<else>return this.unwrapValue().at("<f.dsmName>") as <f.bindingType.annotation>;<endif>%>
+write(f) ::= <%setField(this.unwrapValue(), "<f.dsmName>", value);%>
 
 descendant(d, c) ::= <<
     to<d.asNameInNamespace>Key(): <d.bindingInNamespace> | undefined {

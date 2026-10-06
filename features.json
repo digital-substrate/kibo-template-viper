@@ -200,17 +200,25 @@
   },
   "reserved": {
     "_comment": [
-      "The names this pack's own code takes in each target, beside the names of the model: the",
-      "members every generated class inherits from the runtime's proxy, and the modules at the",
-      "package's root. A tool driving kibo passes them on (kibo --reserve), and a DSM name spelled",
-      "as one of them takes a trailing underscore instead of taking its place: a field wrap_value",
-      "would otherwise mask the proxy's method, a namespace Containers replace the containers module."
+      "The names this pack's own code takes in each target, per family of names: the members",
+      "every generated class inherits from the runtime's proxy, which a field would mask, and the",
+      "modules at the package's root, which a namespace or a pool would replace. A tool driving",
+      "kibo passes them on (kibo --reserve family:name); a DSM name meeting one stops the",
+      "generation, saying how to spell it otherwise for that target ([names.<target>.rename])."
     ],
-    "python": ["wrap_value", "unwrap_value", "copy", "type",
-               "containers", "definitions", "resources", "pools"],
-    "typescript": ["wrapValue", "unwrapValue", "compare", "equals", "hashKey", "toJSON", "toString",
-                   "copy", "type", "constructor",
-                   "containers", "definitions", "index", "pools", "resources"]
+    "python": {
+      "field": ["wrap_value", "unwrap_value", "copy", "type"],
+      "namespace": ["containers", "definitions", "resources", "pools"],
+      "pool": ["containers", "definitions", "resources", "pools"]
+    },
+    "typescript": {
+      "field": ["wrapValue", "unwrapValue", "compare", "equals", "hashKey", "toJSON", "toString",
+                "copy", "type", "constructor"],
+      "attachment": ["constructor"],
+      "function": ["constructor"],
+      "namespace": ["containers", "definitions", "index", "pools", "resources"],
+      "pool": ["containers", "definitions", "index", "pools", "resources"]
+    }
   },
   "validation": {
     "_comment": [

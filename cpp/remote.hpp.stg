@@ -7,7 +7,7 @@ namespace <p.model.namespace>::<p.name;format="lsc"> {
 
 #ifndef <p.guard.pool>_IDENTITY
 #define <p.guard.pool>_IDENTITY
-inline constexpr std::string_view poolName{"<p.name>"};
+inline constexpr std::string_view poolName{"<p.dsmName>"};
 inline Viper::UUId const poolId{Viper::UUId::parse("<p.uuid>")};
 #endif
 
@@ -26,7 +26,7 @@ namespace <p.model.namespace>::<p.name;format="lsc"> {
 
 #ifndef <p.guard.pool>_IDENTITY
 #define <p.guard.pool>_IDENTITY
-inline constexpr std::string_view poolName{"<p.name>"};
+inline constexpr std::string_view poolName{"<p.dsmName>"};
 inline Viper::UUId const poolId{Viper::UUId::parse("<p.uuid>")};
 #endif
 
