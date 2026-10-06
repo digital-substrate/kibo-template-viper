@@ -5,6 +5,7 @@ unit(u) ::= <<
 
 from __future__ import annotations
 
+import builtins as _builtins
 import enum
 import functools
 import typing
@@ -13,7 +14,8 @@ import dsviper
 
 from .. import definitions
 from .._codegen import NOT_GIVEN, AnyConceptKey, AnyValue, Key, NotGiven, Proxy, is_known, register, unwrap, wrap
-from .._codegen.container import _unwrap_deep
+from .._codegen import NotGiven as _NotGiven
+from .._codegen.container import _init_structure
 
 if typing.TYPE_CHECKING:
     from .. import containers
@@ -318,22 +320,14 @@ class <s.name>(Proxy[dsviper.ValueStructure]):
     def type(cls) -> dsviper.TypeStructure:
         return definitions().check_structure(<s.name;format="usnake">)
 
-    def __init__(self, source: dsviper.ValueStructure | dict[str, typing.Any] | None = None, /, *,
+    def __init__(_self, _source: dsviper.ValueStructure | dict[str, typing.Any] | None = None, /, *,
                  <s.fields:{f|<f.name;format="snake">: <input_hint(f)> | NotGiven = NOT_GIVEN};separator=",\n">) -> None:
         """Fields by keyword, in snake_case; or a source: a Viper ValueStructure of this
         type, boxed and not copied, or a dict keyed by the DSM field names, as the runtime
         takes it."""
-        if source is None:
-            source = dsviper.ValueStructure(self.type())
-        elif isinstance(source, dict):
-            source = dsviper.ValueStructure(self.type(), _unwrap_deep(source))
-        elif isinstance(source, Proxy):
-            raise TypeError(f"{source!r} is a generated value, not a source: copy() it, or pass a dict or a Viper value")
-        elif not isinstance(source, dsviper.ValueStructure) or source.type() != self.type():
-            raise TypeError("this value is not a <u.name>::<s.name>")
-        super().__init__(source)
-        <s.fields:{f|if not isinstance(<f.name;format="snake">, NotGiven):
-    self.<f.name;format="snake"> = <f.name;format="snake">};separator="\n">
+        _init_structure(_self, _self.type(), _source, "<u.name>::<s.name>")
+        <s.fields:{f|if not _builtins.isinstance(<f.name;format="snake">, _NotGiven):
+    _self.<f.name;format="snake"> = <f.name;format="snake">};separator="\n">
 
 <s.fields:field(s);separator="\n\n">
 

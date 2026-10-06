@@ -101,7 +101,10 @@ import typing
 
 import dsviper
 
-from .._codegen import AnyConceptKey, AnyValue, unwrap, wrap
+from typing import cast as _cast
+
+from .._codegen import AnyConceptKey, AnyValue
+from .._codegen import unwrap as _unwrap, wrap as _wrap
 
 if typing.TYPE_CHECKING:
     from .. import containers
@@ -110,7 +113,7 @@ if typing.TYPE_CHECKING:
 >>
 
 function(f) ::= <<
-    def <f.name;format="snake">(self<if(f.parameters)>, <f.parameters:parameter();separator=", "><endif>) -> <ret(f)>:
+    def <f.name;format="snake">(_self<if(f.parameters)>, <f.parameters:parameter();separator=", "><endif>) -> <ret(f)>:
 <doc(f)>        <call(f)>
 >>
 
@@ -120,18 +123,18 @@ doc(f) ::= <<
 >>
 
 attachment_function(f) ::= <<
-    def <f.name;format="snake">(self, attachment_<f.interfaceType;format="snake">: dsviper.Attachment<f.interfaceType><if(f.parameters)>, <f.parameters:parameter();separator=", "><endif>) -> <ret(f)>:
+    def <f.name;format="snake">(_self, attachment_<f.interfaceType;format="snake">: dsviper.Attachment<f.interfaceType><if(f.parameters)>, <f.parameters:parameter();separator=", "><endif>) -> <ret(f)>:
 <doc(f)>        <attachment_call(f)>
 >>
 
 parameter(a) ::= <%<a.name;format="snake">: <hint(a.bindingType)>%>
 ret(f) ::= <%<if(f.isVoid)>None<else><hint(f.returnBindingType)><endif>%>
-argument(a) ::= <%<if(a.bindingType.useProxy)>unwrap(<a.name;format="snake">)<else><a.name;format="snake"><endif>%>
+argument(a) ::= <%<if(a.bindingType.useProxy)>_unwrap(<a.name;format="snake">)<else><a.name;format="snake"><endif>%>
 
-call(f) ::= <%<if(f.isVoid)>self._funcs["<f.name>"](<f.parameters:argument();separator=", ">)<else>return <wrap(f)>self._funcs["<f.name>"](<f.parameters:argument();separator=", ">)<unwrap(f)><endif>%>
+call(f) ::= <%<if(f.isVoid)>_self._funcs["<f.name>"](<f.parameters:argument();separator=", ">)<else>return <wrap(f)>_self._funcs["<f.name>"](<f.parameters:argument();separator=", ">)<unwrap(f)><endif>%>
 attachment_call(f) ::= <%<attachment_invoke(f, {attachment_<f.interfaceType;format="snake">})>%>
-attachment_invoke(f, context) ::= <%<if(f.isVoid)>self._funcs["<f.name>"](<context><if(f.parameters)>, <endif><f.parameters:argument();separator=", ">)<else>return <wrap(f)>self._funcs["<f.name>"](<context><if(f.parameters)>, <endif><f.parameters:argument();separator=", ">)<unwrap(f)><endif>%>
-wrap(f) ::= <%typing.cast("<ret(f)>", wrap(%>
+attachment_invoke(f, context) ::= <%<if(f.isVoid)>_self._funcs["<f.name>"](<context><if(f.parameters)>, <endif><f.parameters:argument();separator=", ">)<else>return <wrap(f)>_self._funcs["<f.name>"](<context><if(f.parameters)>, <endif><f.parameters:argument();separator=", ">)<unwrap(f)><endif>%>
+wrap(f) ::= <%_cast("<ret(f)>", _wrap(%>
 unwrap(f) ::= <%))%>
 
 hint(b) ::= <%<b.annotation>%>

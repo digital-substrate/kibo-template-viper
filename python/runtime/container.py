@@ -7,7 +7,7 @@ import typing
 
 import dsviper
 
-from .proxy import _adopt, unwrap, wrap
+from .proxy import Proxy, _adopt, unwrap, wrap
 
 E = typing.TypeVar("E")
 K = typing.TypeVar("K")
@@ -613,6 +613,19 @@ _DECLARED: dict[str, type] = {}
 
 def _holds(container: typing.Any, element: object) -> bool:
     return _unwrap_deep(element) in container
+
+
+def _init_structure(proxy: Proxy[dsviper.ValueStructure], type_: dsviper.TypeStructure,
+                    source: dsviper.ValueStructure | dict[str, typing.Any] | None, name: str) -> None:
+    if source is None:
+        source = dsviper.ValueStructure(type_)
+    elif isinstance(source, dict):
+        source = dsviper.ValueStructure(type_, _unwrap_deep(source))
+    elif isinstance(source, Proxy):
+        raise TypeError(f"{source!r} is a generated value, not a source: copy() it, or pass a dict or a Viper value")
+    elif not isinstance(source, dsviper.ValueStructure) or source.type() != type_:
+        raise TypeError(f"this value is not a {name}")
+    Proxy.__init__(proxy, source)
 
 
 def _unwrap_deep(value: typing.Any) -> typing.Any:
