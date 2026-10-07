@@ -7,7 +7,7 @@ model(m) ::= <<
  *
  * Each DSM namespace is a namespace of this module holding its structures, enumerations and
  * keys: <m.nameSpaces:{u|`<u.name;format="snake">`};separator=", ">. Its attachments, rendered with the
- * Attachments feature, are imported by their path, `<m.namespace;format="snake">/<unit>/attachments`.
+ * Attachments feature, are imported by their path, `<m.namespace;format="snake">/\<unit>/attachments`.
  * One class per container shape the model uses, in a structure, an attachment or a pool, is
  * exported here; another shape is built with the runtime, from Viper values:
  * `dsviper.Value.create(new dsviper.TypeSet(<if(m.concepts)><first(m.concepts):{c|<c.namespace;format="snake">.<c.name>Key}><else>Cls<endif>.type()), keys.map((k) => k.unwrapValue()))`.
