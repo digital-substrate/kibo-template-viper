@@ -9,7 +9,7 @@ import { AttachmentProxy, type Mutating } from "../_codegen/attachment.js";
 import type * as containers from "../containers.js";
 import { AnyConceptKey, type AnyValue } from "../_codegen/registry.js";
 import { definitions } from "../definitions.js";
-<u.dependencies.attachments:{d|import * as <d.name;format="snake"> from "../<d.name;format="snake">/data.js";};separator="\n">
+<u.dependencies.attachmentFields:{d|import * as <d.name;format="snake"> from "../<d.name;format="snake">/data.js";};separator="\n">
 import * as <u.name;format="snake"> from "./data.js";
 <if(u.attachmentScopes)>
 

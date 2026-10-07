@@ -17,7 +17,7 @@ unit(u) ::= <<
 #define <u.guard.attachments>
 
 #include "<u.include.data>"
-<u.dependencies.attachments:{d|#include "<d.include.data>"};separator="\n">
+<u.dependencies.attachmentFields:{d|#include "<d.include.data>"};separator="\n">
 
 #include "Viper_Attachment.hpp"
 #include "Viper_AttachmentGetting.hpp"
