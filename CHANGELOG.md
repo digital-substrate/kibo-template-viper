@@ -51,8 +51,6 @@ version as either one.
 
 ## [Unreleased]
 
-## [Unreleased]
-
 ### Added
 
 - **`console.log` shows a TypeScript generated object as Node shows its own**: the class and
