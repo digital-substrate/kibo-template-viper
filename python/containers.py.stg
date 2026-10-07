@@ -15,7 +15,7 @@ import typing
 import dsviper
 
 from . import definitions
-from ._codegen import AnyValue, Declared, Fixed, Mapping, Matrix, Option, Ordered, SetView, Variant, Vector, declare
+from ._codegen import AnyValue, Declared, Fixed, Mapping, Matrix, Option, Ordered, SetView, Variant, Vector, declare, wrap
 
 if typing.TYPE_CHECKING:
     from . import containers
@@ -110,7 +110,7 @@ tuple_class(v) ::= <<
 
 tuple_getter(t, index) ::= <<
     def get_<index>(self) -> <t.bindingType.qualified>:
-        return typing.cast("<t.bindingType.qualified>", self[<index>])
+        return typing.cast("<t.bindingType.qualified>", wrap(self.unwrap_value()[<index>]))
 >>
 optional_class(v) ::= <<
 <declared(v, {Option["<v.bindingElementType.qualified>"]}, "ValueOptional")>

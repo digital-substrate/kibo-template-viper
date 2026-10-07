@@ -74,6 +74,8 @@ version as either one.
 - **An attachments module imports the units its field setters name**, in Python and TypeScript
   (and includes them in C++): a document field typed by a unit neither the key nor the document
   reaches named a module nothing imported, and `mypy --strict` refused the package.
+- **A Python tuple of one member type** (`tuple<float, float>`) no longer casts what its getters
+  already return: `mypy --strict` refused the redundant cast.
 - **A TypeScript vector's `index()` is declared `number | undefined`**: from
   `@digitalsubstrate/dsviper` 1.2.15 the binding answers `undefined` for an element the vector
   does not hold, and the generated code no longer compiled against it. Below 1.2.15 it throws,
