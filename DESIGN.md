@@ -160,15 +160,17 @@ TypeScript files go to `<unit>/<template>` or the package root.
 | target | feature | emits |
 |---|---|---|
 | cpp | `Base` | `data`, `codec`, `model` per unit; the model's `codec` and `any_concept` |
-| cpp | `Fields` | per unit, each field's name and path as constants |
+| cpp | `Fields` | per unit, each field's name (`fields::S::f`) and, in a header of its own, its path (`paths::S::f()`) |
 | cpp | `Attachments` | per unit, the attachments, in memory or in a database |
 | cpp | `Pool` / `PoolRemote` | a function pool, server side / client side |
 | python | `Base` | `__init__.py` (root: `definitions()`; unit: re-exports `data`), `<unit>/data.py`, `<unit>/attachments.py`, `containers.py` |
 | python | `Pool` | `<pool>/__init__.py`, `<pool>/pool.py` (`Pool` and `Remote`) |
 | python | `Wheel` | `pyproject.toml` (project root), `py.typed` (package) |
+| python | `Fields` | `<unit>/fields.py` (`fields.S.f`, the model's name) and `<unit>/paths.py` (`paths.S.f`, a `PathConst`) |
 | typescript | `Base` | `index.ts` (root: `definitions()`, re-exports `containers`; unit: re-exports `data`), `<unit>/data.ts`, `<unit>/attachments.ts`, `containers.ts` |
 | typescript | `Pool` | `<pool>/index.ts`, `<pool>/pool.ts` (`Remote`) |
 | typescript | `Package` | `package.json`, `tsconfig.json` |
+| typescript | `Fields` | `<unit>/fields.ts` and `<unit>/paths.ts`, the same two, as classes of `static readonly` members |
 
 Two things sit beside the generated code without being rendered by these templates. The
 **embedded definitions** — `resources.py`, `resources.ts`, `<model>_resources.hpp` — are

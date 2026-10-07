@@ -1,0 +1,19 @@
+import "banner.stg"
+
+unit(u) ::= <<
+<banner(u.model)>
+
+/** The name of every field of <u.name>'s structures, as constants: code that handles a structure
+ *  through the dynamic API completes the name and tsc checks it, where a string literal is
+ *  neither. Their paths are in the paths module. */
+
+<u.structures:structure();separator="\n\n">
+
+>>
+
+structure(s) ::= <<
+/** The field names of <s.name>. */
+export abstract class <s.name> {
+    <s.fields:{f|static readonly <f.name;format="lf"> = "<f.dsmName>";};separator="\n">
+}
+>>

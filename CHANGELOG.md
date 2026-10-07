@@ -53,6 +53,11 @@ version as either one.
 
 ### Added
 
+- **`Fields` in Python and TypeScript**, as in C++: per unit, `fields.S.f` holds each field's name
+  as the model writes it, and `paths.S.f` its `PathConst`, each in a module of its own. Code that
+  handles a structure through the dynamic API completes and type-checks the name, where a string
+  literal did not. 1.2 had the paths (`NS_Path_S.f`); they come back with the names beside them.
+
 - **`console.log` shows a TypeScript generated object as Node shows its own**: the class and
   the fields (`StructureS { f_float: 1.5 }`), a container's elements (`Vector_of_uint8(3) [ 1,
   2, 3 ]`, `Map_of_uint8_to_string(2) { 0 => 'Zero' }`), a key's instance id; it showed the

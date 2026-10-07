@@ -1,0 +1,23 @@
+import "banner.stg"
+
+unit(u) ::= <<
+<banner(u.model)>
+
+"""The path of every field of <u.name>'s structures, for code that reads or writes a field
+through the dynamic API. The field names are in the fields module."""
+
+from __future__ import annotations
+
+import typing
+
+import dsviper
+
+<u.structures:structure();separator="\n\n\n">
+
+>>
+
+structure(s) ::= <<
+class <s.name>:
+    """The field paths of <s.name>."""
+    <s.fields:{f|<f.name;format="snake">: typing.Final[dsviper.PathConst] = dsviper.Path.from_field("<f.dsmName>").const()};separator="\n">
+>>

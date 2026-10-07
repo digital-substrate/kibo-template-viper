@@ -1,0 +1,22 @@
+import "banner.stg"
+
+unit(u) ::= <<
+<banner(u.model)>
+
+"""The name of every field of <u.name>'s structures, as constants: code that handles a structure
+through the dynamic API completes the name and a type checker checks it, where a string literal
+is neither. Their paths are in the paths module."""
+
+from __future__ import annotations
+
+import typing
+
+<u.structures:structure();separator="\n\n\n">
+
+>>
+
+structure(s) ::= <<
+class <s.name>:
+    """The field names of <s.name>."""
+    <s.fields:{f|<f.name;format="snake">: typing.Final = "<f.dsmName>"};separator="\n">
+>>

@@ -93,6 +93,16 @@
         "Base"
       ],
       "note": "These two do not land beside the modules: py.typed goes inside the package, pyproject.toml one level up at the project root. A project script renders them with a different -o. Measured: without py.typed a consumer gets `Stub file not found` and every annotation in the package is invisible; without pyproject.toml `pip install` refuses the directory outright."
+    },
+    "Fields": {
+      "doc": "The name of every field, as constants, and its path, each in a module of its own per unit: code that handles structures through the dynamic API gets completion and a type check instead of a string it can misspell, as the C++ Fields.",
+      "templates": [
+        "fields.py.stg",
+        "paths.py.stg"
+      ],
+      "requires": [
+        "Base"
+      ]
     }
   },
   "typescript": {
@@ -123,6 +133,16 @@
       "templates": [
         "package.json.stg",
         "tsconfig.json.stg"
+      ],
+      "requires": [
+        "Base"
+      ]
+    },
+    "Fields": {
+      "doc": "The name of every field, as constants, and its path, each in a module of its own per unit: code that handles structures through the dynamic API gets completion and a type check instead of a string it can misspell, as the C++ Fields.",
+      "templates": [
+        "fields.ts.stg",
+        "paths.ts.stg"
       ],
       "requires": [
         "Base"
