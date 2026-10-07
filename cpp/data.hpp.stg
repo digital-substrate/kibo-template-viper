@@ -68,7 +68,7 @@ public:
 
     bool isValid() const noexcept;
 <if(c.dsmConcept.parent)>
-    operator <c.parentNameInNamespace>Key() const noexcept;
+<c.strictAncestorsInNamespace:{a|    operator <a.nameInNamespace>Key() const noexcept;};separator="\n">
 
     <c.parentNameInNamespace>Key toParentKey() const noexcept;
 <endif>

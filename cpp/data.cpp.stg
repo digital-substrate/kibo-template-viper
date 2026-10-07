@@ -47,7 +47,7 @@ std::string <c.name>Key::description() const { return <u.model.namespace>::codec
 bool <c.name>Key::isKnown() const { return <u.model.namespace>::codec::isKnown(toAny()); }
 <if(c.parent)>
 
-<c.name>Key::operator <c.parentNameInNamespace>Key() const noexcept { return {_instanceId, _runtimeId}; }
+<c.strictAncestorsInNamespace:{a|<c.name>Key::operator <a.nameInNamespace>Key() const noexcept { return {_instanceId, _runtimeId\}; \}};separator="\n">
 
 <c.parentNameInNamespace>Key <c.name>Key::toParentKey() const noexcept { return {_instanceId, _runtimeId}; }
 <endif>

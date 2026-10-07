@@ -78,6 +78,8 @@ version as either one.
   already return: `mypy --strict` refused the redundant cast.
 - **A Python container's constructor takes any iterable of its elements**, as annotated: a
   generator or a mapping view of generated values reached the runtime unwrapped and was refused.
+- **A C++ key converts implicitly to every ancestor**, as in 1.2: it converted to its parent only,
+  and a key passed where a grandparent's was expected no longer compiled.
 - **A TypeScript vector's `index()` is declared `number | undefined`**: from
   `@digitalsubstrate/dsviper` 1.2.15 the binding answers `undefined` for an element the vector
   does not hold, and the generated code no longer compiled against it. Below 1.2.15 it throws,
