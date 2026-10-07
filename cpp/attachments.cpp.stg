@@ -8,11 +8,11 @@ unit(u) ::= <<
 #include "<u.include.attachments>"
 
 #include "<u.include.codec>"
-#include "<u.include.fields>"
+#include "<u.include.paths>"
 #include "<u.include.model>"
 <u.dependencies.attachments:{d|#include "<d.include.codec>"};separator="\n">
 <u.dependencies.attachments:{d|#include "<d.include.model>"};separator="\n">
-<u.dependencies.attachments:{d|#include "<d.include.fields>"};separator="\n">
+<u.dependencies.attachments:{d|#include "<d.include.paths>"};separator="\n">
 
 #include "<u.model.include.codec>"
 
@@ -96,7 +96,7 @@ void set<sf.name;format="uf">(std::shared_ptr\<Viper::AttachmentMutating> const 
 <endif>
 >>
 
-path(sf, a) ::= <%::<u.model.namespace>::<a.documentType.structure.namespace;format="lsc">::fields::<a.documentType.structure.name>::<sf.name>Path()%>
+path(sf, a) ::= <%::<u.model.namespace>::<a.documentType.structure.namespace;format="lsc">::paths::<a.documentType.structure.name>::<sf.name>()%>
 root() ::= <%Viper::Path::make()%>
 
 mutate(op, viper, address, value, u) ::= <%mutating-><op>(attachment(), encodeKey(key), <address>, <u.model.namespace>::codec::encode(<value>));%>

@@ -60,6 +60,9 @@ version as either one.
 
 ### Changed
 
+- **A C++ field's path is `paths::S::f()`, in a header of its own (BREAKING)**, beside the name
+  `fields::S::f`, as 1.2 kept `Path` beside `Field`. `fields::S::fPath()` collided with the name of a
+  field `fPath` (`package` and `packagePath`): the header did not compile.
 - **The TypeScript package declares `@digitalsubstrate/dsviper` as a peer dependency**, no
   longer a dependency: the project owns the runtime and imports it as its own, npm installs
   one copy and refuses a version outside the range, where it could install a second copy the
@@ -192,6 +195,7 @@ two internal applications migrated to.
 | `NS::Demo::Attachments::Concept_Att::get(…)`, `NS::Demo::DatabaseAttachments::…` | `ns::demo::attachments::Concept::att::get(…)`, the `Database` overloads included |
 | `NS::Database::create(…)` (the model registered for you) | `Viper::Database::create(…)` then `extendDefinitions(ns::codec::definitions())` |
 | `AttachmentRuntimeIds::C_a` | `ns::demo::attachments::C::a::runtimeId` |
+| `NS::Demo::Field::S::f`, `NS::Demo::Path::S::f()` | `ns::demo::fields::S::f` (a `std::string_view`), `ns::demo::paths::S::f()` |
 | `NS::FunctionPools::tools()`, `FunctionPoolBridges::Tools::add_vector` | `ns::tools::pool()`, `ns::tools::addVector` |
 | `NS::AttachmentFunctionPools::playerModel()`, a pool the model declares | `ns::player_model::pool()` |
 | `NS::AttachmentFunctionPools::attachments()`, the generated one | gone (see Removed) |

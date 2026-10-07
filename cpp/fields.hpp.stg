@@ -1,19 +1,15 @@
 import "banner.stg"
 
 unit(u) ::= <<
-// <u.name> fields -- the name and path of every field of its structures, as constants, for
-// code that handles them through the dynamic API: a constant completes and is checked by the
-// compiler, a string literal is not.
+// <u.name> fields -- the name of every field of its structures, as constants, for code that
+// handles them through the dynamic API: a constant completes and is checked by the compiler, a
+// string literal is not. Their paths are in the paths header.
 //
 <banner(u.model)>
 
 #ifndef <u.guard.fields>
 #define <u.guard.fields>
 
-#include "Viper_Path.hpp"
-
-#include \<memory>
-#include \<string>
 #include \<string_view>
 
 <u.structures:structure(u);separator="\n\n">
@@ -27,11 +23,8 @@ namespace <u.model.namespace>::<u.name;format="lsc">::fields::<s.name> {
 
 <s.fields:name();separator="\n">
 
-<s.fields:path();separator="\n">
-
 } // namespace <u.model.namespace>::<u.name;format="lsc">::fields::<s.name>
 >>
 
 name(f) ::= <<inline constexpr std::string_view <f.name>{"<f.dsmName>"};>>
 
-path(f) ::= <<std::shared_ptr\<Viper::Path const> const & <f.name>Path();>>

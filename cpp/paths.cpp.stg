@@ -1,0 +1,31 @@
+import "banner.stg"
+
+unit(u) ::= <<
+// <u.name> paths -- the implementation of the field paths.
+//
+<banner(u.model)>
+
+#include "<u.include.paths>"
+#include "<u.include.fields>"
+
+#include \<string>
+
+<u.structures:structure(u);separator="\n\n">
+
+>>
+
+structure(s, u) ::= <<
+namespace <u.model.namespace>::<u.name;format="lsc">::paths::<s.name> {
+
+<s.fields:path(s, u);separator="\n\n">
+
+} // namespace <u.model.namespace>::<u.name;format="lsc">::paths::<s.name>
+>>
+
+path(f, s, u) ::= <<
+std::shared_ptr\<Viper::Path const> const & <f.name>() {
+    static std::shared_ptr\<Viper::Path const> const instance{
+        Viper::Path::makeField(std::string{::<u.model.namespace>::<u.name;format="lsc">::fields::<s.name>::<f.name>})};
+    return instance;
+}
+>>

@@ -22,10 +22,11 @@
       "requires": []
     },
     "Fields": {
-      "doc": "The name and the path of every field, as constants: code that handles structures through the dynamic API gets completion instead of a string it can misspell. Selectable alone; Attachments builds its typed field setters on it.",
+      "doc": "The name of every field, as constants, and its path, in a header of its own: code that handles structures through the dynamic API gets completion instead of a string it can misspell. Selectable alone; Attachments builds its typed field setters on it.",
       "templates": [
-        "fields.cpp.stg",
-        "fields.hpp.stg"
+        "fields.hpp.stg",
+        "paths.cpp.stg",
+        "paths.hpp.stg"
       ],
       "requires": []
     },
