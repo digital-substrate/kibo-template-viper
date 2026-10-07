@@ -164,16 +164,18 @@ TypeScript files go to `<unit>/<template>` or the package root.
 | cpp | `Paths` | per unit, each field's path, `paths::S::f()`, built from its name; `Attachments` requires it |
 | cpp | `Attachments` | per unit, the attachments, in memory or in a database |
 | cpp | `Pool` / `PoolRemote` | a function pool, server side / client side |
-| python | `Base` | `__init__.py` (root: `definitions()`; unit: re-exports `data`), `<unit>/data.py`, `<unit>/attachments.py`, `containers.py` |
+| python | `Base` | the data alone: `__init__.py` (root: `definitions()`; unit: re-exports `data`), `<unit>/data.py`, `containers.py` |
+| python | `Attachments` | `<unit>/attachments.py`, imported by its path (`import pkg.<unit>.attachments`); requires `Base` and `Paths` |
 | python | `Pool` | `<pool>/__init__.py`, `<pool>/pool.py` (`Pool` and `Remote`) |
 | python | `Wheel` | `pyproject.toml` (project root), `py.typed` (package) |
 | python | `Fields` | `<unit>/fields.py`: `fields.S.f`, the model's name |
-| python | `Paths` | `<unit>/paths.py`: `paths.S.f`, a `PathConst` built from it; `Base` requires it, the attachments address fields through it |
-| typescript | `Base` | `index.ts` (root: `definitions()`, re-exports `containers`; unit: re-exports `data`), `<unit>/data.ts`, `<unit>/attachments.ts`, `containers.ts` |
+| python | `Paths` | `<unit>/paths.py`: `paths.S.f`, a `PathConst` built from it; the attachments address fields through it |
+| typescript | `Base` | the data alone: `index.ts` (root: `definitions()`, re-exports `containers`; unit: re-exports `data`), `<unit>/data.ts`, `containers.ts` |
+| typescript | `Attachments` | `<unit>/attachments.ts`, imported by its path (`pkg/<unit>/attachments`); requires `Base` and `Paths` |
 | typescript | `Pool` | `<pool>/index.ts`, `<pool>/pool.ts` (`Remote`) |
 | typescript | `Package` | `package.json`, `tsconfig.json` |
 | typescript | `Fields` | `<unit>/fields.ts`, as Python, a class of `static readonly` members per structure |
-| typescript | `Paths` | `<unit>/paths.ts`, as Python; `Base` requires it |
+| typescript | `Paths` | `<unit>/paths.ts`, as Python |
 
 Two things sit beside the generated code without being rendered by these templates. The
 **embedded definitions** — `resources.py`, `resources.ts`, `<model>_resources.hpp` — are

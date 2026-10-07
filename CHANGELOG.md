@@ -57,9 +57,9 @@ version as either one.
   the model writes it, and `paths.S.f` its path, built once from that name, each in a module of its
   own. Code that handles a structure through the dynamic API completes and type-checks them, where
   a string literal did not. 1.2 had the paths (`NS_Path_S.f`); they come back with the names.
-- **A field operation of an attachment addresses its field through `paths`**: `Attachments` (C++)
-  and `Base` (Python, TypeScript) require `Paths`, which requires `Fields`; the Python and
-  TypeScript runtimes take the path, no longer a field name looked up in a cache.
+- **A field operation of an attachment addresses its field through `paths`**: `Attachments`
+  requires `Paths`, which requires `Fields`; the Python and TypeScript runtimes take the path, no
+  longer a field name looked up in a cache.
 
 - **`console.log` shows a TypeScript generated object as Node shows its own**: the class and
   the fields (`StructureS { f_float: 1.5 }`), a container's elements (`Vector_of_uint8(3) [ 1,
@@ -67,6 +67,10 @@ version as either one.
   symbol holding the Viper value. `String()` and `toJSON()` are unchanged.
 
 ### Changed
+
+- **Attachments are a feature of their own in Python and TypeScript (BREAKING)**, as in C++: `Base`
+  is the data alone, `Attachments` requires it and `Paths`. A unit's `__init__` / index no longer
+  imports them: `import pkg.<unit>.attachments` / `from "pkg/<unit>/attachments"`.
 
 - **A C++ field's path is `paths::S::f()`, in a header of its own (BREAKING)**, beside the name
   `fields::S::f`, as 1.2 kept `Path` beside `Field`. `fields::S::fPath()` collided with the name of a

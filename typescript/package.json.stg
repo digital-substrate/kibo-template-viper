@@ -13,6 +13,18 @@ model(m) ::= <<
             "types": "./dist/pools.d.ts",
             "import": "./dist/pools.js"
         },
+        "./*/attachments": {
+            "types": "./dist/*/attachments.d.ts",
+            "import": "./dist/*/attachments.js"
+        },
+        "./*/fields": {
+            "types": "./dist/*/fields.d.ts",
+            "import": "./dist/*/fields.js"
+        },
+        "./*/paths": {
+            "types": "./dist/*/paths.d.ts",
+            "import": "./dist/*/paths.js"
+        },
         "./*": {
             "types": "./dist/*/index.d.ts",
             "import": "./dist/*/index.js"

@@ -4,9 +4,9 @@ model(m) ::= <<
 <preamble(m)>
 """The <m.namespace> model, generated over dsviper.
 
-Each DSM namespace is a module holding its structures, enumerations and keys, and its
-attachments as `attachments`:
-<m.nameSpaces:{u|`<m.namespace;format="snake">.<u.name;format="snake">`};separator=", ">.
+Each DSM namespace is a module holding its structures, enumerations and keys:
+<m.nameSpaces:{u|`<m.namespace;format="snake">.<u.name;format="snake">`};separator=", ">. Its attachments,
+rendered with the Attachments feature, are a submodule imported by its path, `<unit>.attachments`.
 `containers` holds one class per container shape the model uses, in a structure, an
 attachment or a pool; another shape is built with the runtime, from Viper values:
 `dsviper.Value.create(dsviper.TypeSet(<if(m.concepts)><first(m.concepts):{c|<m.namespace;format="snake">.<c.namespace;format="snake">.<c.name>Key}><else>Cls<endif>.type()), [k.unwrap_value() for k in keys])`.
@@ -18,6 +18,7 @@ The pools, rendered with the Pool feature, are imported by their path:
 A document is stored in a dsviper database that knows the model, and read and written
 through an attachment, given the database or a state:
 
+    import <if(m.attachments)><first(m.attachments):{a|<m.namespace;format="snake">.<a.namespace;format="snake">}><else><m.namespace;format="snake">.<first(m.nameSpaces):{u|<u.name;format="snake">}><endif>.attachments
     db = dsviper.Database.create_in_memory()     # a CommitDatabase keeps every commit
     db.extend_definitions(<m.namespace;format="snake">.definitions())
     db.begin_transaction()
@@ -61,7 +62,6 @@ unit(u) ::= <<
 <preamble(u.model)>
 
 from .data import *
-from . import attachments
 
 >>
 

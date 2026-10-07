@@ -6,8 +6,8 @@ model(m) ::= <<
  * The <m.namespace> model, generated over `@digitalsubstrate/dsviper`.
  *
  * Each DSM namespace is a namespace of this module holding its structures, enumerations and
- * keys, and its attachments as `attachments`:
- * <m.nameSpaces:{u|`<u.name;format="snake">`};separator=", ">.
+ * keys: <m.nameSpaces:{u|`<u.name;format="snake">`};separator=", ">. Its attachments, rendered with the
+ * Attachments feature, are imported by their path, `<m.namespace;format="snake">/<unit>/attachments`.
  * One class per container shape the model uses, in a structure, an attachment or a pool, is
  * exported here; another shape is built with the runtime, from Viper values:
  * `dsviper.Value.create(new dsviper.TypeSet(<if(m.concepts)><first(m.concepts):{c|<c.namespace;format="snake">.<c.name>Key}><else>Cls<endif>.type()), keys.map((k) => k.unwrapValue()))`.
@@ -21,12 +21,13 @@ model(m) ::= <<
  *
  * ```ts
  * import dsviper from "@digitalsubstrate/dsviper";
- * import { definitions, <if(m.attachments)><first(m.attachments):{a|<a.namespace;format="snake">}><else><first(m.nameSpaces):{u|<u.name;format="snake">}><endif> } from "<m.namespace;format="snake">";
+ * import { definitions } from "<m.namespace;format="snake">";
+ * import * as attachments from "<m.namespace;format="snake">/<if(m.attachments)><first(m.attachments):{a|<a.namespace;format="snake">}><else><first(m.nameSpaces):{u|<u.name;format="snake">}><endif>/attachments";
  *
  * const db = dsviper.Database.createInMemory();   // a CommitDatabase keeps every commit
  * db.extendDefinitions(definitions());
  * db.beginTransaction();
- * <if(m.attachments)><first(m.attachments):{a|<a.namespace;format="snake">.attachments.<a.conceptScope>.<a.name;format="lf">}><else><first(m.nameSpaces):{u|<u.name;format="snake">}>.attachments.Concept.attachment<endif>.set(db, key, document);
+ * <if(m.attachments)><first(m.attachments):{a|attachments.<a.conceptScope>.<a.name;format="lf">}><else>attachments.Concept.attachment<endif>.set(db, key, document);
  * db.commit();
  * ```
  *
@@ -57,7 +58,6 @@ export type { AttachmentProxy } from "./_codegen/attachment.js";
 unit(u) ::= <<
 <preamble(u.model)>
 export * from "./data.js";
-export * as attachments from "./attachments.js";
 
 >>
 

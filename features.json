@@ -76,10 +76,17 @@
       "templates": [
         "__init__.py.stg",
         "data.py.stg",
-        "attachments.py.stg",
         "containers.py.stg"
       ],
+      "requires": []
+    },
+    "Attachments": {
+      "doc": "Per unit, one class per concept and an accessor per attachment: documents read and written in a Database, a CommitDatabase's state or a mutable state. Imported by its path, as a C++ attachments header is included; a project that uses the data alone does without it.",
+      "templates": [
+        "attachments.py.stg"
+      ],
       "requires": [
+        "Base",
         "Paths"
       ]
     },
@@ -128,10 +135,17 @@
         "index.ts.stg",
         "definitions.ts.stg",
         "data.ts.stg",
-        "attachments.ts.stg",
         "containers.ts.stg"
       ],
+      "requires": []
+    },
+    "Attachments": {
+      "doc": "Per unit, one class per concept and an accessor per attachment: documents read and written in a Database, a CommitDatabase's state or a mutable state. Imported by its path, as a C++ attachments header is included; a project that uses the data alone does without it.",
+      "templates": [
+        "attachments.ts.stg"
+      ],
       "requires": [
+        "Base",
         "Paths"
       ]
     },
