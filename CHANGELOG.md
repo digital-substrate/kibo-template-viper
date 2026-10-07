@@ -89,6 +89,9 @@ version as either one.
   already return: `mypy --strict` refused the redundant cast.
 - **A Python container's constructor takes any iterable of its elements**, as annotated: a
   generator or a mapping view of generated values reached the runtime unwrapped and was refused.
+- **The Python validation checks the package by name** (`mypy -p`): given its directory, mypy
+  walked up into an output directory that is itself a package (a Blender add-on) and checked the
+  host application's code, and a package that was valid failed its validation.
 - **A C++ key converts implicitly to every ancestor**, as in 1.2: it converted to its parent only,
   and a key passed where a grandparent's was expected no longer compiled.
 - **A TypeScript vector's `index()` is declared `number | undefined`**: from
