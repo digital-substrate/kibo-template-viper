@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import collections.abc
 import typing
 
 import dsviper
@@ -633,13 +634,13 @@ def _init_structure(proxy: Proxy[dsviper.ValueStructure], type_: dsviper.TypeStr
 def _unwrap_deep(value: typing.Any) -> typing.Any:
     if hasattr(value, "_unwrap"):
         return value._unwrap()
-    if isinstance(value, dict):
+    if isinstance(value, collections.abc.Mapping):
         return {_unwrap_deep(k): _unwrap_deep(v) for k, v in value.items()}
     if isinstance(value, tuple):
         return tuple(_unwrap_deep(element) for element in value)
-    if isinstance(value, list):
-        return [_unwrap_deep(element) for element in value]
-    if isinstance(value, (set, frozenset)):
+    if isinstance(value, (str, bytes, bytearray, memoryview, dsviper.Value)):
+        return value
+    if isinstance(value, collections.abc.Iterable):
         return [_unwrap_deep(element) for element in value]
     return value
 
