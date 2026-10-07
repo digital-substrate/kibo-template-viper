@@ -71,6 +71,10 @@ version as either one.
 
 ### Fixed
 
+- **A TypeScript vector's `index()` is declared `number | undefined`**: from
+  `@digitalsubstrate/dsviper` 1.2.15 the binding answers `undefined` for an element the vector
+  does not hold, and the generated code no longer compiled against it. Below 1.2.15 it throws,
+  which the declaration admits.
 - A field operation (`union_f_set`, `update_f_map`, `insert_f_xarray`…) takes what the field's
   setter takes: a native collection as well as the declared container, in Python and
   TypeScript. The annotations refused what the runtime accepts.

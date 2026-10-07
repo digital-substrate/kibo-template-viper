@@ -181,7 +181,7 @@ export class Vector<E> extends Sequence<E, dsviper.ValueVector> {
         return this.vector.count(unwrap(element));
     }
 
-    index(element: E): number {
+    index(element: E): number | undefined {
         return this.vector.index(unwrap(element));
     }
 
