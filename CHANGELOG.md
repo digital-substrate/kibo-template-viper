@@ -53,10 +53,13 @@ version as either one.
 
 ### Added
 
-- **`Fields` in Python and TypeScript**, as in C++: per unit, `fields.S.f` holds each field's name
-  as the model writes it, and `paths.S.f` its `PathConst`, each in a module of its own. Code that
-  handles a structure through the dynamic API completes and type-checks the name, where a string
-  literal did not. 1.2 had the paths (`NS_Path_S.f`); they come back with the names beside them.
+- **`Fields` and `Paths`, in the three targets**: per unit, `fields.S.f` holds each field's name as
+  the model writes it, and `paths.S.f` its path, built once from that name, each in a module of its
+  own. Code that handles a structure through the dynamic API completes and type-checks them, where
+  a string literal did not. 1.2 had the paths (`NS_Path_S.f`); they come back with the names.
+- **A field operation of an attachment addresses its field through `paths`**: `Attachments` (C++)
+  and `Base` (Python, TypeScript) require `Paths`, which requires `Fields`; the Python and
+  TypeScript runtimes take the path, no longer a field name looked up in a cache.
 
 - **`console.log` shows a TypeScript generated object as Node shows its own**: the class and
   the fields (`StructureS { f_float: 1.5 }`), a container's elements (`Vector_of_uint8(3) [ 1,
@@ -200,6 +203,7 @@ two internal applications migrated to.
 | `NS::Demo::Attachments::Concept_Att::get(…)`, `NS::Demo::DatabaseAttachments::…` | `ns::demo::attachments::Concept::att::get(…)`, the `Database` overloads included |
 | `NS::Database::create(…)` (the model registered for you) | `Viper::Database::create(…)` then `extendDefinitions(ns::codec::definitions())` |
 | `AttachmentRuntimeIds::C_a` | `ns::demo::attachments::C::a::runtimeId` |
+| `XKey k = uuid;` (a key from a bare `UUId`, implicitly) | `XKey k{uuid};` — the constructor is `explicit` |
 | `NS::Demo::Field::S::f`, `NS::Demo::Path::S::f()` | `ns::demo::fields::S::f` (a `std::string_view`), `ns::demo::paths::S::f()` |
 | `NS::FunctionPools::tools()`, `FunctionPoolBridges::Tools::add_vector` | `ns::tools::pool()`, `ns::tools::addVector` |
 | `NS::AttachmentFunctionPools::playerModel()`, a pool the model declares | `ns::player_model::pool()` |

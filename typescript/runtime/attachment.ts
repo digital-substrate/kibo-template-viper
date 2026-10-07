@@ -135,57 +135,55 @@ export class AttachmentProxy<K, D, KS = SetView<K>, DI = D> {
         return database.delete(this.descriptor, unwrap(key) as dsviper.ValueKey);
     }
 
-    protected updateField(mutating: Mutating, key: K, field: string, value: unknown): void {
-        mutating.update(this.descriptor, this.keyOf(key), path(field), unwrap(value));
+    protected updateField(mutating: Mutating, key: K, path: dsviper.PathConst, value: unknown): void {
+        mutating.update(this.descriptor, this.keyOf(key), path ?? ROOT, unwrap(value));
     }
 
-    protected unionInSet(mutating: Mutating, key: K, field: string | undefined, value: unknown): void {
-        mutating.unionInSet(this.descriptor, this.keyOf(key), path(field), this.valueAt(field, value));
+    protected unionInSet(mutating: Mutating, key: K, path: dsviper.PathConst | undefined, value: unknown): void {
+        mutating.unionInSet(this.descriptor, this.keyOf(key), path ?? ROOT, this.valueAt(path, value));
     }
 
-    protected subtractInSet(mutating: Mutating, key: K, field: string | undefined, value: unknown): void {
-        mutating.subtractInSet(this.descriptor, this.keyOf(key), path(field), this.valueAt(field, value));
+    protected subtractInSet(mutating: Mutating, key: K, path: dsviper.PathConst | undefined, value: unknown): void {
+        mutating.subtractInSet(this.descriptor, this.keyOf(key), path ?? ROOT, this.valueAt(path, value));
     }
 
-    protected unionInMap(mutating: Mutating, key: K, field: string | undefined, value: unknown): void {
-        mutating.unionInMap(this.descriptor, this.keyOf(key), path(field), this.valueAt(field, value));
+    protected unionInMap(mutating: Mutating, key: K, path: dsviper.PathConst | undefined, value: unknown): void {
+        mutating.unionInMap(this.descriptor, this.keyOf(key), path ?? ROOT, this.valueAt(path, value));
     }
 
-    protected subtractInMap(mutating: Mutating, key: K, field: string | undefined, value: unknown): void {
-        mutating.subtractInMap(this.descriptor, this.keyOf(key), path(field), this.valueAt(field, value, "keys"));
+    protected subtractInMap(mutating: Mutating, key: K, path: dsviper.PathConst | undefined, value: unknown): void {
+        mutating.subtractInMap(this.descriptor, this.keyOf(key), path ?? ROOT, this.valueAt(path, value, "keys"));
     }
 
-    protected updateInMap(mutating: Mutating, key: K, field: string | undefined, value: unknown): void {
-        mutating.updateInMap(this.descriptor, this.keyOf(key), path(field), this.valueAt(field, value));
+    protected updateInMap(mutating: Mutating, key: K, path: dsviper.PathConst | undefined, value: unknown): void {
+        mutating.updateInMap(this.descriptor, this.keyOf(key), path ?? ROOT, this.valueAt(path, value));
     }
 
-    protected insertInXArray(mutating: Mutating, key: K, field: string | undefined,
+    protected insertInXArray(mutating: Mutating, key: K, path: dsviper.PathConst | undefined,
                              beforePosition: dsviper.ValueUUId, newPosition: dsviper.ValueUUId,
                              value: unknown): void {
-        mutating.insertInXarray(this.descriptor, this.keyOf(key), path(field),
-                                beforePosition, newPosition, this.valueAt(field, value, "element"));
+        mutating.insertInXarray(this.descriptor, this.keyOf(key), path ?? ROOT,
+                                beforePosition, newPosition, this.valueAt(path, value, "element"));
     }
 
-    protected updateInXArray(mutating: Mutating, key: K, field: string | undefined,
+    protected updateInXArray(mutating: Mutating, key: K, path: dsviper.PathConst | undefined,
                              position: dsviper.ValueUUId, value: unknown): void {
-        mutating.updateInXarray(this.descriptor, this.keyOf(key), path(field), position, this.valueAt(field, value, "element"));
+        mutating.updateInXarray(this.descriptor, this.keyOf(key), path ?? ROOT, position, this.valueAt(path, value, "element"));
     }
 
-    protected removeInXArray(mutating: Mutating, key: K, field: string | undefined,
+    protected removeInXArray(mutating: Mutating, key: K, path: dsviper.PathConst | undefined,
                              position: dsviper.ValueUUId): void {
-        mutating.removeInXarray(this.descriptor, this.keyOf(key), path(field), position);
+        mutating.removeInXarray(this.descriptor, this.keyOf(key), path ?? ROOT, position);
     }
 
     private keyOf(key: K): dsviper.ValueKey {
         return unwrap(key) as dsviper.ValueKey;
     }
 
-    private valueAt(field: string | undefined, value: unknown,
+    private valueAt(path: dsviper.PathConst | undefined, value: unknown,
                     part: "whole" | "keys" | "element" = "whole"): dsviper.Value {
         const document = this.descriptor.documentType();
-        const aggregate = field === undefined
-            ? document
-            : (document as dsviper.TypeStructure).check(field).type();
+        const aggregate = path === undefined ? document : path.checkType(document)!;
         const type = part === "keys"
             ? new dsviper.TypeSet((aggregate as dsviper.TypeMap).keyType())
             : part === "element"
@@ -196,13 +194,5 @@ export class AttachmentProxy<K, D, KS = SetView<K>, DI = D> {
     }
 }
 
-const paths = new Map<string | undefined, dsviper.PathConst>();
-
-function path(field: string | undefined): dsviper.PathConst {
-    let found = paths.get(field);
-    if (found === undefined) {
-        found = (field === undefined ? new dsviper.Path() : dsviper.Path.fromField(field)).const();
-        paths.set(field, found);
-    }
-    return found;
-}
+// The whole document: what an operation on a set, a map or an xarray document addresses.
+const ROOT: dsviper.PathConst = new dsviper.Path().const();

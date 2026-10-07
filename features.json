@@ -22,13 +22,21 @@
       "requires": []
     },
     "Fields": {
-      "doc": "The name of every field, as constants, and its path, in a header of its own: code that handles structures through the dynamic API gets completion instead of a string it can misspell. Selectable alone; Attachments builds its typed field setters on it.",
+      "doc": "The name of every field, as constants: code that handles structures through the dynamic API gets completion and a type check instead of a string it can misspell.",
       "templates": [
-        "fields.hpp.stg",
+        "fields.hpp.stg"
+      ],
+      "requires": []
+    },
+    "Paths": {
+      "doc": "The path of every field, built once from its name, in a module of its own: what the attachments' field operations address, and what code reaching a field through the dynamic API reads or writes.",
+      "templates": [
         "paths.cpp.stg",
         "paths.hpp.stg"
       ],
-      "requires": []
+      "requires": [
+        "Fields"
+      ]
     },
     "Attachments": {
       "doc": "The attachments a unit declares, read and written in memory or in a database.",
@@ -38,7 +46,7 @@
       ],
       "requires": [
         "Base",
-        "Fields"
+        "Paths"
       ]
     },
     "Pool": {
@@ -71,7 +79,9 @@
         "attachments.py.stg",
         "containers.py.stg"
       ],
-      "requires": []
+      "requires": [
+        "Paths"
+      ]
     },
     "Pool": {
       "doc": "A function pool and its client edge. Most projects have none: a pool is a service surface, not a consequence of having a model.",
@@ -95,13 +105,19 @@
       "note": "These two do not land beside the modules: py.typed goes inside the package, pyproject.toml one level up at the project root. A project script renders them with a different -o. Measured: without py.typed a consumer gets `Stub file not found` and every annotation in the package is invisible; without pyproject.toml `pip install` refuses the directory outright."
     },
     "Fields": {
-      "doc": "The name of every field, as constants, and its path, each in a module of its own per unit: code that handles structures through the dynamic API gets completion and a type check instead of a string it can misspell, as the C++ Fields.",
+      "doc": "The name of every field, as constants: code that handles structures through the dynamic API gets completion and a type check instead of a string it can misspell.",
       "templates": [
-        "fields.py.stg",
+        "fields.py.stg"
+      ],
+      "requires": []
+    },
+    "Paths": {
+      "doc": "The path of every field, built once from its name, in a module of its own: what the attachments' field operations address, and what code reaching a field through the dynamic API reads or writes.",
+      "templates": [
         "paths.py.stg"
       ],
       "requires": [
-        "Base"
+        "Fields"
       ]
     }
   },
@@ -115,7 +131,9 @@
         "attachments.ts.stg",
         "containers.ts.stg"
       ],
-      "requires": []
+      "requires": [
+        "Paths"
+      ]
     },
     "Pool": {
       "doc": "A function pool and its client edge. Most projects have none: a pool is a service surface, not a consequence of having a model.",
@@ -139,13 +157,19 @@
       ]
     },
     "Fields": {
-      "doc": "The name of every field, as constants, and its path, each in a module of its own per unit: code that handles structures through the dynamic API gets completion and a type check instead of a string it can misspell, as the C++ Fields.",
+      "doc": "The name of every field, as constants: code that handles structures through the dynamic API gets completion and a type check instead of a string it can misspell.",
       "templates": [
-        "fields.ts.stg",
+        "fields.ts.stg"
+      ],
+      "requires": []
+    },
+    "Paths": {
+      "doc": "The path of every field, built once from its name, in a module of its own: what the attachments' field operations address, and what code reaching a field through the dynamic API reads or writes.",
+      "templates": [
         "paths.ts.stg"
       ],
       "requires": [
-        "Base"
+        "Fields"
       ]
     }
   },

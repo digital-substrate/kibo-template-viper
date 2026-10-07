@@ -8,6 +8,8 @@ unit(u) ::= <<
 
 import dsviper from "@digitalsubstrate/dsviper";
 
+import * as fields from "./fields.js";
+
 <u.structures:structure();separator="\n\n">
 
 >>
@@ -15,6 +17,6 @@ import dsviper from "@digitalsubstrate/dsviper";
 structure(s) ::= <<
 /** The field paths of <s.name>. */
 export abstract class <s.name> {
-    <s.fields:{f|static readonly <f.name;format="lf">: dsviper.PathConst = dsviper.Path.fromField("<f.dsmName>").const();};separator="\n">
+    <s.fields:{f|static readonly <f.name;format="lf">: dsviper.PathConst = dsviper.Path.fromField(fields.<s.name>.<f.name;format="lf">).const();};separator="\n">
 }
 >>

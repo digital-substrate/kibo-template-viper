@@ -11,6 +11,8 @@ import { AnyConceptKey, type AnyValue } from "../_codegen/registry.js";
 import { definitions } from "../definitions.js";
 <u.dependencies.attachmentFields:{d|import * as <d.name;format="snake"> from "../<d.name;format="snake">/data.js";};separator="\n">
 import * as <u.name;format="snake"> from "./data.js";
+import * as _<u.name;format="snake">_paths from "./paths.js";
+<u.dependencies.attachments:{d|import * as _<d.name;format="snake">_paths from "../<d.name;format="snake">/paths.js";};separator="\n">
 <if(u.attachmentScopes)>
 
 <u.attachmentScopes:by_concept(u);separator="\n\n">
@@ -37,22 +39,24 @@ own_class(a, s) ::= <%<if(a.documentType.isStructure)><own_class_body(a, s)><els
 
 own_class_body(a, s) ::= <<
 export class <opsClass(a, s)> extends AttachmentProxy\<<generics(a, s)>\> {
-    <if(a.documentType.isStructure)><a.documentType.structure.fields:field(s);separator="\n\n"><else><document(a, s)><endif>
+    <if(a.documentType.isStructure)><a.documentType.structure.fields:field(a, s);separator="\n\n"><else><document(a, s)><endif>
 }
 
 >>
 
-field(sf, s) ::= <<
+field(sf, a, s) ::= <<
 set<sf.name;format="uf">(mutating: Mutating, key: <key(s)>, value: <sf.bindingType.inputQualified>): void {
-    this.updateField(mutating, key, "<sf.dsmName>", value);
+    this.updateField(mutating, key, <field_path(sf, a)>, value);
 }<if(sf.field.isSet)>
 
-<set_ops(sf.field, s, {"<sf.dsmName>"}, {<sf.name;format="uf">}, sf.name)><elseif(sf.field.isMap)>
+<set_ops(sf.field, s, {<field_path(sf, a)>}, {<sf.name;format="uf">}, sf.name)><elseif(sf.field.isMap)>
 
-<map_ops(sf.field, s, {"<sf.dsmName>"}, {<sf.name;format="uf">}, sf.name)><elseif(sf.field.isXArray)>
+<map_ops(sf.field, s, {<field_path(sf, a)>}, {<sf.name;format="uf">}, sf.name)><elseif(sf.field.isXArray)>
 
-<xarray_ops(sf.field, s, {"<sf.dsmName>"}, {<sf.name;format="uf">}, sf.name)><endif>
+<xarray_ops(sf.field, s, {<field_path(sf, a)>}, {<sf.name;format="uf">}, sf.name)><endif>
 >>
+
+field_path(sf, a) ::= <%_<a.documentType.structure.namespace;format="snake">_paths.<a.documentType.structure.name>.<sf.name;format="lf">%>
 
 document(a, s) ::= <%<if(a.documentType.field.isSet)><set_ops(a.documentType.field, s, "undefined", "", false)><elseif(a.documentType.field.isMap)><map_ops(a.documentType.field, s, "undefined", "", false)><elseif(a.documentType.field.isXArray)><xarray_ops(a.documentType.field, s, "undefined", "", false)><endif>%>
 

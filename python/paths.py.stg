@@ -12,6 +12,8 @@ import typing
 
 import dsviper
 
+from . import fields
+
 <u.structures:structure();separator="\n\n\n">
 
 >>
@@ -19,5 +21,5 @@ import dsviper
 structure(s) ::= <<
 class <s.name>:
     """The field paths of <s.name>."""
-    <s.fields:{f|<f.name;format="snake">: typing.Final[dsviper.PathConst] = dsviper.Path.from_field("<f.dsmName>").const()};separator="\n">
+    <s.fields:{f|<f.name;format="snake">: typing.Final[dsviper.PathConst] = dsviper.Path.from_field(fields.<s.name>.<f.name;format="snake">).const()};separator="\n">
 >>
