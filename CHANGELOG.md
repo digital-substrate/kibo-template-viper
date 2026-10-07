@@ -182,13 +182,15 @@ two internal applications migrated to.
 | `pkg.definitions.definitions()` | `pkg.definitions()` |
 | `RuntimeIds.Demo_StructureS` | `pkg.demo.STRUCTURE_S` |
 | `AttachmentRuntimeIds.Demo_ConceptA_Properties` | `pkg.demo.attachments.ConceptA.properties.runtime_id` |
-| `<ns>_<concept>_<att>_get(getting, key)`, `_set`, `_has`, `_keys`, `_diff` | `pkg.<ns>.attachments.<Concept>.<att>.get(getting, key)`, … |
+| `<ns>_<concept>_<att>_get(getting, key)`, `_set`, `_has`, `_keys`, `_diff`, `_enumerate` | `pkg.<ns>.attachments.<Concept>.<att>.get(getting, key)`, …, `.enumerate(getting)` |
+| a function annotated with what an attachment's `get` returns (`-> Optional_X`) | `-> Option[X]` (`from pkg._codegen import Option`): `get` is declared `Option[D]`; at run time it is the declared `containers.Optional_of_X`, but a function annotated `-> Optional_of_X` has mypy refuse the `Option[D]` it returns |
 | `database_attachments.<ns>_<concept>_<att>_set(db, …)`, `_get`, `_del` | the same attachment, given the `Database`: `.set(db, …)`, `.get(db, …)`, `.delete(db, key)` |
 | `p.vpr_value`; `Cls(value)` to view a stored value | `p.unwrap_value()`; `Cls.wrap_value(value)` or `Cls(value)`, both boxing it |
 | `p.encode()`; `Cls.decode(blob)` | `Value.encode(p.unwrap_value())`; `Cls.wrap_value(Value.decode(blob, Cls.type(), pkg.definitions(), encoded=False))` |
 | `value_type.type_X()` | `Cls.type()`: `demo.StructureS.type()`, `containers.Vector_of_uint8.type()` |
 | a field `f_uint_8`, `channel_0`, an enumeration case `A_0` | `f_uint8`, `channel0`, `A0` (kibo's snake_case rule; a project fixes a name with `[names]` in `kibo.toml`) |
 | an `any` read as the runtime `ValueAny` | `AnyValue`; `unwrap()` gives the runtime value, as before |
+| `dsviper.ValueAny(x)` written into an `any` field | `AnyValue(x)`, the declared type; the runtime value is still accepted |
 | **TypeScript** | |
 | `Demo_Vector3`, `Demo_Level`, at the package root | `demo.Vector3`, `demo.Level`, from the unit `demo` (also the subpath `pkg/demo`) |
 | `Vector_uint8`, `Map_A_to_B`, … | `Vector_of_uint8`, `Map_of_A_to_B`, …, at the package root |
