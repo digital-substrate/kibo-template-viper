@@ -51,6 +51,9 @@ version as either one.
 
 ## [Unreleased]
 
+Requires the kibo that follows 2.0.0 (`dsmName`, `--reserve`, `--spell`); the kibo floor in
+`features.json` is set to it when both are tagged.
+
 ### Added
 
 - **`Fields` and `Paths`, in the three targets**: per unit, `fields.S.f` holds each field's name as
@@ -60,18 +63,23 @@ version as either one.
 - **A field operation of an attachment addresses its field through `paths`**: `Attachments`
   requires `Paths`, which requires `Fields`; the Python and TypeScript runtimes take the path, no
   longer a field name looked up in a cache.
-
 - **`console.log` shows a TypeScript generated object as Node shows its own**: the class and
   the fields (`StructureS { f_float: 1.5 }`), a container's elements (`Vector_of_uint8(3) [ 1,
   2, 3 ]`, `Map_of_uint8_to_string(2) { 0 => 'Zero' }`), a key's instance id; it showed the
   symbol holding the Viper value. `String()` and `toJSON()` are unchanged.
+- `reserved` in `features.json`: the names this pack's code takes, per target and per family of
+  names — the proxy's members for a field, the root modules for a namespace or a pool. A DSM
+  name meeting one stops the generation, saying how to spell it otherwise for that target.
+- `validation` in `features.json`, run by kibo-project once a target is written: Python imported,
+  every structure built (`python/validate.py`) and `mypy --strict`; TypeScript `tsc --noEmit`.
+- Every name sent to the runtime is written from the Template Model's `dsmName`: a target may
+  spell a DSM name otherwise (`[names.<target>.rename]`), the wire keeps the DSM name.
 
 ### Changed
 
 - **Attachments are a feature of their own in Python and TypeScript (BREAKING)**, as in C++: `Base`
   is the data alone, `Attachments` requires it and `Paths`. A unit's `__init__` / index no longer
   imports them: `import pkg.<unit>.attachments` / `from "pkg/<unit>/attachments"`.
-
 - **A C++ field's path is `paths::S::f()`, in a header of its own (BREAKING)**, beside the name
   `fields::S::f`, as 1.2 kept `Path` beside `Field`. `fields::S::fPath()` collided with the name of a
   field `fPath` (`package` and `packagePath`): the header did not compile.
@@ -111,13 +119,6 @@ version as either one.
   Database say they need a transaction.
 - A map's `values()` and `items()` say their values are the map's own, their keys copies; a
   pool's `Remote` says the port is given as a string.
-
-## [2.0.3] - 2026-10-06
-
-Requires kibo 2.0.2.
-
-### Fixed
-
 - A namespace with types and no concept registers them: Python and TypeScript wrote a malformed
   `register(` line.
 - A type already in upper snake case (`RGB`, `E`) keeps its name; its runtime-id constant takes
@@ -125,42 +126,22 @@ Requires kibo 2.0.2.
 - A field or a pool parameter named like a name the generated body uses (`self`, `source`,
   `dict`, `isinstance`, `super`, `dsviper`, `typing`) no longer breaks or changes what a Python
   constructor or pool function does: those bodies use only names no DSM name can take.
-
-### Added
-
-- `reserved` in `features.json`: the names this pack's code takes, per target and per family of
-  names — the proxy's members for a field, the root modules for a namespace or a pool. A DSM
-  name meeting one stops the generation, saying how to spell it otherwise for that target.
-- `validation` in `features.json`, run by kibo-project once a target is written: Python imported,
-  every structure built (`python/validate.py`) and `mypy --strict`; TypeScript `tsc --noEmit`.
-- Every name sent to the runtime is written from the Template Model's `dsmName`: a target may
-  spell a DSM name otherwise (`[names.<target>.rename]`), the wire keeps the DSM name.
-
-## [2.0.2] - 2026-10-05
-
-### Fixed
-
 - **`from pkg.containers import *` brings the declared containers only.** The module had no
   `__all__`, so a star import also brought the runtime's view classes and the modules it uses,
   and its `Optional` and `Mapping` replaced `typing.Optional` and `typing.Mapping` in the
   importing module. The view classes stay reachable as `containers.Optional`, … .
-
-### Documented
-
-- **A map's `keys()`, `values()` and `items()` return lists** (`entries()` arrays in
-  TypeScript): a snapshot, so the map can change while one is iterated. This is what they
-  did; the map's documentation now says so.
-
-## [2.0.1] - 2026-10-05
-
-### Fixed
-
 - **The generated Python is fully annotated down to Python 3.10**, the oldest its
   `pyproject.toml` declares. The runtime annotated the methods returning their own class with
   `typing.Self`, which Python 3.11 introduced, so `mypy --strict --python-version 3.10`
   reported 19 errors in every package. They are now annotated with a TypeVar bound to their
   class. Nothing changes at run time: the package postpones its annotations, and its tests
   already passed under 3.10.
+
+### Documented
+
+- **A map's `keys()`, `values()` and `items()` return lists** (`entries()` arrays in
+  TypeScript): a snapshot, so the map can change while one is iterated. This is what they
+  did; the map's documentation now says so.
 
 ## [2.0.0] - 2026-10-05
 
