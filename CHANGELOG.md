@@ -51,19 +51,8 @@ version as either one.
 
 ## [Unreleased]
 
-## [2.0.3] - 2026-10-06
-
-Requires kibo 2.0.2.
-
-### Fixed
-
-- A namespace with types and no concept registers them: Python and TypeScript wrote a malformed
-  `register(` line.
-- A type already in upper snake case (`RGB`, `E`) keeps its name; its runtime-id constant takes
-  `_ID` (`RGB_ID`). TypeScript did not compile, Python failed at import.
-- A field or a pool parameter named like a name the generated body uses (`self`, `source`,
-  `dict`, `isinstance`, `super`, `dsviper`, `typing`) no longer breaks or changes what a Python
-  constructor or pool function does: those bodies use only names no DSM name can take.
+Requires the kibo that follows 2.0.0 (`dsmName`, `--reserve`, `--spell`); the kibo floor in
+`features.json` is set to it when both are tagged.
 
 ### Added
 
@@ -75,31 +64,31 @@ Requires kibo 2.0.2.
 - Every name sent to the runtime is written from the Template Model's `dsmName`: a target may
   spell a DSM name otherwise (`[names.<target>.rename]`), the wire keeps the DSM name.
 
-## [2.0.2] - 2026-10-05
-
 ### Fixed
 
+- A namespace with types and no concept registers them: Python and TypeScript wrote a malformed
+  `register(` line.
+- A type already in upper snake case (`RGB`, `E`) keeps its name; its runtime-id constant takes
+  `_ID` (`RGB_ID`). TypeScript did not compile, Python failed at import.
+- A field or a pool parameter named like a name the generated body uses (`self`, `source`,
+  `dict`, `isinstance`, `super`, `dsviper`, `typing`) no longer breaks or changes what a Python
+  constructor or pool function does: those bodies use only names no DSM name can take.
 - **`from pkg.containers import *` brings the declared containers only.** The module had no
   `__all__`, so a star import also brought the runtime's view classes and the modules it uses,
   and its `Optional` and `Mapping` replaced `typing.Optional` and `typing.Mapping` in the
   importing module. The view classes stay reachable as `containers.Optional`, … .
-
-### Documented
-
-- **A map's `keys()`, `values()` and `items()` return lists** (`entries()` arrays in
-  TypeScript): a snapshot, so the map can change while one is iterated. This is what they
-  did; the map's documentation now says so.
-
-## [2.0.1] - 2026-10-05
-
-### Fixed
-
 - **The generated Python is fully annotated down to Python 3.10**, the oldest its
   `pyproject.toml` declares. The runtime annotated the methods returning their own class with
   `typing.Self`, which Python 3.11 introduced, so `mypy --strict --python-version 3.10`
   reported 19 errors in every package. They are now annotated with a TypeVar bound to their
   class. Nothing changes at run time: the package postpones its annotations, and its tests
   already passed under 3.10.
+
+### Documented
+
+- **A map's `keys()`, `values()` and `items()` return lists** (`entries()` arrays in
+  TypeScript): a snapshot, so the map can change while one is iterated. This is what they
+  did; the map's documentation now says so.
 
 ## [2.0.0] - 2026-10-05
 

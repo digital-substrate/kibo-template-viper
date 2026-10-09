@@ -134,7 +134,7 @@
       "these templates consume. A floor, not a co-version: a later kibo exposing the same",
       "Template Model renders them too."
     ],
-    "kibo": ">=2.0.2"
+    "kibo": ">=2.0.0"
   },
   "layout": {
     "_comment": [
