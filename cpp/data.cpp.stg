@@ -10,8 +10,6 @@ unit(u) ::= <<
 #include "<u.include.model>"
 #include "<u.model.include.codec>"
 
-#include "Viper_StaticCompare.hpp"
-
 #include \<utility>
 
 namespace <u.model.namespace>::<u.name;format="lsc"> {

@@ -12,6 +12,7 @@ unit(u) ::= <<
 
 #include "<u.model.include.any_concept>"
 
+#include "Viper_StaticCompare.hpp"
 #include "Viper_StaticHash.hpp"
 #include "Viper_Blob.hpp"
 #include "Viper_UUId.hpp"

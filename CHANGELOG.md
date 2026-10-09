@@ -100,6 +100,9 @@ Requires the kibo that follows 2.0.0 (`dsmName`, `--reserve`, `--spell`); the ki
   They go through the runtime's `Viper::StaticCompare`, field by field: every NaN is one datum, the
   two zeros one, NaN below every number. The generated C++ requires the `viper` runtime
   `>=1.2.29`, stated in its banner.
+- **A C++ set or map keyed by a floating-point value finds NaN**: kibo spells it with
+  `Viper::StaticLess`, and a map's `subtract` takes its set of keys as `keySetType`, with the same
+  comparator, where it wrote `std::set<keyType>` (which kept `std::less`).
 - **An attachments module imports the units its field setters name**, in Python and TypeScript
   (and includes them in C++): a document field typed by a unit neither the key nor the document
   reaches named a module nothing imported, and `mypy --strict` refused the package.

@@ -125,7 +125,7 @@ void update<sf.name;format="uf">(std::shared_ptr\<Viper::AttachmentMutating> con
 }
 >>
 
-field_subtract_map_head(sf, a) ::= <%void subtract<sf.name;format="uf">(std::shared_ptr\<Viper::AttachmentMutating> const & mutating, <a.keyType.type> const & key, std::set\<<sf.field.keyType>> const & value) {%>
+field_subtract_map_head(sf, a) ::= <%void subtract<sf.name;format="uf">(std::shared_ptr\<Viper::AttachmentMutating> const & mutating, <a.keyType.type> const & key, <sf.field.keySetType> const & value) {%>
 
 field_xarray(sf, a, u) ::= <<
 void insert<sf.name;format="uf">(std::shared_ptr\<Viper::AttachmentMutating> const & mutating, <a.keyType.type> const & key, Viper::UUId const & beforePosition, Viper::UUId const & newPosition, <sf.field.elementType><sf.field.passBy> value) {
@@ -171,7 +171,7 @@ void update(std::shared_ptr\<Viper::AttachmentMutating> const & mutating, <a.key
 }
 >>
 
-document_subtract_map_head(a) ::= <%void subtract(std::shared_ptr\<Viper::AttachmentMutating> const & mutating, <a.keyType.type> const & key, std::set\<<a.documentType.field.keyType>> const & value) {%>
+document_subtract_map_head(a) ::= <%void subtract(std::shared_ptr\<Viper::AttachmentMutating> const & mutating, <a.keyType.type> const & key, <a.documentType.field.keySetType> const & value) {%>
 
 document_xarray(a, u) ::= <<
 void insert(std::shared_ptr\<Viper::AttachmentMutating> const & mutating, <a.keyType.type> const & key, Viper::UUId const & beforePosition, Viper::UUId const & newPosition, <a.documentType.field.elementType><a.documentType.field.passBy> value) {

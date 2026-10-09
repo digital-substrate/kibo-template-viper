@@ -98,7 +98,7 @@ field_subtract_set_decl(sf, a) ::= <%void subtract<sf.name;format="uf">(std::sha
 field_subtract_map(sf, a) ::= <<
 <field_subtract_map_decl(sf, a)>
 >>
-field_subtract_map_decl(sf, a) ::= <%void subtract<sf.name;format="uf">(std::shared_ptr\<Viper::AttachmentMutating> const & mutating, <a.keyType.type> const & key, std::set\<<sf.field.keyType>> const & value);%>
+field_subtract_map_decl(sf, a) ::= <%void subtract<sf.name;format="uf">(std::shared_ptr\<Viper::AttachmentMutating> const & mutating, <a.keyType.type> const & key, <sf.field.keySetType> const & value);%>
 
 document_aggregate(a) ::= <<
 <if(a.documentType.field.isSet)><a:document_set()><elseif(a.documentType.field.isMap)><a:document_map()><elseif(a.documentType.field.isXArray)><a:document_xarray()><endif>
@@ -115,7 +115,7 @@ void union_(std::shared_ptr\<Viper::AttachmentMutating> const & mutating, <a.key
 void update(std::shared_ptr\<Viper::AttachmentMutating> const & mutating, <a.keyType.type> const & key, <a.documentType.type> const & value);
 >>
 
-document_subtract_map(a) ::= <%void subtract(std::shared_ptr\<Viper::AttachmentMutating> const & mutating, <a.keyType.type> const & key, std::set\<<a.documentType.field.keyType>> const & value);%>
+document_subtract_map(a) ::= <%void subtract(std::shared_ptr\<Viper::AttachmentMutating> const & mutating, <a.keyType.type> const & key, <a.documentType.field.keySetType> const & value);%>
 
 document_xarray(a) ::= <<
 void insert(std::shared_ptr\<Viper::AttachmentMutating> const & mutating, <a.keyType.type> const & key, Viper::UUId const & beforePosition, Viper::UUId const & newPosition, <a.documentType.field.elementType><a.documentType.field.passBy> value);
