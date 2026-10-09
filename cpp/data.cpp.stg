@@ -10,6 +10,8 @@ unit(u) ::= <<
 #include "<u.include.model>"
 #include "<u.model.include.codec>"
 
+#include "Viper_StaticCompare.hpp"
+
 #include \<utility>
 
 namespace <u.model.namespace>::<u.name;format="lsc"> {
@@ -160,7 +162,7 @@ bool operator==(<s.name> const & l, <s.name> const & r) noexcept {
 bool operator!=(<s.name> const & l, <s.name> const & r) noexcept { return !(l == r); }
 bool operator\<(<s.name> const & l, <s.name> const & r) noexcept {
 <trunc(s.fields):field_less();separator="\n">
-    return l.<last(s.fields).name> \< r.<last(s.fields).name>;
+    return Viper::StaticCompare::less(l.<last(s.fields).name>, r.<last(s.fields).name>);
 }
 
 void hash(Viper::StaticHash::Hasher & h, <s.name> const & value) noexcept {
@@ -175,9 +177,9 @@ void hash(Viper::StaticHash::Hasher & h, <e.name> value) noexcept {
 }
 >>
 
-field_equal(f) ::= <%l.<f.name> == r.<f.name>%>
+field_equal(f) ::= <%Viper::StaticCompare::equal(l.<f.name>, r.<f.name>)%>
 field_less(f) ::= <<
-    if (l.<f.name> \< r.<f.name>) return true;
-    if (r.<f.name> \< l.<f.name>) return false;
+    if (Viper::StaticCompare::less(l.<f.name>, r.<f.name>)) return true;
+    if (Viper::StaticCompare::less(r.<f.name>, l.<f.name>)) return false;
 >>
 field_hash(f) ::= <<    hash(h, value.<f.name>);>>

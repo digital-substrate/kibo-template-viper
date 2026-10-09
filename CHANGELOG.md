@@ -94,6 +94,12 @@ Requires the kibo that follows 2.0.0 (`dsmName`, `--reserve`, `--spell`); the ki
 
 ### Fixed
 
+- **A C++ structure holding NaN equals itself, and its `<` is an order**: `operator==` and
+  `operator<` compared each field with the standard library's `==` and `<`, IEEE 754's, so a
+  structure holding NaN was unequal to itself and a `std::set` or `std::map` of it was undefined.
+  They go through the runtime's `Viper::StaticCompare`, field by field: every NaN is one datum, the
+  two zeros one, NaN below every number. The generated C++ requires the `viper` runtime
+  `>=1.2.29`, stated in its banner.
 - **An attachments module imports the units its field setters name**, in Python and TypeScript
   (and includes them in C++): a document field typed by a unit neither the key nor the document
   reaches named a module nothing imported, and `mypy --strict` refused the package.

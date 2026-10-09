@@ -166,7 +166,7 @@ same declarations in its header:
 | | |
 |---|---|
 | **consumes** | Template Model 2, exposed by kibo |
-| **cpp target** | the `viper` C++ runtime 1.2, with its static layer |
+| **cpp target** | the `viper` C++ runtime 1.2 (floor `>=1.2.29`), with its static layer |
 | **python target** | `dsviper` 1.2 (floor `>=1.2.29`) |
 | **typescript target** | `@digitalsubstrate/dsviper` 1.2 (floor `>=1.2.14`) |
 
@@ -189,7 +189,7 @@ targets:
 |--------------|--------------------------------------|---------------------|
 | `typescript` | `@digitalsubstrate/dsviper` (npm)    | `>=1.2.14 <1.3.0`   |
 | `python`     | `dsviper` (PyPI wheel)               | `>=1.2.29 <1.3`     |
-| `cpp`        | `viper` (C++ runtime)                | `1.2`, with the static layer |
+| `cpp`        | `viper` (C++ runtime)                | `>=1.2.29 <1.3`, with the static layer |
 
 Every generated file names its runtime and that range in its header, so a
 consumer holding generated code can answer the question without this table.
