@@ -38,9 +38,9 @@ directory, so two namespaces of one model may declare the same name.
 
 | target | features |
 |---|---|
-| `cpp` | `Base` (data, codec, model, any concept), `Fields`, `Attachments`, `Pool`, `PoolRemote` |
-| `python` | `Base`, `Pool`, `Wheel` |
-| `typescript` | `Base`, `Pool`, `Package` |
+| `cpp` | `Base` (data, codec, model, any concept), `Fields`, `Paths`, `Attachments`, `Pool`, `PoolRemote` |
+| `python` | `Base`, `Fields`, `Paths`, `Attachments`, `Pool`, `Wheel` |
+| `typescript` | `Base`, `Fields`, `Paths`, `Attachments`, `Pool`, `Package` |
 
 ```
 $ ./resolve.py cpp Attachments

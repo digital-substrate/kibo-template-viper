@@ -51,113 +51,10 @@ version as either one.
 
 ## [Unreleased]
 
-Requires the kibo that follows 2.0.0 (`dsmName`, `--reserve`, `--spell`); the kibo floor in
-`features.json` is set to it when both are tagged.
-
-### Added
-
-- **`Fields` and `Paths`, in the three targets**: per unit, `fields.S.f` holds each field's name as
-  the model writes it, and `paths.S.f` its path, built once from that name, each in a module of its
-  own. Code that handles a structure through the dynamic API completes and type-checks them, where
-  a string literal did not. 1.2 had the paths (`NS_Path_S.f`); they come back with the names.
-- **A field operation of an attachment addresses its field through `paths`**: `Attachments`
-  requires `Paths`, which requires `Fields`; the Python and TypeScript runtimes take the path, no
-  longer a field name looked up in a cache.
-- **`console.log` shows a TypeScript generated object as Node shows its own**: the class and
-  the fields (`StructureS { f_float: 1.5 }`), a container's elements (`Vector_of_uint8(3) [ 1,
-  2, 3 ]`, `Map_of_uint8_to_string(2) { 0 => 'Zero' }`), a key's instance id; it showed the
-  symbol holding the Viper value. `String()` and `toJSON()` are unchanged.
-- `reserved` in `features.json`: the names this pack's code takes, per target and per family of
-  names — the proxy's members for a field, the root modules for a namespace or a pool. A DSM
-  name meeting one stops the generation, saying how to spell it otherwise for that target.
-- `validation` in `features.json`, run by kibo-project once a target is written: Python imported,
-  every structure built (`python/validate.py`) and `mypy --strict`; TypeScript `tsc --noEmit`.
-- Every name sent to the runtime is written from the Template Model's `dsmName`: a target may
-  spell a DSM name otherwise (`[names.<target>.rename]`), the wire keeps the DSM name.
-
-### Changed
-
-- **Attachments are a feature of their own in Python and TypeScript (BREAKING)**, as in C++: `Base`
-  is the data alone, `Attachments` requires it and `Paths`. A unit's `__init__` / index no longer
-  imports them: `import pkg.<unit>.attachments` / `from "pkg/<unit>/attachments"`.
-- **A C++ field's path is `paths::S::f()`, in a header of its own (BREAKING)**, beside the name
-  `fields::S::f`, as 1.2 kept `Path` beside `Field`. `fields::S::fPath()` collided with the name of a
-  field `fPath` (`package` and `packagePath`): the header did not compile.
-- **The TypeScript package declares `@digitalsubstrate/dsviper` as a peer dependency**, no
-  longer a dependency: the project owns the runtime and imports it as its own, npm installs
-  one copy and refuses a version outside the range, where it could install a second copy the
-  native binding refuses to load.
-- **The Python optional's base class is `Option`**, no longer `Optional`: an attachment's `get`
-  was annotated `Optional[D]`, read as `typing.Optional`, a document or None, where it is a box
-  to open with `unwrap()`. The declared `Optional_of_…` classes, their methods and TypeScript
-  are unchanged.
-
-### Fixed
-
-- **A C++ structure holding NaN equals itself, and its `<` is an order**: `operator==` and
-  `operator<` compared each field with the standard library's `==` and `<`, IEEE 754's, so a
-  structure holding NaN was unequal to itself and a `std::set` or `std::map` of it was undefined.
-  They go through the runtime's `Viper::StaticCompare`, field by field: every NaN is one datum, the
-  two zeros one, NaN below every number. The generated C++ requires the `viper` runtime
-  `>=1.2.29`, stated in its banner.
-- **A C++ set or map keyed by a floating-point value finds NaN**: kibo spells it with
-  `Viper::StaticLess`, and a map's `subtract` takes its set of keys as `keySetType`, with the same
-  comparator, where it wrote `std::set<keyType>` (which kept `std::less`).
-- **An attachments module imports the units its field setters name**, in Python and TypeScript
-  (and includes them in C++): a document field typed by a unit neither the key nor the document
-  reaches named a module nothing imported, and `mypy --strict` refused the package.
-- **A Python tuple of one member type** (`tuple<float, float>`) no longer casts what its getters
-  already return: `mypy --strict` refused the redundant cast.
-- **A Python container's constructor takes any iterable of its elements**, as annotated: a
-  generator or a mapping view of generated values reached the runtime unwrapped and was refused.
-- **The Python validation checks the package by name** (`mypy -p`): given its directory, mypy
-  walked up into an output directory that is itself a package (a Blender add-on) and checked the
-  host application's code, and a package that was valid failed its validation.
-- **A C++ key converts implicitly to every ancestor**, as in 1.2: it converted to its parent only,
-  and a key passed where a grandparent's was expected no longer compiled.
-- **A TypeScript vector's `index()` is declared `number | undefined`**: from
-  `@digitalsubstrate/dsviper` 1.2.15 the binding answers `undefined` for an element the vector
-  does not hold, and the generated code no longer compiled against it. Below 1.2.15 it throws,
-  which the declaration admits.
-- A field operation (`union_f_set`, `update_f_map`, `insert_f_xarray`…) takes what the field's
-  setter takes: a native collection as well as the declared container, in Python and
-  TypeScript. The annotations refused what the runtime accepts.
-- A Python structure's constructor is annotated with `dsviper.Value`, as `wrap_value` is: a
-  value `Value.decode` returns type-checks. Another type still raises TypeError.
-- `keys`, `has`, `enumerate` and `delete` say what they return; `set` and `delete` on a
-  Database say they need a transaction.
-- A map's `values()` and `items()` say their values are the map's own, their keys copies; a
-  pool's `Remote` says the port is given as a string.
-- A namespace with types and no concept registers them: Python and TypeScript wrote a malformed
-  `register(` line.
-- A type already in upper snake case (`RGB`, `E`) keeps its name; its runtime-id constant takes
-  `_ID` (`RGB_ID`). TypeScript did not compile, Python failed at import.
-- A field or a pool parameter named like a name the generated body uses (`self`, `source`,
-  `dict`, `isinstance`, `super`, `dsviper`, `typing`) no longer breaks or changes what a Python
-  constructor or pool function does: those bodies use only names no DSM name can take.
-- **`from pkg.containers import *` brings the declared containers only.** The module had no
-  `__all__`, so a star import also brought the runtime's view classes and the modules it uses,
-  and its `Optional` and `Mapping` replaced `typing.Optional` and `typing.Mapping` in the
-  importing module. The view classes stay reachable as `containers.Optional`, … .
-- **The generated Python is fully annotated down to Python 3.10**, the oldest its
-  `pyproject.toml` declares. The runtime annotated the methods returning their own class with
-  `typing.Self`, which Python 3.11 introduced, so `mypy --strict --python-version 3.10`
-  reported 19 errors in every package. They are now annotated with a TypeVar bound to their
-  class. Nothing changes at run time: the package postpones its annotations, and its tests
-  already passed under 3.10.
-
-### Documented
-
-- **A map's `keys()`, `values()` and `items()` return lists** (`entries()` arrays in
-  TypeScript): a snapshot, so the map can change while one is iterated. This is what they
-  did; the map's documentation now says so.
-
-## [2.0.0] - 2026-10-05
-
-Requires **kibo 2** and its Template Model 2; these templates do not render against an
+Requires **kibo 2.0.0** or later and its Template Model 2; these templates do not render against an
 earlier generator. The runtimes they target stay on the 1.2 line, with floors:
-`dsviper >= 1.2.29`, `@digitalsubstrate/dsviper >= 1.2.14`, and a `viper` C++ runtime that
-carries its static layer. Every generated file names its runtime and its range in its
+`dsviper >= 1.2.29`, `@digitalsubstrate/dsviper >= 1.2.14`, and a `viper` C++ runtime `>= 1.2.29`,
+which carries the static layer and `Viper::StaticCompare`. Every generated file names its runtime and its range in its
 header. The generated surface changes throughout: code written against 1.2 output needs
 migrating.
 
@@ -188,7 +85,7 @@ two internal applications migrated to.
 | **TypeScript** | |
 | `Demo_Vector3`, `Demo_Level`, at the package root | `demo.Vector3`, `demo.Level`, from the unit `demo` (also the subpath `pkg/demo`) |
 | `Vector_uint8`, `Map_A_to_B`, … | `Vector_of_uint8`, `Map_of_A_to_B`, …, at the package root |
-| `attachments.player_Property.get(…)` | `demo.attachments.Player.property.get(…)` |
+| `attachments.player_Property.get(…)` | `attachments.Player.property.get(…)`, from `pkg/demo/attachments` |
 | `functionPoolRemotes.Tools`, `attachmentFunctionPoolRemotes.PlayerModel` | `tools.Remote`, `player_model.Remote`, from `pkg/pools` |
 | a pool function `add_vector`, `has_player` | `addVector`, `hasPlayer`, as the DSM spells them |
 | `p.vprValue` | `p.unwrapValue()` |
@@ -221,9 +118,9 @@ packager's to add.
   declare the same name, and a type no longer carries its namespace as a prefix
   (`Graph_VertexKey` becomes `graph.VertexKey`).
 - **Templates are flat, and a project selects features.** `features.json` maps each feature
-  to its templates and to the features it requires; `resolve.py` walks the closure. C++:
-  `Base`, `Fields`, `Attachments`, `Pool`, `PoolRemote`. Python: `Base`, `Pool`,
-  `Wheel`. TypeScript: `Base`, `Pool`, `Package`.
+  to its templates and to the features it requires; `resolve.py` walks the closure. Every
+  target: `Base`, `Fields`, `Paths`, `Attachments` (which requires `Paths`, which requires
+  `Fields`) and `Pool`; C++ adds `PoolRemote`, Python `Wheel`, TypeScript `Package`.
 - **`-n` names the generated infrastructure** — the C++ namespace, the Python and TypeScript
   package — and the application keeps its own namespace.
 - **Python and TypeScript carry a runtime instead of a class per container shape.** The
@@ -241,7 +138,8 @@ packager's to add.
 - **A read leaves the Viper world only at the primitive leaves.** bool, integers, floats,
   string and blob read as the host's own values; every other type reads as a view, and an
   optional is one of them: an `optional<T>` field reads as its declared class
-  (`containers.Optional_of_T`), and an attachment's `get` returns `Optional[D]` (Python) /
+  (`containers.Optional_of_T`), and an attachment's `get` returns `Option[D]` (Python: the base
+  class of the declared optionals, named so that it does not read as `typing.Optional`) /
   `Optional<D>` (TypeScript) — the runtime's own answer — rather than the document or
   `None`. The optional's truth is presence: an empty document, `0` or `""` is present, and
   a nil document is told apart from no document. Its `get()` answers as the runtime's does:
@@ -257,15 +155,17 @@ packager's to add.
   takes any value, a generated one included; a generated class is built from what it gives
   (`StructureS.wrap_value(value)`, `StructureS.wrapValue(value)`).
 - **The package leads to every unit.** TypeScript: the entry exports each unit as a namespace
-  (`features.demo.StructureU`), each unit its attachments (`demo.attachments.ConceptA`), and
-  `AnyConceptKey` and `AnyValue`; every top-level directory is a subpath export
-  (`features/demo`, `features/tools`). Python: a unit imports its `attachments` module.
+  (`features.demo.StructureU`), and `AnyConceptKey` and `AnyValue`; every top-level directory
+  is a subpath export (`features/demo`, `features/tools`). A unit's attachments are a module
+  of their own, as in C++, imported by name: `import pkg.<unit>.attachments` in Python,
+  `from "pkg/<unit>/attachments"` in TypeScript.
 - **What the annotations allow, the runtime takes**: a tuple keys a map of vectors, a
   structure's `dict` source holds generated values, a default club key reads back, and a
   removed xarray position reads `None`. `Key` is exported; a concept key built from another
   view's key points to `to_parent_key()` and `from_any_concept_key()`. A TypeScript `Mapping` iterates its `[key, value]`
   entries, as a `Map` does.
-- **The generated Python is fully annotated**, its runtime included: it passes mypy with
+- **The generated Python is fully annotated**, its runtime included, down to Python 3.10, the
+  oldest its `pyproject.toml` declares: it passes mypy with
   `--disallow-untyped-defs`, and an attachment's `get`, `has` and `keys` take a `Database` as
   well as an `AttachmentGetting`. A TypeScript proxy or view is not extensible, so assigning a
   misspelt field throws at the line, in plain JavaScript too.
@@ -398,7 +298,7 @@ packager's to add.
 - **The generated C++ crosses to a `Value`, and hashes, through the runtime's static layer**
   (`Viper_StaticType`, `Viper_StaticWriter`, `Viper_StaticReader`, `Viper_StaticHash`), found
   by argument-dependent lookup. A key hashes through `std::hash`; a child key widens
-  implicitly to its parent's, and a parent key narrows with `<Child>Key::from`.
+  implicitly to every ancestor's, as in 1.2, and a parent key narrows with `<Child>Key::from`.
 - **A default key names its concept**, as the 1.2 runtime stored it, and a structure field
   starts with the default value the model declares.
 - **Function pools use the DSM spelling** for their functions, in C++ and on the wire; each
@@ -409,6 +309,10 @@ packager's to add.
   mutable one, so a client holding a database calls a read remotely.
 - **The model's documentation reaches the generated code** in all three targets, and nothing
   else does: a generated file carries its header and the documentation the model declares.
+- **The TypeScript package declares `@digitalsubstrate/dsviper` as a peer dependency**, no
+  longer a dependency: the project owns the runtime and imports it as its own, npm installs
+  one copy and refuses a version outside the range, where it could install a second copy the
+  native binding refuses to load.
 
 ### Removed
 
@@ -422,7 +326,7 @@ packager's to add.
   into `containers` and the package entry point, with `definitions`.
 - **Python and TypeScript `database_attachments`, `path`, `value_type`, `definitions`**:
   absorbed into the attachments, the package entry point and the containers; field paths
-  are not exposed — the typed field operations cover them. The runtime ids `RuntimeIds`
+  move to `Paths`, field names to `Fields`. The runtime ids `RuntimeIds`
   held are exported by each unit, as the C++ `runtime_ids::` and TypeScript do:
   `features.demo.CONCEPT_A`, `features.demo.STRUCTURE_S`. An attachment carries its runtime
   id, which `AttachmentRuntimeIds` held, as the C++ attachment does:
@@ -447,11 +351,49 @@ packager's to add.
 
 ### Added
 
-- **`Fields`** (C++): every field's name and path as constants, for code that handles
-  structures through the dynamic API — 1.2's `Field` and `Path`, renamed: `Field::S::f`
-  becomes `fields::S::f`, a `std::string_view`, and `Path::S::f()` becomes `fields::S::fPath()`.
+- **`Fields` and `Paths`, in the three targets**: per unit, `fields.S.f` holds each field's name as
+  the model writes it, and `paths.S.f` its path, built once from that name, each in a module of its
+  own. Code that handles a structure through the dynamic API completes and type-checks them, where
+  a string literal did not. 1.2's `Field` and `Path` (C++ `Field::S::f` becomes `fields::S::f`, a
+  `std::string_view`, and `Path::S::f()` becomes `paths::S::f()`); 1.2's Python `NS_Path_S.f`
+  becomes `paths.S.f`. A field operation of an attachment addresses its field through them.
 - **`Package`** (TypeScript): `package.json` and `tsconfig.json` at the package root, the
   counterpart of Python's `Wheel`.
+- **`console.log` shows a TypeScript generated object as Node shows its own**: the class and
+  the fields (`StructureS { f_float: 1.5 }`), a container's elements (`Vector_of_uint8(3) [ 1,
+  2, 3 ]`, `Map_of_uint8_to_string(2) { 0 => 'Zero' }`), a key's instance id. `String()` and
+  `toJSON()` answer as the runtime value does.
+- `reserved` in `features.json`: the names this pack's code takes, per target and per family of
+  names — the proxy's members for a field, the root modules for a namespace or a pool. A DSM
+  name meeting one stops the generation, saying how to spell it otherwise for that target.
+- `validation` in `features.json`, run by kibo-project once a target is written: Python imported,
+  every structure built (`python/validate.py`) and `mypy --strict`; TypeScript `tsc --noEmit`.
+- Every name sent to the runtime is written from the Template Model's `dsmName`: a target may
+  spell a DSM name otherwise (`[names.<target>.rename]`), the wire keeps the DSM name.
+
+### Fixed
+
+- **A C++ structure holding NaN equals itself, and its `<` is an order**: `operator==` and
+  `operator<` compared each field with the standard library's `==` and `<`, IEEE 754's, so a
+  structure holding NaN was unequal to itself and a `std::set` or `std::map` of it was undefined.
+  They go through the runtime's `Viper::StaticCompare`, field by field: every NaN is one datum, the
+  two zeros one, NaN below every number. The generated C++ requires the `viper` runtime
+  `>=1.2.29`, stated in its banner.
+- **A C++ set or map keyed by a floating-point value finds NaN**: kibo spells it with
+  `Viper::StaticLess`, and a map's `subtract` takes its set of keys as `keySetType`, with the same
+  comparator, where it wrote `std::set<keyType>` (which kept `std::less`).
+- **A TypeScript vector's `index()` is declared `number | undefined`**: from
+  `@digitalsubstrate/dsviper` 1.2.15 the binding answers `undefined` for an element the vector
+  does not hold, and the generated code no longer compiled against it. Below 1.2.15 it throws,
+  which the declaration admits.
+
+### Documented
+
+- **A map's `keys()`, `values()` and `items()` return lists** (`entries()` arrays in
+  TypeScript): a snapshot, so the map can change while one is iterated. This is what they
+  did; the map's documentation now says so.
+- A map's `values()` and `items()` say their values are the map's own, their keys copies; a
+  pool's `Remote` says the port is given as a string.
 
 ## [1.2.5] - 2026-10-05
 
