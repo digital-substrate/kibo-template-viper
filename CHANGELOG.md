@@ -51,6 +51,9 @@ version as either one.
 
 ## [Unreleased]
 
+What changes from kibo-template-viper 1.2.5; "Migrating from 1.2" below is what a 1.2 client
+writes against 2.0.
+
 Requires **kibo 2.0.0** or later and its Template Model 2; these templates do not render against an
 earlier generator. The runtimes they target stay on the 1.2 line, with floors:
 `dsviper >= 1.2.29`, `@digitalsubstrate/dsviper >= 1.2.14`, and a `viper` C++ runtime `>= 1.2.29`,
@@ -244,7 +247,7 @@ packager's to add.
   `back`, `[i] =`, `del`, `+`, `+=`), a set a `SetView` (`add`, `remove`, `discard`, `pop`,
   `min`, `max`, the set operations, their `_update` forms and operators), a vec or a tuple a
   `Fixed` (`set`, `[i] =`; a tuple's `get_<i>()` typed by its member), a mat a `Matrix`
-  (`at`, `set`, `m[c, r]`, `m[c]`; `len` its columns, `size()` its elements, as the runtime); a map adds `popitem`, `min`, `max`, an xarray
+  (`at`, `set`, `m[c, r]`, `m[c]`; `len` its columns, `size()` its elements, as the runtime); a map adds `popitem`, `min`, `max` (its `keys()`, `values()` and `items()` are lists, a snapshot), an xarray
   `disable_position`, `extend`, `contains`; no view forwards an undeclared name through
   `__getattr__`, so mypy refuses a method the kind does not have. TypeScript: A vector is a `Vector` (`append`,
   `insert`, `set`, `extend`, `concat`, `pop`, `remove`, `clear`, `count`, `index`,
@@ -384,16 +387,7 @@ packager's to add.
   comparator, where it wrote `std::set<keyType>` (which kept `std::less`).
 - **A TypeScript vector's `index()` is declared `number | undefined`**: from
   `@digitalsubstrate/dsviper` 1.2.15 the binding answers `undefined` for an element the vector
-  does not hold, and the generated code no longer compiled against it. Below 1.2.15 it throws,
-  which the declaration admits.
-
-### Documented
-
-- **A map's `keys()`, `values()` and `items()` return lists** (`entries()` arrays in
-  TypeScript): a snapshot, so the map can change while one is iterated. This is what they
-  did; the map's documentation now says so.
-- A map's `values()` and `items()` say their values are the map's own, their keys copies; a
-  pool's `Remote` says the port is given as a string.
+  does not hold, which 1.2's `number` does not admit. Below 1.2.15 it throws.
 
 ## [1.2.5] - 2026-10-05
 
