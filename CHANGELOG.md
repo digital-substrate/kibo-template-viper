@@ -51,6 +51,8 @@ version as either one.
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-10-10
+
 What changes from kibo-template-viper 1.2.5; "Migrating from 1.2" below is what a 1.2 client
 writes against 2.0.
 
