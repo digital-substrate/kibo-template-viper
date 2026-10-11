@@ -71,7 +71,7 @@ def _type_blob() -> dsviper.TypeBlob: return dsviper.TypeBlob()
 def _type_blob_id() -> dsviper.TypeBlobId: return dsviper.TypeBlobId()
 def _type_commit_id() -> dsviper.TypeCommitId: return dsviper.TypeCommitId()
 def _type_uuid() -> dsviper.TypeUUId: return dsviper.TypeUUId()
-def _type_any() -> dsviper.TypeAny: return dsviper.TypeAny()
+def _type_Any() -> dsviper.TypeAny: return dsviper.TypeAny()
 def _type_AnyConceptKey() -> dsviper.TypeKey: return dsviper.TypeKey(dsviper.TypeAnyConcept())
 >>
 

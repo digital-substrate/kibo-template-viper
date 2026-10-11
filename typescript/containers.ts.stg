@@ -52,7 +52,7 @@ const type_blob = () => dsviper.Type.BLOB;
 const type_blob_id = () => dsviper.Type.BLOB_ID;
 const type_commit_id = () => dsviper.Type.COMMIT_ID;
 const type_uuid = () => dsviper.Type.UUID;
-const type_any = () => dsviper.Type.ANY;
+const type_Any = () => dsviper.Type.ANY;
 const type_AnyConceptKey = () => new dsviper.TypeKey(dsviper.Type.ANY_CONCEPT);
 >>
 

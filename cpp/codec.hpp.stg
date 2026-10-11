@@ -63,7 +63,7 @@ model(m) ::= <<
 //   encode / decode    a C++ value to a Viper::Value, and back, for any generated type
 //                      and any container of them -- this header brings every namespace's
 //                      codec, so including it is enough
-//   description, isKnown, isMember   what an untyped key names
+//   description, isKnown, isMember   what a key of any concept names
 //
 // JSON, XML and hashing are the runtime's, applied to what `encode` returns.
 

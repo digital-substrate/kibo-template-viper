@@ -95,8 +95,8 @@ field_read(f) ::= <%read(r, Viper::StaticType::tag\<<f.typeInNamespace>>{})%>
 plain_read_head(e) ::= <%<e.name> read(Viper::StaticReader::Reader & r, Viper::StaticType::tag\<<e.name>>) {%>
 
 model(m) ::= <<
-// <m.namespace>::codec -- the embedded definitions, the bridge's stream codec, and what an
-// untyped key names.
+// <m.namespace>::codec -- the embedded definitions, the bridge's stream codec, and what a
+// key of any concept names.
 //
 <banner(m)>
 

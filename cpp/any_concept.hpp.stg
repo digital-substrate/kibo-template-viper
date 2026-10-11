@@ -1,7 +1,7 @@
 import "banner.stg"
 
 model(m) ::= <<
-// <m.namespace>::AnyConceptKey -- an untyped key: an instance, and the concept it really is.
+// <m.namespace>::AnyConceptKey -- the key of any concept: an instance, and the concept it really is.
 //
 <banner(m)>
 

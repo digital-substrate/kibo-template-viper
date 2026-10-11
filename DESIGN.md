@@ -201,8 +201,8 @@ author and licence, not this pack's, and the runtime notice is the third party's
 `_codegen/` is small and generic; everything type-specific is generated.
 
 - **`Proxy`** — the base of every generated structure and key (§1.3). **`AnyConceptKey`**,
-  the type-erased concept key, lives here too: it is the join point of
-  `to_any_concept_key` / `from_any_concept_key` and belongs to no unit.
+  the key of any concept, which keeps the concept it really is, lives here too: it is the
+  join point of `to_any_concept_key` / `from_any_concept_key` and belongs to no unit.
 - **The registry** — each unit's `data` module ends with `register(...)`, mapping the
   runtime id of every concept, club, enumeration and structure it declares to its class.
   `set_definitions` / `setDefinitions` is called once by the root module.

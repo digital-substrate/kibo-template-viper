@@ -74,7 +74,7 @@ two internal applications migrated to.
 | **Python** | |
 | `from pkg.data import *`; `Demo_StructureS`, `Demo_ConceptAKey` | `from pkg import demo`; `demo.StructureS`, `demo.ConceptAKey` |
 | `Vector_uint8`, `Set_X`, `Map_A_to_B`, `Optional_X`, `XArray_X`, at the package root | `containers.Vector_of_uint8`, `Set_of_X`, `Map_of_A_to_B`, `Optional_of_X`, `XArray_of_X` |
-| `Variant_A_B`, `Tuple_a_b`, `Vec_uint8_2`, `Mat_uint8_2_3` | `containers.Variant_of_A_or_B`, `Tuple_of_a_and_b`, `Vec2_of_uint8`, `Mat2x3_of_uint8` |
+| `Variant_A_B`, `Tuple_a_b`, `Vec_uint8_2`, `Mat_uint8_2_3` | `containers.Variant2_of_A_or_B`, `Tuple2_of_a_and_b`, `Vec2_of_uint8`, `Mat2x3_of_uint8` |
 | `pkg.definitions.definitions()` | `pkg.definitions()` |
 | `RuntimeIds.Demo_StructureS` | `pkg.demo.STRUCTURE_S` |
 | `AttachmentRuntimeIds.Demo_ConceptA_Properties` | `pkg.demo.attachments.ConceptA.properties.runtime_id` |
@@ -151,7 +151,7 @@ packager's to add.
   the element, the default when nil, and raises when nil with no default. A write still takes what the runtime
   decodes: an optional field accepts its declared class, its element, or `None`
   (`undefined`).
-  A variant reads as its declared class (`containers.Variant_of_A_or_B`), which tells, reads
+  A variant reads as its declared class (`containers.Variant2_of_A_or_B`), which tells, reads
   and writes each alternative by a generated method named after it — `is_Demo_ConceptAKey()`,
   `get_…`, `set_…` in Python, `isDemo_ConceptAKey()`, … in TypeScript — and changes in place;
   the dynamic attribute lookup that served them is gone. An any reads as `AnyValue`, a view
