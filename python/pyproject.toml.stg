@@ -16,9 +16,9 @@ license = { text = "Proprietary" }
 dependencies = ["dsviper >= 1.2.29, \< 1.3"]
 
 [tool.setuptools.packages.find]
-include = ["<m.namespace;format="snake">", "<m.namespace;format="snake">.*"]
+include = ["<m.namespace>", "<m.namespace>.*"]
 
 [tool.setuptools.package-data]
-"<m.namespace;format="snake">" = ["py.typed", "*.pyi"]
+"<m.namespace>" = ["py.typed", "*.pyi"]
 
 >>
