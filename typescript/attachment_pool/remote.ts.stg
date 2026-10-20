@@ -3,6 +3,7 @@ import "../banner.stg"
 attachment_pool(p) ::= <<
 <preamble(p)>
 
+<if(p.hasDocumentation)>/** <p.documentation;format="comment"> */<endif>
 export class Remote {
     private readonly service: dsviper.ServiceRemote;
 
@@ -33,7 +34,6 @@ export class Remote {
 preamble(p) ::= <<
 <banner(p.model)>
 
-<if(p.hasDocumentation)>/** <p.documentation;format="comment"> */<endif>
 import dsviper from "@digitalsubstrate/dsviper";
 
 import type * as containers from "../containers.js";
