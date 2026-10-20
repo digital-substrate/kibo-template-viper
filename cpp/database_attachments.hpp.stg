@@ -1,0 +1,58 @@
+import "banner.stg"
+
+unit(u) ::= <<
+// <u.name> database attachments -- the documents this namespace attaches to concepts, in a Viper::Database.
+//
+<banner(u.model)>
+//
+// The CRUD usage: read, write and delete whole documents of a `Viper::Database`, inside an
+// open transaction for a write. One scope per attachment,
+// `<u.model.namespace>::<u.name;format="lsc">::database_attachments::\<Concept>::\<attachment>`. A concept declared in
+// another namespace is spelled `\<Namespace>_\<Concept>` there, so that adding an attachment never
+// renames another. A Commit database is the other usage: its own scopes, `commit_attachments`.
+
+#ifndef <u.guard.database_attachments>
+#define <u.guard.database_attachments>
+
+#include "<u.include.data>"
+<u.dependencies.attachments:{d|#include "<d.include.data>"};separator="\n">
+
+#include "Viper_Attachment.hpp"
+#include "Viper_Database.hpp"
+#include "Viper_UUId.hpp"
+
+#include \<map>
+
+#include \<cstdint>
+#include \<optional>
+#include \<set>
+
+<u.attachments:attachment(u);separator="\n\n">
+
+#endif
+
+>>
+
+attachment(a, u) ::= <<
+<if(a.hasDocumentation)>/** <a.documentation> */
+<endif>namespace <u.model.namespace>::<u.name;format="lsc">::database_attachments::<a.conceptScope>::<a.name> {
+
+extern Viper::UUId const runtimeId;
+
+std::shared_ptr\<Viper::Attachment> const & descriptor();
+
+<keys(a)>
+
+bool has(std::shared_ptr\<Viper::Database const> const & database, <a.keyType.type> const & key);
+
+<get(a)>
+
+bool set(std::shared_ptr\<Viper::Database> const & database, <a.keyType.type> const & key, <a.documentType.type> const & value);
+
+bool del(std::shared_ptr\<Viper::Database> const & database, <a.keyType.type> const & key);
+
+} // namespace <u.model.namespace>::<u.name;format="lsc">::database_attachments::<a.conceptScope>::<a.name>
+>>
+
+keys(a) ::= <%std::set\<<a.keyType.type>> keys(std::shared_ptr\<Viper::Database const> const & database);%>
+get(a) ::= <%std::optional\<<a.documentType.type>> get(std::shared_ptr\<Viper::Database const> const & database, <a.keyType.type> const & key);%>

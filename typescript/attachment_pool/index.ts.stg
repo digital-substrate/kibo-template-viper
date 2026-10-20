@@ -1,0 +1,8 @@
+import "../banner.stg"
+
+attachment_pool(p) ::= <<
+<banner(p.model)>
+
+export * from "./remote.js";
+
+>>

@@ -51,6 +51,33 @@ version as either one.
 
 ## [Unreleased]
 
+### Changed
+
+- **Attachments are generated per usage.** Viper has two databases that share nothing, a
+  `Database` read and written whole and a Commit database read through a state and written by
+  mutations; each gets its own feature and its own module, with only its own operations.
+  `Attachments` is replaced by:
+  - `DatabaseAttachments` (requires `Base`): `<unit>::database_attachments` in C++,
+    `<unit>.database_attachments` in Python, `<unit>/database_attachments` in TypeScript;
+    `keys`, `has`, `get`, `enumerate`, `set`, `del` (`delete` in Python) over a database.
+  - `CommitAttachments` (requires `Base` and `Paths`): `<unit>::commit_attachments`,
+    `<unit>.commit_attachments`, `<unit>/commit_attachments`; `keys`, `has`, `get`,
+    `enumerate`, `diff_keys` over a state, `set`, `diff` and the field mutations over an
+    `AttachmentMutating`.
+
+  The first parameter is named for what it takes, `database` or `state`. The runtime's
+  `AttachmentProxy` becomes `AttachmentBase`, which holds the attachment's runtime id and
+  descriptor; the operations are the generated classes'.
+- **Function pools and attachment pools are separate features**, each with a host side and a
+  client side: `Pool`, `PoolRemote`, `AttachmentPool`, `AttachmentPoolRemote` (the attachment
+  ones require `CommitAttachments`).
+  - C++: an attachment pool renders to `<pool>_attachment_pool` and `<pool>_attachment_remote`.
+  - Python: a pool is a package of two modules, `<pool>.embedded` (`Pool`, in the host's
+    embedded Python) and `<pool>.remote` (`Remote`); its `__init__` re-exports nothing.
+  - TypeScript has the client side only, as no host embeds Node: `PoolRemote` renders
+    `pools` and `<pool>/remote`, `AttachmentPoolRemote` renders `attachment_pools` and
+    `<pool>/remote`. `Pool` is removed.
+
 ## [2.0.0] - 2026-10-11
 
 What changes from kibo-template-viper 1.2.5; "Migrating from 1.2" below is what a 1.2 client

@@ -1,0 +1,75 @@
+import "banner.stg"
+
+unit(u) ::= <<
+<banner(u.model)>
+
+"""The <u.name> attachments in a Database: read, write and delete whole documents.
+
+A Database needs the model first: db.extend_definitions(definitions()). A write goes inside a
+transaction. A Commit database is the other usage: <u.name;format="snake">.commit_attachments."""
+
+from __future__ import annotations
+
+import dsviper
+
+from .. import definitions
+import typing
+
+from .._codegen import AnyConceptKey, AnyValue, AttachmentBase, Option
+from .. import containers
+from .. import <u.name;format="snake">
+<u.dependencies.attachments:{d|from .. import <d.name;format="snake">};separator="\n">
+<if(u.attachmentScopes)>
+
+<u.attachmentScopes:by_concept(u);separator="\n\n">
+<endif>
+
+>>
+
+by_concept(s, u) ::= <<
+class <s.name>:
+<s.attachments:one(s);separator="\n\n">
+>>
+
+one(a, s) ::= <<
+    class _<a.name;format="uf">(AttachmentBase):
+        """<if(a.hasDocumentation)><a.documentation;format="docstring">
+
+        <endif>The attachment <a.representation>, in a Database."""
+
+        def keys(self, database: dsviper.Database) -> <keyset(s)>:
+            """Return the keys that hold a document. The set is taken now: a later write does
+            not reach it."""
+            return typing.cast("<keyset(s)>", self._keys(database))
+
+        def has(self, database: dsviper.Database, key: <key(s)>) -> bool:
+            """Return True if a document is stored at key."""
+            return self._has(database, key)
+
+        def get(self, database: dsviper.Database, key: <key(s)>) -> Option[<document(a)>]:
+            """Return the stored document in an Option, empty when none is stored: unwrap()
+            opens it, is_nil() tells it is empty. It is a copy: changing it does not change what
+            is stored; write it back with set."""
+            return typing.cast("Option[<document(a)>]", self._get(database, key))
+
+        def enumerate(self, database: dsviper.Database) -> list[tuple[<key(s)>, <document(a)>]]:
+            """Return every (key, document) pair stored. Each document is a copy, as get returns
+            it."""
+            return typing.cast("list[tuple[<key(s)>, <document(a)>]]", self._enumerate(database.attachment_getting()))
+
+        def set(self, database: dsviper.Database, key: <key(s)>, value: <input(a)>) -> bool:
+            """Write the document, inside a transaction; True once written, a refusal raises.
+            The document is copied in: changing it afterwards does not reach what was written."""
+            return self._set_in_database(database, key, value)
+
+        def delete(self, database: dsviper.Database, key: <key(s)>) -> bool:
+            """Delete the document at key, inside a transaction; True if one was there."""
+            return self._delete(database, key)
+
+    <a.name;format="snake"> = _<a.name;format="uf">(dsviper.ValueUUId.create("<a.runtimeId>"), definitions)
+>>
+
+key(s) ::= <%<s.keyType.bindingType.qualified>%>
+keyset(s) ::= <%<s.keyType.bindingKeySetType.qualified>%>
+document(a) ::= <%<a.documentType.bindingType.qualified>%>
+input(a) ::= <%<a.documentType.bindingType.inputQualified>%>

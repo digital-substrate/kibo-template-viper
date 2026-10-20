@@ -1,0 +1,100 @@
+import "banner.stg"
+
+attachment_pool(p) ::= <<
+<preamble(p, "AttachmentFunctionPool")>
+#include "Viper_AttachmentGettingFunction.hpp"
+#include "Viper_AttachmentMutatingFunction.hpp"
+
+namespace <p.model.namespace>::<p.name;format="lsc"> {
+
+namespace {
+
+<p.functions:attachment_function(p);separator="\n\n">
+
+} // namespace
+
+std::shared_ptr\<Viper::AttachmentFunctionPool> pool() {
+    static auto const instance = [] {
+        auto const created = Viper::AttachmentFunctionPool::make(poolId, "<p.dsmName>", "<p.documentation;format="string">");
+<p.functions:function_add();separator="\n">
+        return created;
+    }();
+    return instance;
+}
+
+} // namespace <p.model.namespace>::<p.name;format="lsc">
+
+>>
+
+preamble(p, kind) ::= <<
+// <p.name> -- the pool's bridge between the static and the dynamic world.
+//
+<banner(p.model)>
+
+#include "<p.include.attachment_pool>"
+
+<p.dependencies.functions:{d|#include "<d.include.codec>"};separator="\n">
+<p.dependencies.functions:{d|#include "<d.include.model>"};separator="\n">
+
+#include "<p.model.include.codec>"
+
+#include "Viper_<kind>.hpp"
+#include "Viper_FunctionPrototype.hpp"
+#include "Viper_ValueVoid.hpp"
+>>
+
+attachment_function(f, p) ::= <<
+class <f.name;format="uf"> final : public Viper::Attachment<f.interfaceType>Function {
+public:
+    <make(f)>
+
+    explicit <f.name;format="uf">(std::shared_ptr\<Viper::FunctionPrototype> prototype)
+    : Viper::Attachment<f.interfaceType>Function{std::move(prototype), "<f.documentation;format="string">"} {}
+
+protected:
+    <attachment_checked_call(f)>
+<if(f.parameters)>
+<f.parameters:{a|<a:decode(p, i0)>};separator="\n">
+
+<endif>
+<if(f.isVoid)>
+        <f.name>(attachment<f.interfaceType><if(f.parameters)>, <f.parameters:{a|<a.name>};separator=", "><endif>);
+        return Viper::ValueVoid::Instance();
+<else>
+        return <p.model.namespace>::codec::encode(<f.name>(attachment<f.interfaceType><if(f.parameters)>, <f.parameters:{a|<a.name>};separator=", "><endif>));
+<endif>
+    }
+};
+>>
+
+decode(a, p, i) ::= <<
+        <decode_body(a, p, i)>
+>>
+decode_body(a, p, i) ::= <%auto const <a.name>{<p.model.namespace>::codec::decode\<<a.type>>(args.at(<i>))};%>
+
+make(f) ::= <<
+<make_head(f)>
+    <make_body(f)>
+        "<f.dsmName>",
+        {<f.parameters:parameter();separator=",\n         ">},
+        <return_type(f)>));
+}
+>>
+
+make_head(f) ::= <%static std::shared_ptr\<<f.name;format="uf">> make() {%>
+make_body(f) ::= <%return std::make_shared\<<f.name;format="uf">>(Viper::FunctionPrototype::make(%>
+
+parameter(a) ::= <%{"<a.dsmName>", type(Viper::StaticType::tag\<<a.type>>{})}%>
+return_type(f) ::= <%<if(f.isVoid)>Viper::TypeVoid::Instance()<else>type(Viper::StaticType::tag\<<f.type>>{})<endif>%>
+
+checked_call_head() ::= <%std::shared_ptr\<Viper::Value> checkedCall(%>
+attachment_checked_call(f) ::= <<
+<checked_call_head()>
+        <attachment_checked_call_interface(f)>
+        <attachment_checked_call_args()>
+>>
+
+attachment_checked_call_interface(f) ::= <%std::shared_ptr\<Viper::Attachment<f.interfaceType>> const & attachment<f.interfaceType>,%>
+attachment_checked_call_args() ::= <%std::vector\<std::shared_ptr\<Viper::Value>> const & args) const override {%>
+
+function_add(f) ::= <<        created->add(<f.name;format="uf">::make());>>

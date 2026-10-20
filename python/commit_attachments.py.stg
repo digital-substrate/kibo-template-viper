@@ -1,0 +1,154 @@
+import "banner.stg"
+
+unit(u) ::= <<
+<banner(u.model)>
+
+"""The <u.name> attachments in a Commit database: read a state, write by mutations.
+
+A read takes an AttachmentGetting: a CommitState's or a mutable state's attachment_getting().
+A write takes an AttachmentMutating, which a CommitMutableState gives (attachment_mutating()):
+dsviper.CommitMutableState(dsviper.CommitStateBuilder.initial_state(db)) for the first commit,
+CommitStateBuilder.state(db, commit_id) to carry on from the last one. The database needs the
+model first: db.extend_definitions(definitions()). Nothing is stored until the state is
+committed: db.commit_mutations(label, state), or a CommitStore's dispatch. A Database is the
+other usage: <u.name;format="snake">.database_attachments."""
+
+from __future__ import annotations
+
+import dsviper
+
+from .. import definitions
+import typing
+
+from .._codegen import AnyConceptKey, AnyValue, AttachmentBase, Option
+from .. import containers
+from .. import <u.name;format="snake">
+<u.dependencies.attachmentFields:{d|from .. import <d.name;format="snake">};separator="\n">
+from . import paths as _<u.name;format="snake">_paths
+<u.dependencies.attachments:{d|from ..<d.name;format="snake"> import paths as _<d.name;format="snake">_paths};separator="\n">
+<if(u.attachmentScopes)>
+
+<u.attachmentScopes:by_concept(u);separator="\n\n">
+<endif>
+
+>>
+
+by_concept(s, u) ::= <<
+class <s.name>:
+<s.attachments:one(s);separator="\n\n">
+>>
+
+one(a, s) ::= <<
+    class _<a.name;format="uf">(AttachmentBase):
+        """<if(a.hasDocumentation)><a.documentation;format="docstring">
+
+        <endif>The attachment <a.representation>, in a Commit database."""
+
+        def keys(self, state: dsviper.AttachmentGetting) -> <keyset(s)>:
+            """Return the keys that hold a document in this state. The set is taken now: a later
+            mutation does not reach it."""
+            return typing.cast("<keyset(s)>", self._keys(state))
+
+        def has(self, state: dsviper.AttachmentGetting, key: <key(s)>) -> bool:
+            """Return True if a document is stored at key in this state."""
+            return self._has(state, key)
+
+        def get(self, state: dsviper.AttachmentGetting, key: <key(s)>) -> Option[<document(a)>]:
+            """Return the document in an Option, empty when none is stored: unwrap() opens it,
+            is_nil() tells it is empty. It is a copy: changing it changes nothing; write it back
+            with set, or mutate a field."""
+            return typing.cast("Option[<document(a)>]", self._get(state, key))
+
+        def enumerate(self, state: dsviper.AttachmentGetting) -> list[tuple[<key(s)>, <document(a)>]]:
+            """Return every (key, document) pair of this state. Each document is a copy, as get
+            returns it."""
+            return typing.cast("list[tuple[<key(s)>, <document(a)>]]", self._enumerate(state))
+
+        def diff_keys(self, current: dsviper.AttachmentGetting, other: dsviper.AttachmentGetting
+                      ) -> tuple[<keyset(s)>, <keyset(s)>, <keyset(s)>, <keyset(s)>]:
+            """Return (added, removed, different, same), from current, the reference, to other:
+            the keys other holds and current does not, those current holds and other does not,
+            those whose documents differ, those whose documents are equal. For what changed since
+            the last load, pass the last loaded state first."""
+            return typing.cast("tuple[<keyset(s)>, <keyset(s)>, <keyset(s)>, <keyset(s)>]", self._diff_keys(current, other))
+
+        def set(self, state: dsviper.AttachmentMutating, key: <key(s)>, value: <input(a)>) -> None:
+            """Set the document: one mutation, stored when the state is committed. The document is
+            copied in: changing it afterwards does not reach what was written."""
+            self._set_in_state(state, key, value)
+
+        def diff(self, state: dsviper.AttachmentMutating, key: <key(s)>, value: <input(a)>, *, recursive: bool = False) -> None:
+            """Write only what differs between value and the stored document. recursive computes
+            the difference field by field inside a structure, instead of replacing it whole."""
+            self._diff(state, key, value, recursive)
+        <if(a.documentType.isStructure)><a.documentType.structure.fields:field(a, s);separator="\n"><elseif(a.documentType.field.isNotBox)><document_ops(a, s)><endif>
+
+    <a.name;format="snake"> = _<a.name;format="uf">(dsviper.ValueUUId.create("<a.runtimeId>"), definitions)
+>>
+
+field(sf, a, s) ::= <<
+
+def set_<sf.name;format="snake">(self, state: dsviper.AttachmentMutating, key: <key(s)>, value: <sf.bindingType.inputQualified>) -> None:
+    """Write value in the field <sf.name;format="snake">. A key that holds no document is left as it
+    is, without a word: set the document first."""
+    self._update(state, key, <field_path(sf, a)>, value)<if(sf.field.isSet)>
+
+<set_ops(sf.field, s, {<field_path(sf, a)>}, {_<sf.name;format="snake">})><elseif(sf.field.isMap)>
+
+<map_ops(sf.field, s, {<field_path(sf, a)>}, {_<sf.name;format="snake">})><elseif(sf.field.isXArray)>
+
+<xarray_ops(sf.field, s, {<field_path(sf, a)>}, {_<sf.name;format="snake">})><endif>
+>>
+
+field_path(sf, a) ::= <%_<a.documentType.structure.namespace;format="snake">_paths.<a.documentType.structure.name>.<sf.name;format="snake">%>
+
+document_ops(a, s) ::= <<
+
+<if(a.documentType.field.isSet)><set_ops(a.documentType.field, s, "None", "")><elseif(a.documentType.field.isMap)><map_ops(a.documentType.field, s, "None", "")><elseif(a.documentType.field.isXArray)><xarray_ops(a.documentType.field, s, "None", "")><endif>
+>>
+
+set_ops(t, s, path, suffix) ::= <<
+def union<suffix>(self, state: dsviper.AttachmentMutating, key: <key(s)>, value: <t.bindingType.inputQualified>) -> None:
+    """Add the elements of value to the set."""
+    self._union_in_set(state, key, <path>, value)
+
+def subtract<suffix>(self, state: dsviper.AttachmentMutating, key: <key(s)>, value: <t.bindingType.inputQualified>) -> None:
+    """Remove the elements of value from the set."""
+    self._subtract_in_set(state, key, <path>, value)
+>>
+
+map_ops(t, s, path, suffix) ::= <<
+def union<suffix>(self, state: dsviper.AttachmentMutating, key: <key(s)>, value: <t.bindingType.inputQualified>) -> None:
+    """Add the entries of value to the map, replacing the map keys already there."""
+    self._union_in_map(state, key, <path>, value)
+
+def subtract<suffix>(self, state: dsviper.AttachmentMutating, key: <key(s)>, value: <t.bindingKeySetType.inputQualified>) -> None:
+    """Remove the entries whose map key is in value."""
+    self._subtract_in_map(state, key, <path>, value)
+
+def update<suffix>(self, state: dsviper.AttachmentMutating, key: <key(s)>, value: <t.bindingType.inputQualified>) -> None:
+    """Update the entries of the map from those of value. Only map keys already there are
+    written; a map key only value carries is ignored: union inserts it."""
+    self._update_in_map(state, key, <path>, value)
+>>
+
+xarray_ops(t, s, path, suffix) ::= <<
+def insert<suffix>(self, state: dsviper.AttachmentMutating, key: <key(s)>, before_position: dsviper.ValueUUId, new_position: dsviper.ValueUUId, value: <t.bindingElementType.inputQualified>) -> None:
+    """Insert value at new_position, before before_position. A new_position the xarray holds,
+    or held before a removal, keeps its place; a before_position it does not hold leaves it
+    unchanged."""
+    self._insert_in_xarray(state, key, <path>, before_position, new_position, value)
+
+def update<suffix>(self, state: dsviper.AttachmentMutating, key: <key(s)>, position: dsviper.ValueUUId, value: <t.bindingElementType.inputQualified>) -> None:
+    """Write value at position."""
+    self._update_in_xarray(state, key, <path>, position, value)
+
+def remove<suffix>(self, state: dsviper.AttachmentMutating, key: <key(s)>, position: dsviper.ValueUUId) -> None:
+    """Remove position."""
+    self._remove_in_xarray(state, key, <path>, position)
+>>
+
+key(s) ::= <%<s.keyType.bindingType.qualified>%>
+keyset(s) ::= <%<s.keyType.bindingKeySetType.qualified>%>
+document(a) ::= <%<a.documentType.bindingType.qualified>%>
+input(a) ::= <%<a.documentType.bindingType.inputQualified>%>

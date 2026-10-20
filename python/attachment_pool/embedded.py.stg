@@ -1,0 +1,22 @@
+import "../pool_common.stg"
+
+attachment_pool(p) ::= <<
+<preamble(p)>
+
+class Pool:
+    """The attachment pool a host application exposes to its embedded Python. A function
+    that mutates takes an AttachmentMutating, one that reads an AttachmentGetting, as the
+    package's commit_attachments do. From a client of a service, the pool's remote module."""
+
+    __slots__ = ("_funcs",)
+
+    NAME = "<p.dsmName>"
+    UUID = dsviper.ValueUUId.create("<p.uuid>")
+
+    def __init__(self, pool: dsviper.AttachmentFunctionPool):
+        """pool comes from the C++ host: the wheel cannot build one."""
+        self._funcs = pool.funcs
+
+<p.functions:attachment_function();separator="\n\n">
+
+>>

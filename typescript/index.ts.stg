@@ -6,25 +6,28 @@ model(m) ::= <<
  * The <m.namespace> model, generated over `@digitalsubstrate/dsviper`.
  *
  * Each DSM namespace is a namespace of this module holding its structures, enumerations and
- * keys: <m.nameSpaces:{u|`<u.name;format="snake">`};separator=", ">. Its attachments, rendered with the
- * Attachments feature, are imported by their path, `<m.namespace;format="snake">/\<unit>/attachments`.
+ * keys: <m.nameSpaces:{u|`<u.name;format="snake">`};separator=", ">. Its attachments are a module per
+ * usage, imported by its path: `<m.namespace;format="snake">/\<unit>/database_attachments` over a
+ * dsviper.Database (the DatabaseAttachments feature), `<m.namespace;format="snake">/\<unit>/commit_attachments`
+ * over a Commit state (the CommitAttachments feature).
  * One class per container shape the model uses, in a structure, an attachment or a pool, is
  * exported here; another shape is built with the runtime, from Viper values:
  * `dsviper.Value.create(new dsviper.TypeSet(<if(m.concepts)><first(m.concepts):{c|<c.namespace;format="snake">.<c.name>Key}><else>Cls<endif>.type()), keys.map((k) => k.unwrapValue()))`.
  * `definitions()` is the model.<if(m.functionPools || m.attachmentFunctionPools)>
- * The pools, rendered with the Pool feature, are imported from `<m.namespace;format="snake">/pools`:
+ * The function pools are imported from `<m.namespace;format="snake">/pools`, the attachment pools
+ * from `<m.namespace;format="snake">/attachment_pools`:
  * <[m.functionPools, m.attachmentFunctionPools]:{p|`<p.name;format="snake">`};separator=", ">.<endif>
 
  *
  * A document is stored in a dsviper database that knows the model, and read and written
- * through an attachment, given the database or a state:
+ * through an attachment; over a Database:
  *
  * ```ts
  * import dsviper from "@digitalsubstrate/dsviper";
  * import { definitions } from "<m.namespace;format="snake">";
- * import * as attachments from "<m.namespace;format="snake">/<if(m.attachments)><first(m.attachments):{a|<a.namespace;format="snake">}><else><first(m.nameSpaces):{u|<u.name;format="snake">}><endif>/attachments";
+ * import * as attachments from "<m.namespace;format="snake">/<if(m.attachments)><first(m.attachments):{a|<a.namespace;format="snake">}><else><first(m.nameSpaces):{u|<u.name;format="snake">}><endif>/database_attachments";
  *
- * const db = dsviper.Database.createInMemory();   // a CommitDatabase keeps every commit
+ * const db = dsviper.Database.createInMemory();
  * db.extendDefinitions(definitions());
  * db.beginTransaction();
  * <if(m.attachments)><first(m.attachments):{a|attachments.<a.conceptScope>.<a.name;format="lf">}><else>attachments.Concept.attachment<endif>.set(db, key, document);
@@ -50,7 +53,7 @@ export { definitions } from "./definitions.js";
 export * from "./containers.js";
 export { AnyConceptKey, AnyValue } from "./_codegen/registry.js";
 export { Key } from "./_codegen/proxy.js";
-export type { AttachmentProxy } from "./_codegen/attachment.js";
+export { AttachmentBase } from "./_codegen/attachment.js";
 <m.nameSpaces:{u|export * as <u.name;format="snake"> from "./<u.name;format="snake">/index.js";};separator="\n">
 
 >>

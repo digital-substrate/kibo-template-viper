@@ -1,0 +1,10 @@
+import "../banner.stg"
+
+attachment_pool(p) ::= <<
+<banner(p.model)>
+
+"""The attachment pool <p.dsmName>: its embedded module (Pool, the host's pool in its embedded
+Python, the AttachmentPool feature) and its remote module (Remote, for a client of a service,
+the AttachmentPoolRemote feature), each rendered with its feature."""
+
+>>

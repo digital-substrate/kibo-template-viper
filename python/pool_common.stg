@@ -1,0 +1,52 @@
+import "banner.stg"
+
+// What the embedded and the remote classes of a pool share.
+
+preamble(p) ::= <<
+<banner(p.model)>
+
+<if(p.hasDocumentation)>"""<p.documentation;format="docstring">"""<endif>
+
+from __future__ import annotations
+
+import typing
+
+import dsviper
+
+from typing import cast as _cast
+
+from .._codegen import AnyConceptKey, AnyValue
+from .._codegen import unwrap as _unwrap, wrap as _wrap
+
+if typing.TYPE_CHECKING:
+    from .. import containers
+
+<p.dependencies.functions:{d|from .. import <d.name;format="snake">};separator="\n">
+>>
+
+function(f) ::= <<
+    def <f.name;format="snake">(_self<if(f.parameters)>, <f.parameters:parameter();separator=", "><endif>) -> <ret(f)>:
+<doc(f)>        <call(f)>
+>>
+
+doc(f) ::= <<
+<if(f.hasDocumentation)>        """<f.documentation;format="docstring">"""
+<endif>
+>>
+
+attachment_function(f) ::= <<
+    def <f.name;format="snake">(_self, attachment_<f.interfaceType;format="snake">: dsviper.Attachment<f.interfaceType><if(f.parameters)>, <f.parameters:parameter();separator=", "><endif>) -> <ret(f)>:
+<doc(f)>        <attachment_call(f)>
+>>
+
+parameter(a) ::= <%<a.name;format="snake">: <hint(a.bindingType)>%>
+ret(f) ::= <%<if(f.isVoid)>None<else><hint(f.returnBindingType)><endif>%>
+argument(a) ::= <%<if(a.bindingType.useProxy)>_unwrap(<a.name;format="snake">)<else><a.name;format="snake"><endif>%>
+
+call(f) ::= <%<if(f.isVoid)>_self._funcs["<f.dsmName>"](<f.parameters:argument();separator=", ">)<else>return <wrap(f)>_self._funcs["<f.dsmName>"](<f.parameters:argument();separator=", ">)<unwrap(f)><endif>%>
+attachment_call(f) ::= <%<attachment_invoke(f, {attachment_<f.interfaceType;format="snake">})>%>
+attachment_invoke(f, context) ::= <%<if(f.isVoid)>_self._funcs["<f.dsmName>"](<context><if(f.parameters)>, <endif><f.parameters:argument();separator=", ">)<else>return <wrap(f)>_self._funcs["<f.dsmName>"](<context><if(f.parameters)>, <endif><f.parameters:argument();separator=", ">)<unwrap(f)><endif>%>
+wrap(f) ::= <%_cast("<ret(f)>", _wrap(%>
+unwrap(f) ::= <%))%>
+
+hint(b) ::= <%<b.annotation>%>

@@ -1,19 +1,10 @@
 import "../banner.stg"
 
 pool(p) ::= <<
-<preamble(p.model)>
+<banner(p.model)>
 
-from .pool import Pool, Remote
-
-__all__ = ["Pool", "Remote"]
-
->>
-
-attachment_pool(p) ::= <<
-<pool(p)>
->>
-
-preamble(m) ::= <<
-<banner(m)>
+"""The pool <p.dsmName>: its embedded module (Pool, the host's pool in its embedded Python, the
+Pool feature) and its remote module (Remote, for a client of a service, the PoolRemote
+feature), each rendered with its feature."""
 
 >>

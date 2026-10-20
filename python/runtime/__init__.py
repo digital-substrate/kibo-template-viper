@@ -1,7 +1,7 @@
 # The runtime of the kibo-template-viper 2.0.0 Python templates (MIT), copied into every
 # generated package. Do not edit by hand.
 
-from .attachment import AttachmentProxy
+from .attachment import AttachmentBase
 from .container import (AnyValue, Fixed, Mapping, Matrix, Option, Ordered, Sequence, SetView, Variant, Vector, View,
                         Declared, declare)
 from .proxy import (NOT_GIVEN, AnyConceptKey, Key, NotGiven, Proxy, is_known, register,
@@ -12,7 +12,7 @@ __all__ = [
     "NotGiven",
     "AnyConceptKey",
     "AnyValue",
-    "AttachmentProxy",
+    "AttachmentBase",
     "Declared",
     "Key",
     "Mapping",

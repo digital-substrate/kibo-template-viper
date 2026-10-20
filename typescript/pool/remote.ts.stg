@@ -1,0 +1,55 @@
+import "../banner.stg"
+
+pool(p) ::= <<
+<preamble(p)>
+
+export class Remote {
+    private readonly service: dsviper.ServiceRemote;
+
+    /**
+     * The pool as a service carries it: service is a dsviper.ServiceRemote.connect(host, port,
+     * new dsviper.Definitions()), the port given as a string ("54321"). isAvailable() says
+     * whether the service declares this pool; the connection's own state is service.isClosed().
+     */
+    constructor(service: dsviper.ServiceRemote) {
+        this.service = service;
+    }
+
+    isAvailable(): boolean {
+        return this.service.functionPoolFuncs(NAME) !== undefined;
+    }
+
+<p.functions:remote_call();separator="\n\n">
+}
+
+>>
+
+preamble(p) ::= <<
+<banner(p.model)>
+
+<if(p.hasDocumentation)>/** <p.documentation;format="comment"> */<endif>
+import dsviper from "@digitalsubstrate/dsviper";
+
+import type * as containers from "../containers.js";
+import { AnyConceptKey, type AnyValue, unwrap, wrap } from "../_codegen/registry.js";
+<p.dependencies.functions:{d|import * as <d.name;format="snake"> from "../<d.name;format="snake">/data.js";};separator="\n">
+
+export const NAME = "<p.dsmName>";
+export const UUID = dsviper.ValueUUId.create("<p.uuid>");
+>>
+
+remote_call(f) ::= <<
+<doc(f)>    <f.name;format="lf">(<f.parameters:parameter();separator=", ">): <ret(f)> {
+        <call(f)>
+    }
+>>
+
+parameter(a) ::= <%<a.name;format="lf">: <a.bindingType.annotation>%>
+ret(f) ::= <%<if(f.isVoid)>void<else><f.returnBindingType.annotation><endif>%>
+argument(a) ::= <%unwrap(<a.name;format="lf">)%>
+
+call(f) ::= <%<if(f.isVoid)>this.service.functionPoolFunc(NAME, "<f.dsmName>").call(<f.parameters:argument();separator=", ">);<else>return wrap(this.service.functionPoolFunc(NAME, "<f.dsmName>").call(<f.parameters:argument();separator=", ">));<endif>%>
+doc(f) ::= <<
+<if(f.hasDocumentation)>    /** <f.documentation;format="comment"> */
+<endif>
+>>

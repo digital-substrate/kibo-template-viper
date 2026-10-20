@@ -13,17 +13,18 @@ features/                 # the package, named by kibo's -n
     containers.py         # one class per container shape the model uses: Vector_of_uint8, …
     demo/                 # one module per DSM namespace: Demo is demo
         data.py           # structures, enumerations, keys, and the runtime ids (STRUCTURE_S)
-        attachments.py    # one class per concept, one attachment accessor per attachment
-    tools/                # one subpackage per pool, rendered with the Pool feature
+        database_attachments.py  # over a dsviper.Database: one class per concept, one accessor per attachment
+        commit_attachments.py    # the same over a Commit state
+    tools/                # one subpackage per pool: embedded.py (Pool), remote.py (Remote)
     _codegen/             # the runtime every generated package carries (see below)
 ```
 
 A namespace is a module, so two namespaces may declare the same name: `core.Colour` and
 `parts.Colour` stay apart. Names are kibo's snake_case: `docUInt8` is `doc_uint8`, `f_E` is
 `f_e`, a name Python reserves takes a trailing underscore (`annotations_`). A project spells a
-name its own way with `[names]` in its `kibo.toml`. A pool is imported by its path,
-`import features.tools`: the entry module belongs to `Base` and cannot import what only the
-`Pool` feature renders.
+name its own way with `[names]` in its `kibo.toml`. A pool's modules are imported by their path,
+`import features.tools.remote`: the entry module belongs to `Base` and cannot import what only
+the pool features render.
 
 ## The bridge, and what is shared
 
@@ -35,7 +36,7 @@ inherited. The bindings follow Viper's reference semantics:
 import dsviper
 import features
 from features import demo, containers
-from features.demo import attachments
+from features.demo import commit_attachments, database_attachments
 
 s = demo.StructureS(f_float=1.5, f_string="hello")   # fields by keyword
 v = containers.Vector_of_uint8([1, 2, 3])
@@ -57,26 +58,28 @@ value rather than natives.
 
 ## Storing documents
 
-An attachment operation takes the store it acts on. A `Database` holds the current state:
+Viper has two databases, and the package a module per usage. A `Database` holds the current
+state, read and written whole through `database_attachments`:
 
 ```python
 db = dsviper.Database.create_in_memory()
 db.extend_definitions(features.definitions())      # the model, once
 db.begin_transaction()
-attachments.ConceptA.properties.set(db, key, demo.StructureV(f_string="stored"))
+database_attachments.ConceptA.properties.set(db, key, demo.StructureV(f_string="stored"))
 db.commit()
-attachments.ConceptA.properties.get(db, key).unwrap().f_string   # "stored", a copy
+database_attachments.ConceptA.properties.get(db, key).unwrap().f_string   # "stored", a copy
 ```
 
 A `CommitDatabase` keeps every commit; its writes, the field operations included, go
-through a `CommitMutableState`, and are stored once it is committed:
+through a `CommitMutableState`, and are stored once it is committed; `commit_attachments`
+reads a state and writes by mutations:
 
 ```python
 cdb = dsviper.CommitDatabase.create_in_memory()
 cdb.extend_definitions(features.definitions())
 state = dsviper.CommitMutableState(dsviper.CommitStateBuilder.initial_state(cdb))
-attachments.ConceptA.properties.set(state.attachment_mutating(), key, demo.StructureV())
-attachments.ConceptA.properties.set_f_string(state.attachment_mutating(), key, "edited")
+commit_attachments.ConceptA.properties.set(state.attachment_mutating(), key, demo.StructureV())
+commit_attachments.ConceptA.properties.set_f_string(state.attachment_mutating(), key, "edited")
 cdb.commit_mutations("edit", state)
 ```
 

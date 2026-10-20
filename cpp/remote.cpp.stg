@@ -11,17 +11,6 @@ namespace <p.model.namespace>::<p.name;format="lsc"> {
 
 >>
 
-attachment_pool(p) ::= <<
-<preamble(p)>
-
-namespace <p.model.namespace>::<p.name;format="lsc"> {
-
-<attachment_remote(p)>
-
-} // namespace <p.model.namespace>::<p.name;format="lsc">
-
->>
-
 preamble(p) ::= <<
 // <p.name> -- the same pool, seen from a client.
 //
@@ -62,27 +51,3 @@ remote_call(f, p) ::= <<
 remote_decode(f, p) ::= <%return <p.model.namespace>::codec::decode\<<f.type>>(%>
 remote_head(f) ::= <%<if(f.isVoid)>void<else><f.type><endif> Remote::<f.name>(<f.parameters:remote_param();separator=", ">) const {%>
 remote_param(a) ::= <%<a.type><a.passBy> <a.name>%>
-
-attachment_remote(p) ::= <<
-Remote::Remote(std::shared_ptr\<Viper::ServiceRemote> service)
-: _service{std::move(service)} {}
-
-bool Remote::isAvailable() const {
-    return _service->queryAttachmentFunctionPool(poolId) != nullptr;
-}
-
-<p.functions:attachment_remote_call(p);separator="\n\n">
->>
-
-attachment_remote_call(f, p) ::= <<
-<attachment_remote_head(f)>
-<if(f.isVoid)>
-    _service->call(attachment<f.interfaceType>, poolId, "<f.dsmName>", {<f.parameters:{a|<p.model.namespace>::codec::encode(<a.name>)};separator=", ">});
-<else>
-    <remote_decode(f, p)>
-        _service->call(attachment<f.interfaceType>, poolId, "<f.dsmName>", {<f.parameters:{a|<p.model.namespace>::codec::encode(<a.name>)};separator=", ">}));
-<endif>
-}
->>
-
-attachment_remote_head(f) ::= <%<if(f.isVoid)>void<else><f.type><endif> Remote::<f.name>(std::shared_ptr\<Viper::Attachment<f.interfaceType>> const & attachment<f.interfaceType><if(f.parameters)>, <f.parameters:remote_param();separator=", "><endif>) const {%>

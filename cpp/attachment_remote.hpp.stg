@@ -1,0 +1,71 @@
+import "banner.stg"
+
+attachment_pool(p) ::= <<
+<preamble(p, "yes")>
+
+namespace <p.model.namespace>::<p.name;format="lsc"> {
+
+#ifndef <p.guard.attachment_pool>_IDENTITY
+#define <p.guard.attachment_pool>_IDENTITY
+inline constexpr std::string_view poolName{"<p.dsmName>"};
+inline Viper::UUId const poolId{Viper::UUId::parse("<p.uuid>")};
+#endif
+
+<attachment_remote(p)>
+
+} // namespace <p.model.namespace>::<p.name;format="lsc">
+
+#endif
+
+>>
+
+preamble(p, context) ::= <<
+// <p.name> -- the same pool, seen from a client.
+//
+<banner(p.model)>
+
+#ifndef <p.guard.attachment_remote>
+#define <p.guard.attachment_remote>
+
+<p.dependencies.functions:{d|#include "<d.include.data>"};separator="\n">
+
+#include "Viper_ServiceRemote.hpp"
+#include "Viper_Any.hpp"
+#include "Viper_Blob.hpp"
+#include "Viper_BlobId.hpp"
+#include "Viper_CommitId.hpp"
+#include "Viper_UUId.hpp"
+#include "Viper_XArray.hpp"
+<if(context)>
+
+#include "Viper_AttachmentMutating.hpp"
+<endif>
+
+#include \<cstdint>
+#include \<memory>
+#include \<string_view>
+>>
+
+doc(f) ::= <<
+<if(f.hasDocumentation)>    /** <f.documentation;format="comment"> */
+<endif>
+>>
+ret(f) ::= <%<if(f.isVoid)>void<else><f.type><endif>%>
+param(p) ::= <%<p.type><p.passBy> <p.name>%>
+
+attachment_remote(f) ::= <<
+class Remote final {
+public:
+    explicit Remote(std::shared_ptr\<Viper::ServiceRemote> service);
+    bool isAvailable() const;
+
+<f.functions:attachment_remote_call();separator="\n">
+
+private:
+    std::shared_ptr\<Viper::ServiceRemote> _service;
+};
+>>
+
+attachment_remote_call(f) ::= <<
+<doc(f)>    <ret(f)> <f.name>(std::shared_ptr\<Viper::Attachment<f.interfaceType>\> const & attachment<f.interfaceType><if(f.parameters)>, <f.parameters:param();separator=", "><endif>) const;
+>>

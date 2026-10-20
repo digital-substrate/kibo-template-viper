@@ -13,9 +13,17 @@ model(m) ::= <<
             "types": "./dist/pools.d.ts",
             "import": "./dist/pools.js"
         },
-        "./*/attachments": {
-            "types": "./dist/*/attachments.d.ts",
-            "import": "./dist/*/attachments.js"
+        "./attachment_pools": {
+            "types": "./dist/attachment_pools.d.ts",
+            "import": "./dist/attachment_pools.js"
+        },
+        "./*/database_attachments": {
+            "types": "./dist/*/database_attachments.d.ts",
+            "import": "./dist/*/database_attachments.js"
+        },
+        "./*/commit_attachments": {
+            "types": "./dist/*/commit_attachments.d.ts",
+            "import": "./dist/*/commit_attachments.js"
         },
         "./*/fields": {
             "types": "./dist/*/fields.d.ts",

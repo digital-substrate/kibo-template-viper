@@ -3,11 +3,11 @@ import "banner.stg"
 model(m) ::= <<
 <banner(m)>
 
-/** Every pool of the model, one namespace each, holding the `Remote` a client calls through a
- *  service. Rendered with the `Pool` feature only; a module even when the model has no pool. */
+/** Every function pool of the model, one namespace each, holding the `Remote` a client calls
+ *  through a service. Rendered with the `PoolRemote` feature; a module even when the model has no
+ *  function pool. */
 export {};
 <m.functionPools:pool_export();separator="\n">
-<m.attachmentFunctionPools:pool_export();separator="\n">
 
 >>
 

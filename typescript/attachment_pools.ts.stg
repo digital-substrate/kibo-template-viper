@@ -1,0 +1,14 @@
+import "banner.stg"
+
+model(m) ::= <<
+<banner(m)>
+
+/** Every attachment pool of the model, one namespace each, holding the `Remote` a client calls
+ *  through a service. Rendered with the `AttachmentPoolRemote` feature; a module even when the
+ *  model has no attachment pool. */
+export {};
+<m.attachmentFunctionPools:pool_export();separator="\n">
+
+>>
+
+pool_export(p) ::= <%export * as <p.name;format="snake"> from "./<p.name;format="snake">/index.js";%>

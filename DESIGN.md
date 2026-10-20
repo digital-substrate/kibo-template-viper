@@ -70,7 +70,7 @@ thing*. The single variable is **how thick the static layer is**, which the bind
 | containers | STL (`std::vector`/`set`/`map`/`optional`/`array`), `Viper::XArray` | generic views from the runtime: `Sequence`, `Mapping`, `Ordered` | the same views, as TS classes |
 | absent optional | `std::nullopt` | `None` | `undefined` |
 | equality / order | `operator==` / `operator<`, `std::hash` | `__eq__` / `__lt__` / `__hash__`, delegated | `equals()` / `hashKey()`, `compareTo()` on keys |
-| attachments | `<model>::<unit>::attachments::<Concept>::<attachment>::<op>` | `<pkg>.<unit>.attachments.<Concept>.<attachment>.<op>` | `<unit>/attachments`: `<Concept>.<attachment>.<op>` |
+| attachments | `<model>::<unit>::<usage>::<Concept>::<attachment>::<op>` | `<pkg>.<unit>.<usage>.<Concept>.<attachment>.<op>` | `<unit>/<usage>`: `<Concept>.<attachment>.<op>` |
 
 The pattern is one axis: **C++ is a thick native static layer + an explicit codec**;
 **Python and Node are a thin static view + continuous delegation.** C++ can hold native
@@ -141,7 +141,7 @@ do not merge the way two C++ `namespace` blocks do. A unit's `dependencies` are 
 what reaches them — `types` (concept parents, club members, structure fields), `attachments`
 (an attachment's key or document), `functions` (a pool's signatures) and their union `all`.
 A template imports the dependencies of *what it emits*: `data.py` imports
-`u.dependencies.types`, `attachments.py` imports `u.dependencies.attachments`. Importing
+`u.dependencies.types`, `database_attachments.py` imports `u.dependencies.attachments`. Importing
 `all` would compile and be wrong.
 
 **The model** carries what has no namespace: the **structural** types, deduplicated across
@@ -161,18 +161,24 @@ TypeScript files go to `<unit>/<template>` or the package root.
 |---|---|---|
 | cpp | `Base` | `data`, `codec`, `model` per unit; the model's `codec` and `any_concept` |
 | cpp | `Fields` | per unit, each field's name, `fields::S::f` |
-| cpp | `Paths` | per unit, each field's path, `paths::S::f()`, built from its name; `Attachments` requires it |
-| cpp | `Attachments` | per unit, the attachments, in memory or in a database |
-| cpp | `Pool` / `PoolRemote` | a function pool, server side / client side |
+| cpp | `Paths` | per unit, each field's path, `paths::S::f()`, built from its name; `CommitAttachments` requires it |
+| cpp | `DatabaseAttachments` | per unit, the attachments of a `Viper::Database`: `database_attachments::<Concept>::<att>`, keys/has/get/set/del |
+| cpp | `CommitAttachments` | per unit, the attachments of a Commit state: `commit_attachments::<Concept>::<att>`, reads over an `AttachmentGetting`, `set`, `diff` and the field mutations over an `AttachmentMutating` |
+| cpp | `Pool` / `PoolRemote` | a function pool, host side (`<pool>_pool`) / client side (`<pool>_remote`) |
+| cpp | `AttachmentPool` / `AttachmentPoolRemote` | an attachment pool, host side (`<pool>_attachment_pool`) / client side (`<pool>_attachment_remote`); requires `CommitAttachments` |
 | python | `Base` | the data alone: `__init__.py` (root: `definitions()`; unit: re-exports `data`), `<unit>/data.py`, `containers.py` |
-| python | `Attachments` | `<unit>/attachments.py`, imported by its path (`import pkg.<unit>.attachments`); requires `Base` and `Paths` |
-| python | `Pool` | `<pool>/__init__.py`, `<pool>/pool.py` (`Pool` and `Remote`) |
+| python | `DatabaseAttachments` | `<unit>/database_attachments.py`, imported by its path; requires `Base` |
+| python | `CommitAttachments` | `<unit>/commit_attachments.py`, imported by its path; requires `Base` and `Paths` |
+| python | `Pool` / `PoolRemote` | `<pool>/__init__.py`, with `<pool>/embedded.py` (`Pool`, in the host's embedded Python) / `<pool>/remote.py` (`Remote`) |
+| python | `AttachmentPool` / `AttachmentPoolRemote` | the same for an attachment pool; requires `CommitAttachments` |
 | python | `Wheel` | `pyproject.toml` (project root), `py.typed` (package) |
 | python | `Fields` | `<unit>/fields.py`: `fields.S.f`, the model's name |
 | python | `Paths` | `<unit>/paths.py`: `paths.S.f`, a `PathConst` built from it; the attachments address fields through it |
 | typescript | `Base` | the data alone: `index.ts` (root: `definitions()`, re-exports `containers`; unit: re-exports `data`), `<unit>/data.ts`, `containers.ts` |
-| typescript | `Attachments` | `<unit>/attachments.ts`, imported by its path (`pkg/<unit>/attachments`); requires `Base` and `Paths` |
-| typescript | `Pool` | `<pool>/index.ts`, `<pool>/pool.ts` (`Remote`) |
+| typescript | `DatabaseAttachments` | `<unit>/database_attachments.ts`, imported by its path; requires `Base` |
+| typescript | `CommitAttachments` | `<unit>/commit_attachments.ts`, imported by its path; requires `Base` and `Paths` |
+| typescript | `PoolRemote` | `pools.ts`, `<pool>/index.ts`, `<pool>/remote.ts` (`Remote`) |
+| typescript | `AttachmentPoolRemote` | `attachment_pools.ts`, the same per attachment pool; requires `CommitAttachments` |
 | typescript | `Package` | `package.json`, `tsconfig.json` |
 | typescript | `Fields` | `<unit>/fields.ts`, as Python, a class of `static readonly` members per structure |
 | typescript | `Paths` | `<unit>/paths.ts`, as Python |
@@ -213,8 +219,9 @@ author and licence, not this pack's, and the runtime notice is the third party's
   the view does not define forward to the held value and wrap what comes back — `__getattr__`
   in Python, a `globalThis.Proxy` returned from the TS constructor, the only form that keeps
   `instanceof` working.
-- **`AttachmentProxy`** — the attachment operations over `AttachmentGetting` /
-  `AttachmentMutating` / `Database`, typed by generics `<Key, Document>`.
+- **`AttachmentBase`** — what every generated attachment shares, whatever its usage: its
+  runtime id and its descriptor. The generated classes of `database_attachments` and
+  `commit_attachments` declare their usage's operations, typed, and call its protected ones.
 
 **Named containers** are bound, not generated. `containers.py` / `containers.ts` defines the
 runtime `Type` of every structural type the model mentions, then binds a name to it:
@@ -369,14 +376,16 @@ demands:
 | container protocol | `len()`, `in`, `contains`, `empty`, `to_list` / `to_tuple`, `items`, `v + w`, `m[c] = column` | `size` / `length`, `has`, `toArray`, `entries`, `concat`, `setColumn` |
 | a value of another type | `TypeError`, from every `wrap_value` and constructor | `TypeError`, from every `wrapValue` and constructor |
 | documentation | the DSM documentation on the class, the field, the attachment | the same places; a structure's, on the class, not on its `…Init` |
-| attachment | `<unit>.attachments.<Concept>.<attachment>.get(getting, key)` | `<Concept>.<attachment>.get(getting, key)` |
-| attachment verbs | `keys`, `has`, `get`, `enumerate`, `diff_keys`, `set`, `delete`, `diff` (`del` is a keyword) | `keys`, `has`, `get`, `enumerate`, `diffKeys`, `set`, `del`, `diff`, as the C++ |
+| attachment | `<unit>.<usage>.<Concept>.<attachment>.get(database or state, key)` | `<Concept>.<attachment>.get(database or state, key)` |
+| Database verbs | `keys`, `has`, `get`, `enumerate`, `set`, `delete` (`del` is a keyword) | `keys`, `has`, `get`, `enumerate`, `set`, `del`, as the C++ |
+| Commit verbs | `keys`, `has`, `get`, `enumerate`, `diff_keys`, `set`, `diff` | `keys`, `has`, `get`, `enumerate`, `diffKeys`, `set`, `diff` |
 | field-level verbs | `set_<f>`, `union_<f>`, `subtract_<f>`, `update_<f>`, `insert_<f>`, `remove_<f>` | `set<F>`, `union<F>`, `subtract<F>`, `update<F>`, `insert<F>`, `remove<F>` |
-| function pool | `Pool` (local, holding `NAME` and `UUID`) and `Remote` | `Remote`; `NAME` and `UUID` are the module's |
+| pool | `<pool>.embedded.Pool` and `<pool>.remote.Remote`, each holding `NAME` and `UUID` | `Remote`; `NAME` and `UUID` are the module's |
 
-The argument order is the same everywhere: state first, then key, then value. Divergences
-beyond these rows are drift, not idiom — treat them as bugs. The function-pool row is the
-one open gap (§9).
+The argument order is the same everywhere: database or state first, then key, then value.
+Divergences beyond these rows are drift, not idiom — treat them as bugs. TypeScript has no
+host-side pool because no host embeds Node: a pool's functions run where the host implements
+them, and Node reaches them as a client.
 
 The rows were measured, not recalled: every public member of the two packages of each
 laboratory site, names compared without case or underscores, and whether each carries
@@ -463,6 +472,3 @@ container is the C++ spelling (`std::set<…>`), not a binding's.
 
 ## 9. Open directions
 
-- **Function-pool parity.** Python emits a local `Pool` beside `Remote`; TypeScript emits
-  `Remote` only. Either TypeScript gains the local side or the reason it does not is stated
-  here.

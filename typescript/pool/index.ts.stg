@@ -1,16 +1,8 @@
 import "../banner.stg"
 
 pool(p) ::= <<
-<preamble(p.model)>
-export * from "./pool.js";
+<banner(p.model)>
 
->>
-
-attachment_pool(p) ::= <<
-<pool(p)>
->>
-
-preamble(m) ::= <<
-<banner(m)>
+export * from "./remote.js";
 
 >>

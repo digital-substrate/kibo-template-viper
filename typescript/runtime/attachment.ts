@@ -3,20 +3,18 @@
 
 import dsviper from "@digitalsubstrate/dsviper";
 
-import { Optional, SetView } from "./container.js";
-import { wrap, unwrap, type Wrapping } from "./registry.js";
+import { wrap, unwrap } from "./registry.js";
 
+/** What a Commit state reads through: a CommitState's or a mutable state's attachmentGetting(). */
 export interface Getting {
     keys(attachment: dsviper.Attachment): dsviper.ValueSet;
     has(attachment: dsviper.Attachment, key: dsviper.ValueKey): boolean;
     get(attachment: dsviper.Attachment, key: dsviper.ValueKey): dsviper.ValueOptional;
 }
 
-export interface Setting extends Getting {
+/** What a Commit state writes through: a CommitMutableState's attachmentMutating(). */
+export interface Mutating extends Getting {
     set(attachment: dsviper.Attachment, key: dsviper.ValueKey, value: dsviper.InputValue): unknown;
-}
-
-export interface Mutating extends Setting {
     diff(attachment: dsviper.Attachment, key: dsviper.ValueKey, value: dsviper.InputValue,
          recursive?: boolean): void;
     update(attachment: dsviper.Attachment, key: dsviper.ValueKey, path: dsviper.PathConst,
@@ -41,25 +39,11 @@ export interface Mutating extends Setting {
 }
 
 /**
- * An attachment of the model; each operation takes the store it acts on.
- *
- * Reading - keys, has, get, enumerate - takes an AttachmentGetting (a CommitState's or a
- * mutable state's attachmentGetting()) or a Database.
- *
- * Either database needs the model first: db.extendDefinitions(definitions()). Writing then
- * goes one of two ways. On a Database, set and del write the current state directly, inside a
- * transaction. On a CommitDatabase, set, diff and the field operations write to an
- * AttachmentMutating, which a CommitMutableState gives (attachmentMutating()):
- * new dsviper.CommitMutableState(dsviper.CommitStateBuilder.initialState(db)) for the first
- * commit, CommitStateBuilder.state(db, commitId) to carry on from the commit id the last one
- * returned. Nothing is stored until that state is committed - db.commitMutations(label,
- * state), or a CommitStore's dispatch, which keeps that thread and commits for you. A field
- * operation on a key that holds no document does nothing and throws nothing: set the document
- * first. A Database has no AttachmentMutating, so diff and the field
- * operations are a commit database's only; del is a Database's only, a commit never removing
- * a key.
+ * What every generated attachment shares, whatever its usage: its identity. The generated
+ * classes of `database_attachments` (a Database) and `commit_attachments` (a Commit state)
+ * declare the operations of their usage; the protected calls below are theirs.
  */
-export class AttachmentProxy<K, D, KS = SetView<K>, DI = D> {
+export class AttachmentBase {
     /**
      * The attachment's runtime id, a constant: it tells which attachment an id names without
      * resolving the definitions.
@@ -68,115 +52,97 @@ export class AttachmentProxy<K, D, KS = SetView<K>, DI = D> {
     private readonly definitions: () => dsviper.DefinitionsConst;
     private resolved?: dsviper.Attachment;
 
-    constructor(runtimeId: dsviper.ValueUUId,
-                definitions: () => dsviper.DefinitionsConst,
-                _key: Wrapping,
-                _document: Wrapping | undefined) {
+    constructor(runtimeId: dsviper.ValueUUId, definitions: () => dsviper.DefinitionsConst) {
         this.runtimeId = runtimeId;
         this.definitions = definitions;
     }
 
+    /** The attachment as the definitions declare it. */
     get descriptor(): dsviper.Attachment {
         return (this.resolved ??= this.definitions().checkAttachment(this.runtimeId));
     }
 
-    /** Return the keys that hold a document. The set is taken now: a later write does not reach it. */
-    keys(getting: Getting): KS {
-        return wrap(getting.keys(this.descriptor)) as KS;
+    protected keysIn(getting: Getting | dsviper.Database): unknown {
+        return wrap(getting.keys(this.descriptor));
     }
 
-    /** Return every [key, document] pair stored. Each document is a copy, as `get` returns it. */
-    enumerate(getting: dsviper.AttachmentGetting | dsviper.Database): [K, D][] {
-        const reader = getting instanceof dsviper.Database ? getting.attachmentGetting() : getting;
-        return reader.enumerate(this.descriptor)
-            .map(([key, document]) => [wrap(key) as K, wrap(document) as D]);
+    protected hasIn(getting: Getting | dsviper.Database, key: unknown): boolean {
+        return getting.has(this.descriptor, this.keyOf(key));
     }
 
-    diffKeys(current: Getting, other: Getting): [KS, KS, KS, KS] {
+    protected getIn(getting: Getting | dsviper.Database, key: unknown): unknown {
+        return wrap(getting.get(this.descriptor, this.keyOf(key)));
+    }
+
+    protected enumerateIn(getting: dsviper.AttachmentGetting): unknown {
+        return getting.enumerate(this.descriptor).map(([key, document]) => [wrap(key), wrap(document)]);
+    }
+
+    protected diffKeysOf(current: Getting, other: Getting): unknown {
         const groups = dsviper.AttachmentGetting.diffKeys(
             current as unknown as dsviper.AttachmentGetting,
             other as unknown as dsviper.AttachmentGetting, this.descriptor);
-        return groups.map((group) => wrap(group)) as unknown as [KS, KS, KS, KS];
+        return groups.map((group) => wrap(group));
     }
 
-    /** Return true if a document is stored at key. */
-    has(getting: Getting, key: K): boolean {
-        return getting.has(this.descriptor, unwrap(key) as dsviper.ValueKey);
+    protected setInDatabase(database: dsviper.Database, key: unknown, value: unknown): boolean {
+        return database.set(this.descriptor, this.keyOf(key), unwrap(value) as dsviper.InputValue);
     }
 
-    /**
-     * Return the stored document as an optional. It is a copy: changing it does not change what
-     * is stored; write it back with `set`.
-     */
-    get(getting: Getting, key: K): Optional<D> {
-        return wrap(getting.get(this.descriptor, unwrap(key) as dsviper.ValueKey));
+    protected deleteIn(database: dsviper.Database, key: unknown): boolean {
+        return database.delete(this.descriptor, this.keyOf(key));
     }
 
-    /**
-     * Write the document; on a Database, inside a transaction, true once written (a refusal
-     * throws), on a mutating state, nothing. The document is copied in: changing it afterwards
-     * does not reach what was written.
-     */
-    set(setting: Mutating, key: K, value: DI): void;
-    set(setting: dsviper.Database, key: K, value: DI): boolean;
-    set(setting: Setting, key: K, value: DI): unknown {
-        return setting.set(this.descriptor, unwrap(key) as dsviper.ValueKey, unwrap(value));
+    protected setInState(state: Mutating, key: unknown, value: unknown): void {
+        state.set(this.descriptor, this.keyOf(key), unwrap(value) as dsviper.InputValue);
     }
 
-    diff(mutating: Mutating, key: K, value: DI, recursive = false): void {
-        mutating.diff(this.descriptor, unwrap(key) as dsviper.ValueKey, unwrap(value), recursive);
+    protected diffIn(state: Mutating, key: unknown, value: unknown, recursive: boolean): void {
+        state.diff(this.descriptor, this.keyOf(key), unwrap(value) as dsviper.InputValue, recursive);
     }
 
-    /**
-     * Delete the document at key, inside a transaction; true if one was there. A CommitDatabase
-     * has no delete: a commit never removes a key.
-     */
-    del(database: dsviper.Database, key: K): boolean {
-        return database.delete(this.descriptor, unwrap(key) as dsviper.ValueKey);
+    protected updateField(state: Mutating, key: unknown, path: dsviper.PathConst, value: unknown): void {
+        state.update(this.descriptor, this.keyOf(key), path ?? ROOT, unwrap(value) as dsviper.InputValue);
     }
 
-    protected updateField(mutating: Mutating, key: K, path: dsviper.PathConst, value: unknown): void {
-        mutating.update(this.descriptor, this.keyOf(key), path ?? ROOT, unwrap(value));
+    protected unionInSet(state: Mutating, key: unknown, path: dsviper.PathConst | undefined, value: unknown): void {
+        state.unionInSet(this.descriptor, this.keyOf(key), path ?? ROOT, this.valueAt(path, value));
     }
 
-    protected unionInSet(mutating: Mutating, key: K, path: dsviper.PathConst | undefined, value: unknown): void {
-        mutating.unionInSet(this.descriptor, this.keyOf(key), path ?? ROOT, this.valueAt(path, value));
+    protected subtractInSet(state: Mutating, key: unknown, path: dsviper.PathConst | undefined, value: unknown): void {
+        state.subtractInSet(this.descriptor, this.keyOf(key), path ?? ROOT, this.valueAt(path, value));
     }
 
-    protected subtractInSet(mutating: Mutating, key: K, path: dsviper.PathConst | undefined, value: unknown): void {
-        mutating.subtractInSet(this.descriptor, this.keyOf(key), path ?? ROOT, this.valueAt(path, value));
+    protected unionInMap(state: Mutating, key: unknown, path: dsviper.PathConst | undefined, value: unknown): void {
+        state.unionInMap(this.descriptor, this.keyOf(key), path ?? ROOT, this.valueAt(path, value));
     }
 
-    protected unionInMap(mutating: Mutating, key: K, path: dsviper.PathConst | undefined, value: unknown): void {
-        mutating.unionInMap(this.descriptor, this.keyOf(key), path ?? ROOT, this.valueAt(path, value));
+    protected subtractInMap(state: Mutating, key: unknown, path: dsviper.PathConst | undefined, value: unknown): void {
+        state.subtractInMap(this.descriptor, this.keyOf(key), path ?? ROOT, this.valueAt(path, value, "keys"));
     }
 
-    protected subtractInMap(mutating: Mutating, key: K, path: dsviper.PathConst | undefined, value: unknown): void {
-        mutating.subtractInMap(this.descriptor, this.keyOf(key), path ?? ROOT, this.valueAt(path, value, "keys"));
+    protected updateInMap(state: Mutating, key: unknown, path: dsviper.PathConst | undefined, value: unknown): void {
+        state.updateInMap(this.descriptor, this.keyOf(key), path ?? ROOT, this.valueAt(path, value));
     }
 
-    protected updateInMap(mutating: Mutating, key: K, path: dsviper.PathConst | undefined, value: unknown): void {
-        mutating.updateInMap(this.descriptor, this.keyOf(key), path ?? ROOT, this.valueAt(path, value));
-    }
-
-    protected insertInXArray(mutating: Mutating, key: K, path: dsviper.PathConst | undefined,
+    protected insertInXArray(state: Mutating, key: unknown, path: dsviper.PathConst | undefined,
                              beforePosition: dsviper.ValueUUId, newPosition: dsviper.ValueUUId,
                              value: unknown): void {
-        mutating.insertInXarray(this.descriptor, this.keyOf(key), path ?? ROOT,
-                                beforePosition, newPosition, this.valueAt(path, value, "element"));
+        state.insertInXarray(this.descriptor, this.keyOf(key), path ?? ROOT,
+                             beforePosition, newPosition, this.valueAt(path, value, "element"));
     }
 
-    protected updateInXArray(mutating: Mutating, key: K, path: dsviper.PathConst | undefined,
+    protected updateInXArray(state: Mutating, key: unknown, path: dsviper.PathConst | undefined,
                              position: dsviper.ValueUUId, value: unknown): void {
-        mutating.updateInXarray(this.descriptor, this.keyOf(key), path ?? ROOT, position, this.valueAt(path, value, "element"));
+        state.updateInXarray(this.descriptor, this.keyOf(key), path ?? ROOT, position, this.valueAt(path, value, "element"));
     }
 
-    protected removeInXArray(mutating: Mutating, key: K, path: dsviper.PathConst | undefined,
+    protected removeInXArray(state: Mutating, key: unknown, path: dsviper.PathConst | undefined,
                              position: dsviper.ValueUUId): void {
-        mutating.removeInXarray(this.descriptor, this.keyOf(key), path ?? ROOT, position);
+        state.removeInXarray(this.descriptor, this.keyOf(key), path ?? ROOT, position);
     }
 
-    private keyOf(key: K): dsviper.ValueKey {
+    private keyOf(key: unknown): dsviper.ValueKey {
         return unwrap(key) as dsviper.ValueKey;
     }
 

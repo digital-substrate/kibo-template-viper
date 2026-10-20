@@ -38,11 +38,21 @@
         "Fields"
       ]
     },
-    "Attachments": {
-      "doc": "The attachments a unit declares, read and written in memory or in a database.",
+    "DatabaseAttachments": {
+      "doc": "The CRUD usage: per unit, the attachments of a Viper::Database -- keys, has, get, set, del -- read, written and deleted whole, a write inside a transaction. Nothing of Commit.",
       "templates": [
-        "attachments.cpp.stg",
-        "attachments.hpp.stg"
+        "database_attachments.cpp.stg",
+        "database_attachments.hpp.stg"
+      ],
+      "requires": [
+        "Base"
+      ]
+    },
+    "CommitAttachments": {
+      "doc": "The Commit usage: per unit, the attachments of a Commit database -- keys, has, get over a state; set, diff and the field mutations over an AttachmentMutating, stored when the state is committed.",
+      "templates": [
+        "commit_attachments.cpp.stg",
+        "commit_attachments.hpp.stg"
       ],
       "requires": [
         "Base",
@@ -50,7 +60,7 @@
       ]
     },
     "Pool": {
-      "doc": "A function pool, server side: the functions the application implements, and the pool that registers them.",
+      "doc": "A function pool, host side: the functions the application implements, and the pool that registers them, for its embedded Python or a service.",
       "templates": [
         "pool.cpp.stg",
         "pool.hpp.stg"
@@ -60,13 +70,33 @@
       ]
     },
     "PoolRemote": {
-      "doc": "A function pool, client side: `Remote`, which calls the pool through a service. Selectable without Pool, so a client does not link the functions only a server implements.",
+      "doc": "A function pool, client side: `Remote`, which calls the pool through a service. Selectable without Pool, so a client does not link the functions only a host implements.",
       "templates": [
         "remote.cpp.stg",
         "remote.hpp.stg"
       ],
       "requires": [
         "Base"
+      ]
+    },
+    "AttachmentPool": {
+      "doc": "An attachment pool, host side: the functions over a Commit state the application implements, and the pool that registers them.",
+      "templates": [
+        "attachment_pool.cpp.stg",
+        "attachment_pool.hpp.stg"
+      ],
+      "requires": [
+        "CommitAttachments"
+      ]
+    },
+    "AttachmentPoolRemote": {
+      "doc": "An attachment pool, client side: `Remote`, which calls the pool through a service, over a Commit state.",
+      "templates": [
+        "attachment_remote.cpp.stg",
+        "attachment_remote.hpp.stg"
+      ],
+      "requires": [
+        "CommitAttachments"
       ]
     }
   },
@@ -80,10 +110,19 @@
       ],
       "requires": []
     },
-    "Attachments": {
-      "doc": "Per unit, one class per concept and an accessor per attachment: documents read and written in a Database, a CommitDatabase's state or a mutable state. Imported by its path, as a C++ attachments header is included; a project that uses the data alone does without it.",
+    "DatabaseAttachments": {
+      "doc": "The CRUD usage: per unit, the attachments of a dsviper.Database -- keys, has, get, set, delete -- read, written and deleted whole, a write inside a transaction. Nothing of Commit. Imported by its path, <unit>.database_attachments.",
       "templates": [
-        "attachments.py.stg"
+        "database_attachments.py.stg"
+      ],
+      "requires": [
+        "Base"
+      ]
+    },
+    "CommitAttachments": {
+      "doc": "The Commit usage: per unit, the attachments of a Commit database -- keys, has, get over a state; set, diff and the field mutations over an AttachmentMutating, stored when the state is committed. Imported by its path, <unit>.commit_attachments.",
+      "templates": [
+        "commit_attachments.py.stg"
       ],
       "requires": [
         "Base",
@@ -91,13 +130,43 @@
       ]
     },
     "Pool": {
-      "doc": "A function pool and its client edge. Most projects have none: a pool is a service surface, not a consequence of having a model.",
+      "doc": "A function pool in the host's embedded Python: `Pool`, over the dsviper.FunctionPool the C++ host gives. Imported as <pool>.embedded.",
       "templates": [
         "pool/__init__.py.stg",
-        "pool.py.stg"
+        "pool/embedded.py.stg"
       ],
       "requires": [
         "Base"
+      ]
+    },
+    "PoolRemote": {
+      "doc": "A function pool, client side: `Remote`, which calls the pool through a service. Imported as <pool>.remote.",
+      "templates": [
+        "pool/__init__.py.stg",
+        "pool/remote.py.stg"
+      ],
+      "requires": [
+        "Base"
+      ]
+    },
+    "AttachmentPool": {
+      "doc": "An attachment pool in the host's embedded Python: `Pool`, over the dsviper.AttachmentFunctionPool the C++ host gives. Imported as <pool>.embedded.",
+      "templates": [
+        "attachment_pool/__init__.py.stg",
+        "attachment_pool/embedded.py.stg"
+      ],
+      "requires": [
+        "CommitAttachments"
+      ]
+    },
+    "AttachmentPoolRemote": {
+      "doc": "An attachment pool, client side: `Remote`, which calls the pool through a service, over a Commit state. Imported as <pool>.remote.",
+      "templates": [
+        "attachment_pool/__init__.py.stg",
+        "attachment_pool/remote.py.stg"
+      ],
+      "requires": [
+        "CommitAttachments"
       ]
     },
     "Wheel": {
@@ -139,25 +208,45 @@
       ],
       "requires": []
     },
-    "Attachments": {
-      "doc": "Per unit, one class per concept and an accessor per attachment: documents read and written in a Database, a CommitDatabase's state or a mutable state. Imported by its path, as a C++ attachments header is included; a project that uses the data alone does without it.",
+    "DatabaseAttachments": {
+      "doc": "The CRUD usage: per unit, the attachments of a Viper::Database -- keys, has, get, set, del -- read, written and deleted whole, a write inside a transaction. Nothing of Commit. Imported by its path, <unit>/database_attachments.",
       "templates": [
-        "attachments.ts.stg"
+        "database_attachments.ts.stg"
+      ],
+      "requires": [
+        "Base"
+      ]
+    },
+    "CommitAttachments": {
+      "doc": "The Commit usage: per unit, the attachments of a Commit database -- keys, has, get over a state; set, diff and the field mutations over an AttachmentMutating, stored when the state is committed. Imported by its path, <unit>/commit_attachments.",
+      "templates": [
+        "commit_attachments.ts.stg"
       ],
       "requires": [
         "Base",
         "Paths"
       ]
     },
-    "Pool": {
-      "doc": "A function pool and its client edge. Most projects have none: a pool is a service surface, not a consequence of having a model.",
+    "PoolRemote": {
+      "doc": "A function pool, client side: `Remote`, which calls the pool through a service; every function pool of the model from <package>/pools. There is no embedded Node: no host-side pool.",
       "templates": [
         "pool/index.ts.stg",
         "pools.ts.stg",
-        "pool.ts.stg"
+        "pool/remote.ts.stg"
       ],
       "requires": [
         "Base"
+      ]
+    },
+    "AttachmentPoolRemote": {
+      "doc": "An attachment pool, client side: `Remote`, which calls the pool through a service, over a Commit state; every attachment pool of the model from <package>/attachment_pools.",
+      "templates": [
+        "attachment_pool/index.ts.stg",
+        "attachment_pools.ts.stg",
+        "attachment_pool/remote.ts.stg"
+      ],
+      "requires": [
+        "CommitAttachments"
       ]
     },
     "Package": {
@@ -275,8 +364,8 @@
                 "copy", "type", "constructor"],
       "attachment": ["constructor"],
       "function": ["constructor"],
-      "namespace": ["containers", "definitions", "index", "pools", "resources"],
-      "pool": ["containers", "definitions", "index", "pools", "resources"]
+      "namespace": ["attachment_pools", "containers", "definitions", "index", "pools", "resources"],
+      "pool": ["attachment_pools", "containers", "definitions", "index", "pools", "resources"]
     }
   },
   "validation": {

@@ -38,13 +38,19 @@ directory, so two namespaces of one model may declare the same name.
 
 | target | features |
 |---|---|
-| `cpp` | `Base` (data, codec, model, any concept), `Fields`, `Paths`, `Attachments`, `Pool`, `PoolRemote` |
-| `python` | `Base`, `Fields`, `Paths`, `Attachments`, `Pool`, `Wheel` |
-| `typescript` | `Base`, `Fields`, `Paths`, `Attachments`, `Pool`, `Package` |
+| `cpp` | `Base` (data, codec, model, any concept), `Fields`, `Paths`, `DatabaseAttachments`, `CommitAttachments`, `Pool`, `PoolRemote`, `AttachmentPool`, `AttachmentPoolRemote` |
+| `python` | `Base`, `Fields`, `Paths`, `DatabaseAttachments`, `CommitAttachments`, `Pool`, `PoolRemote`, `AttachmentPool`, `AttachmentPoolRemote`, `Wheel` |
+| `typescript` | `Base`, `Fields`, `Paths`, `DatabaseAttachments`, `CommitAttachments`, `PoolRemote`, `AttachmentPoolRemote`, `Package` |
+
+The attachments come in two usages, as Viper has two databases that share nothing: a
+`Database` read and written whole (`DatabaseAttachments`), and a Commit database read through
+a state and written by mutations (`CommitAttachments`). A pool has a host side (`Pool`,
+`AttachmentPool`) and a client side (`PoolRemote`, `AttachmentPoolRemote`); TypeScript has no
+host side, since no host embeds Node.
 
 ```
-$ ./resolve.py cpp Attachments
-features : Base Fields Attachments
+$ ./resolve.py cpp CommitAttachments
+features : Base Fields Paths CommitAttachments
 ```
 
 For the conceptual ground (templated feature, Template Model, the role
@@ -80,7 +86,7 @@ Underneath, kibo renders one template, or a directory of them, per run. A projec
 its features, then renders each template:
 
 ```bash
-for stg in $(python3 -c "import resolve; print(*resolve.templates('cpp', ['Attachments']))"); do
+for stg in $(python3 -c "import resolve; print(*resolve.templates('cpp', ['CommitAttachments']))"); do
     java -jar kibo-2.X.Y.jar -c cpp -n myapp -d MyApp.dsm.json -t "$stg" -o ./generated
 done
 ```

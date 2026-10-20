@@ -15,14 +15,16 @@ src/index.ts                  # definitions(), AnyConceptKey, AnyValue, Key, the
 src/containers.ts             # one class per container shape the model uses: Vector_of_uint8, …
 src/demo/                     # one directory per DSM namespace: Demo is demo
     data.ts                   # structures, enumerations, keys, and the runtime ids
-    attachments.ts            # one class per concept, one attachment accessor per attachment
-src/pools.ts, src/tools/      # the pools, rendered with the Pool feature
+    database_attachments.ts   # over a dsviper.Database: one class per concept, one accessor per attachment
+    commit_attachments.ts     # the same over a Commit state
+src/pools.ts, src/tools/      # the function pools, rendered with the PoolRemote feature
+src/attachment_pools.ts       # the attachment pools, rendered with the AttachmentPoolRemote feature
 src/_codegen/                 # the runtime every generated package carries (see below)
 ```
 
-The package exports `.`, `./pools` and every directory (`features/demo`). A pool is reached
-through `features/pools`: the entry module belongs to `Base` and cannot import what only the
-`Pool` feature renders. Names keep the DSM spelling (`docUInt8`, `f_E`); namespaces and pool
+The package exports `.`, `./pools`, `./attachment_pools` and every directory (`features/demo`).
+A pool is reached through `features/pools` or `features/attachment_pools`: the entry module
+belongs to `Base` and cannot import what only the pool features render. Names keep the DSM spelling (`docUInt8`, `f_E`); namespaces and pool
 modules are snake_case (`demo`, `player_model`), as in Python.
 
 ## Using it from a project
@@ -77,20 +79,24 @@ A few things are TypeScript's own:
 
 ## Storing documents
 
-An attachment operation takes the store it acts on. A `Database` holds the current state:
+Viper has two databases, and the package a module per usage. A `Database` holds the current
+state, read and written whole through `database_attachments`:
 
 ```ts
+import * as database_attachments from "features/demo/database_attachments";
+
 const db = dsviper.Database.createInMemory();
 db.extendDefinitions(definitions());               // the model, once
 db.beginTransaction();
-demo.attachments.ConceptA.properties.set(db, key, new demo.StructureV({ f_string: "stored" }));
+database_attachments.ConceptA.properties.set(db, key, new demo.StructureV({ f_string: "stored" }));
 db.commit();
-demo.attachments.ConceptA.properties.get(db, key).unwrap().f_string;   // "stored", a copy
+database_attachments.ConceptA.properties.get(db, key).unwrap().f_string;   // "stored", a copy
 ```
 
 A `CommitDatabase` keeps every commit; its writes, the field operations included, go through
 a `CommitMutableState` and are stored once it is committed (`commitMutations`), or through a
-`CommitStore`, which adds undo and redo.
+`CommitStore`, which adds undo and redo; `features/demo/commit_attachments` reads a state and
+writes by mutations.
 
 ## Errors
 

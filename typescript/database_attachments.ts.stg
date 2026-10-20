@@ -1,0 +1,88 @@
+import "banner.stg"
+
+unit(u) ::= <<
+<banner(u.model)>
+
+/**
+ * The <u.name> attachments in a Database: read, write and delete whole documents.
+ *
+ * A Database needs the model first: db.extendDefinitions(definitions()). A write goes inside a
+ * transaction. A Commit database is the other usage: the unit's commit_attachments.
+ */
+
+import dsviper from "@digitalsubstrate/dsviper";
+
+import { AttachmentBase } from "../_codegen/attachment.js";
+import type { Optional } from "../_codegen/container.js";
+import type * as containers from "../containers.js";
+import { AnyConceptKey, type AnyValue } from "../_codegen/registry.js";
+import { definitions } from "../definitions.js";
+<u.dependencies.attachments:{d|import * as <d.name;format="snake"> from "../<d.name;format="snake">/data.js";};separator="\n">
+import * as <u.name;format="snake"> from "./data.js";
+<if(u.attachmentScopes)>
+
+<u.attachmentScopes:by_concept(u);separator="\n\n">
+<endif>
+
+>>
+
+by_concept(s, u) ::= <<
+<s.attachments:own_class(s);separator="">
+export class <s.name> {
+<s.attachments:one(s);separator="\n\n">
+}
+>>
+
+one(a, s) ::= <<
+    static readonly <a.name;format="lf"> = new <opsClass(a, s)>(dsviper.ValueUUId.create("<a.runtimeId>"), definitions);
+>>
+
+opsClass(a, s) ::= <%_<s.name>_<a.name;format="lf">%>
+
+own_class(a, s) ::= <<
+/** <if(a.hasDocumentation)><a.documentation;format="comment"> <endif>The attachment <a.representation>, in a Database. */
+export class <opsClass(a, s)> extends AttachmentBase {
+    /** Return the keys that hold a document. The set is taken now: a later write does not reach it. */
+    keys(database: dsviper.Database): <keyset(s)> {
+        return this.keysIn(database) as <keyset(s)>;
+    }
+
+    /** Return true if a document is stored at key. */
+    has(database: dsviper.Database, key: <key(s)>): boolean {
+        return this.hasIn(database, key);
+    }
+
+    /**
+     * Return the stored document as an optional. It is a copy: changing it does not change what
+     * is stored; write it back with `set`.
+     */
+    get(database: dsviper.Database, key: <key(s)>): Optional\<<document(a)>\> {
+        return this.getIn(database, key) as Optional\<<document(a)>\>;
+    }
+
+    /** Return every [key, document] pair stored. Each document is a copy, as `get` returns it. */
+    enumerate(database: dsviper.Database): [<key(s)>, <document(a)>][] {
+        return this.enumerateIn(database.attachmentGetting()) as [<key(s)>, <document(a)>][];
+    }
+
+    /**
+     * Write the document, inside a transaction; true once written, a refusal throws. The
+     * document is copied in: changing it afterwards does not reach what was written.
+     */
+    set(database: dsviper.Database, key: <key(s)>, value: <input(a)>): boolean {
+        return this.setInDatabase(database, key, value);
+    }
+
+    /** Delete the document at key, inside a transaction; true if one was there. */
+    del(database: dsviper.Database, key: <key(s)>): boolean {
+        return this.deleteIn(database, key);
+    }
+}
+
+
+>>
+
+key(s) ::= <%<s.keyType.bindingType.qualified>%>
+keyset(s) ::= <%<s.keyType.bindingKeySetType.qualified>%>
+document(a) ::= <%<a.documentType.bindingType.qualified>%>
+input(a) ::= <%<a.documentType.bindingType.inputQualified>%>
