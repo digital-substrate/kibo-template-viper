@@ -59,6 +59,16 @@
         "Paths"
       ]
     },
+    "Reads": {
+      "doc": "The reading usage: per unit, keys, has and get over an AttachmentGetting -- a Viper::Database read as it is, or a Commit state -- for code that consumes documents without knowing the source, such as a library applications of either database compile. Nothing writes. A third usage beside the two: it requires Base only, and neither DatabaseAttachments nor CommitAttachments requires it.",
+      "templates": [
+        "reads.cpp.stg",
+        "reads.hpp.stg"
+      ],
+      "requires": [
+        "Base"
+      ]
+    },
     "Pool": {
       "doc": "A function pool, host side: the functions the application implements, and the pool that registers them, for its embedded Python or a service.",
       "templates": [
@@ -127,6 +137,15 @@
       "requires": [
         "Base",
         "Paths"
+      ]
+    },
+    "Reads": {
+      "doc": "The reading usage: per unit, keys, has and get over an AttachmentGetting -- a Database's attachment_getting(), or a Commit state's -- for code that consumes documents without knowing the source. Nothing writes. A third usage beside the two: it requires Base only, and neither usage requires it. Imported by its path, <unit>.reads.",
+      "templates": [
+        "reads.py.stg"
+      ],
+      "requires": [
+        "Base"
       ]
     },
     "Pool": {

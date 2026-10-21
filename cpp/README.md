@@ -19,6 +19,7 @@ is `../features.json`, resolved by `../resolve.py`:
 | `Paths` | `<ns>_<unit>_paths` | every field's path, built once from its name |
 | `DatabaseAttachments` | `<ns>_<unit>_database_attachments` | the CRUD usage: per attachment, `keys`, `has`, `get`, `set`, `del` over a `Viper::Database` |
 | `CommitAttachments` | `<ns>_<unit>_commit_attachments` | the Commit usage: per attachment, `keys`, `has`, `get` over a state; `set`, `diff` and the field mutations over an `AttachmentMutating` |
+| `Reads` | `<ns>_<unit>_reads` | the reading usage: per attachment, `keys`, `has`, `get` over an `AttachmentGetting`, whatever holds the documents; nothing writes |
 | `Pool` | `<ns>_<pool>_pool` | a function pool: the functions an application implements, and the pool it exposes |
 | `PoolRemote` | `<ns>_<pool>_remote` | the same pool, called through a service |
 | `AttachmentPool` | `<ns>_<pool>_attachment_pool` | an attachment pool: the functions over a Commit state an application implements, and the pool |
@@ -68,8 +69,12 @@ with its own operations only:
   whose `keys`, `has`, `get` read a state (an `AttachmentGetting`) and whose `set`, `diff` and field
   mutations (`setName`, `unionVertexKeys`, …) emit mutations on an `AttachmentMutating`.
 
-A library that reads either base, whichever its application holds, renders its own reads from a
-template of its own over `Base`, rather than choosing a usage for its applications.
+- `Reads`, the reading usage: `<ns>::<unit>::reads::<Concept>::<attachment>`, whose `keys`, `has`,
+  `get` take any `AttachmentGetting` -- a `Viper::Database` read as it is, or a Commit state -- and
+  nothing writes. For code that consumes documents without knowing the source, such as a library
+  that applications of either database compile: it reads through `Reads`, and never chooses a
+  usage for its applications. It requires `Base` only, and neither usage requires it: an
+  application asks for it beside its own usage when it compiles such a library.
 
 A pool is a namespace, `<ns>::<pool>`: the application implements its functions there,
 `pool()` returns the `Viper::FunctionPool` it exposes, and `poolName` / `poolId` name it.

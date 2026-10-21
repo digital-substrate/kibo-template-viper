@@ -1,0 +1,67 @@
+import "banner.stg"
+
+unit(u) ::= <<
+// <u.name> reads -- the implementation of the reads declared here, over an AttachmentGetting.
+//
+<banner(u.model)>
+
+#include "<u.include.reads>"
+
+#include "<u.include.codec>"
+#include "<u.include.model>"
+<u.dependencies.attachments:{d|#include "<d.include.codec>"};separator="\n">
+<u.dependencies.attachments:{d|#include "<d.include.model>"};separator="\n">
+
+#include "<u.model.include.codec>"
+
+#include "Viper_Attachment.hpp"
+#include "Viper_Definitions.hpp"
+#include "Viper_Values.hpp"
+#include "Viper_ValueSetIter.hpp"
+
+<u.attachments:attachment(u);separator="\n\n">
+
+>>
+
+attachment(a, u) ::= <<
+namespace <u.model.namespace>::<u.name;format="lsc">::reads::<a.conceptScope>::<a.name> {
+
+Viper::UUId const runtimeId{Viper::UUId::parse("<a.runtimeId>")};
+
+std::shared_ptr\<Viper::Attachment> const & descriptor() {
+    static auto const instance = <u.model.namespace>::codec::definitions()->checkAttachment(runtimeId);
+    return instance;
+}
+
+namespace {
+
+std::shared_ptr\<Viper::Attachment> const & attachment() { return descriptor(); }
+
+std::shared_ptr\<Viper::ValueKey> encodeKey(<a.keyType.type> const & key) {
+    return <u.model.namespace>::codec::encode(key);
+}
+
+} // namespace
+
+std::set\<<a.keyType.type>\> keys(std::shared_ptr\<Viper::AttachmentGetting> const & getting) {
+    std::set\<<a.keyType.type>\> result;
+    for (Viper::ValueSetIter it{getting->keys(attachment())}; it.hasNext(); it.next())
+        result.insert(<u.model.namespace>::codec::decode\<<a.keyType.type>\>(it.value()));
+
+    return result;
+}
+
+bool has(std::shared_ptr\<Viper::AttachmentGetting> const & getting, <a.keyType.type> const & key) {
+    return getting->has(attachment(), encodeKey(key));
+}
+
+std::optional\<<a.documentType.type>\> get(std::shared_ptr\<Viper::AttachmentGetting> const & getting, <a.keyType.type> const & key) {
+    auto const document = getting->get(attachment(), encodeKey(key));
+    if (document->isNil())
+        return std::nullopt;
+
+    return <u.model.namespace>::codec::decode\<<a.documentType.type>\>(document->unwrap());
+}
+
+} // namespace <u.model.namespace>::<u.name;format="lsc">::reads::<a.conceptScope>::<a.name>
+>>

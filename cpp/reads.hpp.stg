@@ -1,0 +1,55 @@
+import "banner.stg"
+
+unit(u) ::= <<
+// <u.name> reads -- the documents this namespace attaches to concepts, read from whatever holds them.
+//
+<banner(u.model)>
+//
+// The reading usage: `keys`, `has` and `get` over a `Viper::AttachmentGetting` -- a `Viper::Database`
+// read as it is, or a Commit state -- for code that consumes documents without knowing the source,
+// such as a library that applications of either database compile. Nothing here writes. One scope
+// per attachment, `<u.model.namespace>::<u.name;format="lsc">::reads::\<Concept>::\<attachment>`. A concept declared
+// in another namespace is spelled `\<Namespace>_\<Concept>` there, so that adding an attachment never
+// renames another.
+
+#ifndef <u.guard.reads>
+#define <u.guard.reads>
+
+#include "<u.include.data>"
+<u.dependencies.attachments:{d|#include "<d.include.data>"};separator="\n">
+
+#include "Viper_Attachment.hpp"
+#include "Viper_AttachmentGetting.hpp"
+#include "Viper_UUId.hpp"
+
+#include \<map>
+
+#include \<cstdint>
+#include \<optional>
+#include \<set>
+
+<u.attachments:attachment(u);separator="\n\n">
+
+#endif
+
+>>
+
+attachment(a, u) ::= <<
+<if(a.hasDocumentation)>/** <a.documentation> */
+<endif>namespace <u.model.namespace>::<u.name;format="lsc">::reads::<a.conceptScope>::<a.name> {
+
+extern Viper::UUId const runtimeId;
+
+std::shared_ptr\<Viper::Attachment> const & descriptor();
+
+<keys(a)>
+
+bool has(std::shared_ptr\<Viper::AttachmentGetting> const & getting, <a.keyType.type> const & key);
+
+<get(a)>
+
+} // namespace <u.model.namespace>::<u.name;format="lsc">::reads::<a.conceptScope>::<a.name>
+>>
+
+keys(a) ::= <%std::set\<<a.keyType.type>> keys(std::shared_ptr\<Viper::AttachmentGetting> const & getting);%>
+get(a) ::= <%std::optional\<<a.documentType.type>> get(std::shared_ptr\<Viper::AttachmentGetting> const & getting, <a.keyType.type> const & key);%>

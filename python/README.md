@@ -15,6 +15,7 @@ features/                 # the package, named by kibo's -n
         data.py           # structures, enumerations, keys, and the runtime ids (STRUCTURE_S)
         database_attachments.py  # over a dsviper.Database: one class per concept, one accessor per attachment
         commit_attachments.py    # the same over a Commit state
+        reads.py                 # keys, has, get over any AttachmentGetting, nothing that writes
     tools/                # one subpackage per pool: embedded.py (Pool), remote.py (Remote)
     _codegen/             # the runtime every generated package carries (see below)
 ```
@@ -84,6 +85,16 @@ cdb.commit_mutations("edit", state)
 ```
 
 A `CommitStore` holds that thread for an application, with undo and redo.
+
+Code that reads documents without knowing which database holds them -- a library used beside
+applications of either kind -- asks for `Reads`: `reads` takes any `AttachmentGetting`, a
+Database's (`db.attachment_getting()`) or a Commit state's, and writes nothing:
+
+```python
+from features.demo import reads
+reads.ConceptA.properties.get(db.attachment_getting(), key)       # the same call over either base
+reads.ConceptA.properties.get(state.attachment_getting(), key)
+```
 
 ## Errors
 

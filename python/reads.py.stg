@@ -1,0 +1,62 @@
+import "banner.stg"
+
+unit(u) ::= <<
+<banner(u.model)>
+
+"""The <u.name> attachments, read from whatever holds them.
+
+Each read takes an AttachmentGetting: a Database's attachment_getting(), or a Commit state's. For
+code that consumes documents without knowing the source, such as a library that applications of
+either database use. Nothing here writes: a Database is written through
+<u.name;format="snake">.database_attachments, a Commit state through <u.name;format="snake">.commit_attachments."""
+
+from __future__ import annotations
+
+import dsviper
+
+from .. import definitions
+import typing
+
+from .._codegen import AttachmentBase, Option
+from .. import containers
+from .. import <u.name;format="snake">
+<u.dependencies.attachments:{d|from .. import <d.name;format="snake">};separator="\n">
+<if(u.attachmentScopes)>
+
+<u.attachmentScopes:by_concept(u);separator="\n\n">
+<endif>
+
+>>
+
+by_concept(s, u) ::= <<
+class <s.name>:
+<s.attachments:one(s);separator="\n\n">
+>>
+
+one(a, s) ::= <<
+    class _<a.name;format="uf">(AttachmentBase):
+        """<if(a.hasDocumentation)><a.documentation;format="docstring">
+
+        <endif>The attachment <a.representation>, read."""
+
+        def keys(self, getting: dsviper.AttachmentGetting) -> <keyset(s)>:
+            """Return the keys that hold a document. The set is taken now: a later write does
+            not reach it."""
+            return typing.cast("<keyset(s)>", self._keys(getting))
+
+        def has(self, getting: dsviper.AttachmentGetting, key: <key(s)>) -> bool:
+            """Return True if a document is stored at key."""
+            return self._has(getting, key)
+
+        def get(self, getting: dsviper.AttachmentGetting, key: <key(s)>) -> Option[<document(a)>]:
+            """Return the stored document in an Option, empty when none is stored: unwrap()
+            opens it, is_nil() tells it is empty. It is a copy: changing it does not change what
+            is stored."""
+            return typing.cast("Option[<document(a)>]", self._get(getting, key))
+
+    <a.name;format="snake"> = _<a.name;format="uf">(dsviper.ValueUUId.create("<a.runtimeId>"), definitions)
+>>
+
+key(s) ::= <%<s.keyType.bindingType.qualified>%>
+keyset(s) ::= <%<s.keyType.bindingKeySetType.qualified>%>
+document(a) ::= <%<a.documentType.bindingType.qualified>%>

@@ -51,6 +51,14 @@ version as either one.
 
 ## [Unreleased]
 
+### Added
+
+- **`Reads`, the reading usage** (requires `Base`): `<unit>::reads` in C++, `<unit>.reads` in
+  Python; per attachment `keys`, `has`, `get` over an `AttachmentGetting`, whatever holds the
+  documents, and nothing that writes. For code that consumes documents without knowing the
+  source, such as a library that applications of either database compile. A third usage beside
+  the two: neither `DatabaseAttachments` nor `CommitAttachments` requires it.
+
 ### Changed
 
 - **Attachments are generated per usage.** Viper has two databases that share nothing, a
