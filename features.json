@@ -102,7 +102,7 @@
   },
   "python": {
     "Base": {
-      "doc": "The package: its entry point, the types each namespace declares, the attachments, and the container bindings the model mentions.",
+      "doc": "The package: its entry point, the types each namespace declares, and the container bindings the model mentions. The attachments are a usage: DatabaseAttachments or CommitAttachments.",
       "templates": [
         "__init__.py.stg",
         "data.py.stg",
@@ -199,7 +199,7 @@
   },
   "typescript": {
     "Base": {
-      "doc": "The package: its entry point, the types each namespace declares, the attachments, and the container bindings the model mentions.",
+      "doc": "The package: its entry point, the types each namespace declares, and the container bindings the model mentions. The attachments are a usage: DatabaseAttachments or CommitAttachments.",
       "templates": [
         "index.ts.stg",
         "definitions.ts.stg",

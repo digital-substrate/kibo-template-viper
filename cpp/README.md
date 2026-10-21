@@ -15,10 +15,14 @@ is `../features.json`, resolved by `../resolve.py`:
 | feature | files | what it holds |
 |---|---|---|
 | `Base` | `<ns>_<unit>_data`, `_model`, `_codec`, `<ns>_codec`, `<ns>_any_concept`, `<ns>_resources` | structures, enumerations, keys; their identity in the definitions; the bridge to a `Value` |
-| `Fields` | `<ns>_<unit>_fields` | every field's name and path, for code that goes through the dynamic API |
-| `Attachments` | `<ns>_<unit>_attachments` | one scope per attachment, its operations |
-| `Pool` | `<ns>_<pool>_pool` | the functions an application implements, and the pool it exposes |
+| `Fields` | `<ns>_<unit>_fields` | every field's name, for code that goes through the dynamic API |
+| `Paths` | `<ns>_<unit>_paths` | every field's path, built once from its name |
+| `DatabaseAttachments` | `<ns>_<unit>_database_attachments` | the CRUD usage: per attachment, `keys`, `has`, `get`, `set`, `del` over a `Viper::Database` |
+| `CommitAttachments` | `<ns>_<unit>_commit_attachments` | the Commit usage: per attachment, `keys`, `has`, `get` over a state; `set`, `diff` and the field mutations over an `AttachmentMutating` |
+| `Pool` | `<ns>_<pool>_pool` | a function pool: the functions an application implements, and the pool it exposes |
 | `PoolRemote` | `<ns>_<pool>_remote` | the same pool, called through a service |
+| `AttachmentPool` | `<ns>_<pool>_attachment_pool` | an attachment pool: the functions over a Commit state an application implements, and the pool |
+| `AttachmentPoolRemote` | `<ns>_<pool>_attachment_remote` | the same attachment pool, called through a service |
 
 ## Value semantics
 
@@ -29,7 +33,7 @@ copies too:
 
 ```cpp
 #include "features_codec.hpp"        // the bridge, for every namespace of the model
-#include "features_demo_attachments.hpp"
+#include "features_demo_database_attachments.hpp"
 #include "Viper_Database.hpp"
 
 using namespace features;
@@ -43,7 +47,7 @@ auto const key{demo::ConceptAKey::create()};
 auto const db{Viper::Database::createInMemory()};
 db->extendDefinitions(codec::definitions());
 db->beginTransaction(Viper::DatabaseTransactionMode::Deferred);
-demo::attachments::ConceptA::properties::set(db, key, demo::StructureV{});
+demo::database_attachments::ConceptA::properties::set(db, key, demo::StructureV{});
 db->commit();
 ```
 
@@ -54,15 +58,25 @@ the pack generates the bridge, not what composes it with a runtime feature.
 
 ## Attachments and pools
 
-An attachment is a scope, `<ns>::<unit>::attachments::<Concept>::<attachment>`: `get`,
-`has`, `keys` take any `AttachmentGetting` (a `Viper::Database` is one); `set`, `diff` and
-the field operations (`setName`, `unionVertexKeys`, …) take an `AttachmentMutating`; `set`
-and `del` also take a `Viper::Database`, inside a transaction.
+Viper has two databases that share nothing, and an attachment is generated once per usage, each
+with its own operations only:
+
+- `DatabaseAttachments`, the CRUD usage: `<ns>::<unit>::database_attachments::<Concept>::<attachment>`,
+  whose `keys`, `has`, `get` read a `Viper::Database` and whose `set`, `del` write it whole, inside a
+  transaction. Nothing of Commit.
+- `CommitAttachments`, the Commit usage: `<ns>::<unit>::commit_attachments::<Concept>::<attachment>`,
+  whose `keys`, `has`, `get` read a state (an `AttachmentGetting`) and whose `set`, `diff` and field
+  mutations (`setName`, `unionVertexKeys`, …) emit mutations on an `AttachmentMutating`.
+
+A library that reads either base, whichever its application holds, renders its own reads from a
+template of its own over `Base`, rather than choosing a usage for its applications.
 
 A pool is a namespace, `<ns>::<pool>`: the application implements its functions there,
 `pool()` returns the `Viper::FunctionPool` it exposes, and `poolName` / `poolId` name it.
 `Remote` calls the same pool through a `Viper::ServiceRemote`; most projects do not expose
 their pools as a service, and a client links without the functions only a server implements.
+An attachment pool is the same over a Commit state (`AttachmentPool`, `AttachmentPoolRemote`),
+and requires `CommitAttachments`.
 
 ## Tests of the generator
 
