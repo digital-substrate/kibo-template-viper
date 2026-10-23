@@ -38,7 +38,7 @@ preamble(p, context) ::= <<
 #include "Viper_XArray.hpp"
 <if(context)>
 
-#include "Viper_AttachmentMutating.hpp"
+#include "Viper_CommitAttachmentMutating.hpp"
 <endif>
 
 #include \<cstdint>
@@ -67,5 +67,5 @@ private:
 >>
 
 attachment_remote_call(f) ::= <<
-<doc(f)>    <ret(f)> <f.name>(std::shared_ptr\<Viper::Attachment<f.interfaceType>\> const & attachment<f.interfaceType><if(f.parameters)>, <f.parameters:param();separator=", "><endif>) const;
+<doc(f)>    <ret(f)> <f.name>(std::shared_ptr\<Viper::<f.interfaceName>\> const & attachment<f.interfaceType><if(f.parameters)>, <f.parameters:param();separator=", "><endif>) const;
 >>

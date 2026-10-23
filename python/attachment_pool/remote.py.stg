@@ -5,7 +5,7 @@ attachment_pool(p) ::= <<
 
 class Remote:
     """The attachment pool as a service carries it, for a client. A function that mutates takes
-    an AttachmentMutating, one that reads an AttachmentGetting, as the package's
+    a CommitAttachmentMutating, one that reads an AttachmentGetting, as the package's
     commit_attachments do. The state knows the model: one a CommitDatabase extended with the
     package's definitions() gives, or dsviper.CommitMutableState(dsviper.CommitState(definitions()));
     over other definitions a call fails on an unregistered attachment. The service reads and

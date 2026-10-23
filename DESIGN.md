@@ -163,7 +163,7 @@ TypeScript files go to `<unit>/<template>` or the package root.
 | cpp | `Fields` | per unit, each field's name, `fields::S::f` |
 | cpp | `Paths` | per unit, each field's path, `paths::S::f()`, built from its name; `CommitAttachments` requires it |
 | cpp | `DatabaseAttachments` | per unit, the attachments of a `Viper::Database`: `database_attachments::<Concept>::<att>`, keys/has/get/set/del |
-| cpp | `CommitAttachments` | per unit, the attachments of a Commit state: `commit_attachments::<Concept>::<att>`, reads over an `AttachmentGetting`, `set`, `diff` and the field mutations over an `AttachmentMutating` |
+| cpp | `CommitAttachments` | per unit, the attachments of a Commit state: `commit_attachments::<Concept>::<att>`, reads over an `AttachmentGetting`, `set`, `diff` and the field mutations over an `CommitAttachmentMutating` |
 | cpp | `Pool` / `PoolRemote` | a function pool, host side (`<pool>_pool`) / client side (`<pool>_remote`) |
 | cpp | `AttachmentPool` / `AttachmentPoolRemote` | an attachment pool, host side (`<pool>_attachment_pool`) / client side (`<pool>_attachment_remote`); requires `CommitAttachments` |
 | python | `Base` | the data alone: `__init__.py` (root: `definitions()`; unit: re-exports `data`), `<unit>/data.py`, `containers.py` |

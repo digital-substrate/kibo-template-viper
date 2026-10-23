@@ -11,7 +11,7 @@ export class Remote {
      * The pool as a service carries it: service is a dsviper.ServiceRemote.connect(host, port,
      * new dsviper.Definitions()), the port given as a string ("54321"). isAvailable() says
      * whether the service declares this pool; the connection's own state is
-     * service.isClosed(). A function that mutates takes an AttachmentMutating, one that reads
+     * service.isClosed(). A function that mutates takes a CommitAttachmentMutating, one that reads
      * an AttachmentGetting, as the package's commit_attachments do. The state knows the model: one a
      * CommitDatabase extended with the package's definitions() gives, or new
      * dsviper.CommitMutableState(new dsviper.CommitState(definitions())); over other
@@ -45,7 +45,7 @@ export const UUID = dsviper.ValueUUId.create("<p.uuid>");
 >>
 
 attachment_remote_call(f) ::= <<
-<doc(f)>    <f.name;format="lf">(state: dsviper.Attachment<f.interfaceType><if(f.parameters)>, <f.parameters:parameter();separator=", "><endif>): <ret(f)> {
+<doc(f)>    <f.name;format="lf">(state: dsviper.<f.interfaceName><if(f.parameters)>, <f.parameters:parameter();separator=", "><endif>): <ret(f)> {
         <attachment_call(f)>
     }
 >>

@@ -61,6 +61,10 @@ version as either one.
 
 ### Changed
 
+- **`AttachmentMutating` is `CommitAttachmentMutating` (BREAKING)**, in C++, Python and
+  TypeScript, as the runtime names it: a mutating pool function, `set`, `diff` and the field
+  mutations take a `CommitAttachmentMutating`. Parameter names keep `attachment_mutating`. Needs
+  kibo's `interfaceName`.
 - **Attachments are generated per usage.** Viper has two databases that share nothing, a
   `Database` read and written whole and a Commit database read through a state and written by
   mutations; each gets its own feature and its own module, with only its own operations.

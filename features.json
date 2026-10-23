@@ -49,7 +49,7 @@
       ]
     },
     "CommitAttachments": {
-      "doc": "The Commit usage: per unit, the attachments of a Commit database -- keys, has, get over a state; set, diff and the field mutations over an AttachmentMutating, stored when the state is committed.",
+      "doc": "The Commit usage: per unit, the attachments of a Commit database -- keys, has, get over a state; set, diff and the field mutations over a CommitAttachmentMutating, stored when the state is committed.",
       "templates": [
         "commit_attachments.cpp.stg",
         "commit_attachments.hpp.stg"
@@ -130,7 +130,7 @@
       ]
     },
     "CommitAttachments": {
-      "doc": "The Commit usage: per unit, the attachments of a Commit database -- keys, has, get over a state; set, diff and the field mutations over an AttachmentMutating, stored when the state is committed. Imported by its path, <unit>.commit_attachments.",
+      "doc": "The Commit usage: per unit, the attachments of a Commit database -- keys, has, get over a state; set, diff and the field mutations over a CommitAttachmentMutating, stored when the state is committed. Imported by its path, <unit>.commit_attachments.",
       "templates": [
         "commit_attachments.py.stg"
       ],
@@ -237,7 +237,7 @@
       ]
     },
     "CommitAttachments": {
-      "doc": "The Commit usage: per unit, the attachments of a Commit database -- keys, has, get over a state; set, diff and the field mutations over an AttachmentMutating, stored when the state is committed. Imported by its path, <unit>/commit_attachments.",
+      "doc": "The Commit usage: per unit, the attachments of a Commit database -- keys, has, get over a state; set, diff and the field mutations over a CommitAttachmentMutating, stored when the state is committed. Imported by its path, <unit>/commit_attachments.",
       "templates": [
         "commit_attachments.ts.stg"
       ],

@@ -18,7 +18,7 @@ is `../features.json`, resolved by `../resolve.py`:
 | `Fields` | `<ns>_<unit>_fields` | every field's name, for code that goes through the dynamic API |
 | `Paths` | `<ns>_<unit>_paths` | every field's path, built once from its name |
 | `DatabaseAttachments` | `<ns>_<unit>_database_attachments` | the CRUD usage: per attachment, `keys`, `has`, `get`, `set`, `del` over a `Viper::Database` |
-| `CommitAttachments` | `<ns>_<unit>_commit_attachments` | the Commit usage: per attachment, `keys`, `has`, `get` over a state; `set`, `diff` and the field mutations over an `AttachmentMutating` |
+| `CommitAttachments` | `<ns>_<unit>_commit_attachments` | the Commit usage: per attachment, `keys`, `has`, `get` over a state; `set`, `diff` and the field mutations over an `CommitAttachmentMutating` |
 | `Reads` | `<ns>_<unit>_reads` | the reading usage: per attachment, `keys`, `has`, `get` over an `AttachmentGetting`, whatever holds the documents; nothing writes |
 | `Pool` | `<ns>_<pool>_pool` | a function pool: the functions an application implements, and the pool it exposes |
 | `PoolRemote` | `<ns>_<pool>_remote` | the same pool, called through a service |
@@ -67,7 +67,7 @@ with its own operations only:
   transaction. Nothing of Commit.
 - `CommitAttachments`, the Commit usage: `<ns>::<unit>::commit_attachments::<Concept>::<attachment>`,
   whose `keys`, `has`, `get` read a state (an `AttachmentGetting`) and whose `set`, `diff` and field
-  mutations (`setName`, `unionVertexKeys`, …) emit mutations on an `AttachmentMutating`.
+  mutations (`setName`, `unionVertexKeys`, …) emit mutations on an `CommitAttachmentMutating`.
 
 - `Reads`, the reading usage: `<ns>::<unit>::reads::<Concept>::<attachment>`, whose `keys`, `has`,
   `get` take any `AttachmentGetting` -- a `Viper::Database` read as it is, or a Commit state -- and

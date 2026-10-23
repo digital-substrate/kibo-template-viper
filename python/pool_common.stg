@@ -35,7 +35,7 @@ doc(f) ::= <<
 >>
 
 attachment_function(f) ::= <<
-    def <f.name;format="snake">(_self, attachment_<f.interfaceType;format="snake">: dsviper.Attachment<f.interfaceType><if(f.parameters)>, <f.parameters:parameter();separator=", "><endif>) -> <ret(f)>:
+    def <f.name;format="snake">(_self, attachment_<f.interfaceType;format="snake">: dsviper.<f.interfaceName><if(f.parameters)>, <f.parameters:parameter();separator=", "><endif>) -> <ret(f)>:
 <doc(f)>        <attachment_call(f)>
 >>
 

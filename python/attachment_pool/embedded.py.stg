@@ -5,7 +5,7 @@ attachment_pool(p) ::= <<
 
 class Pool:
     """The attachment pool a host application exposes to its embedded Python. A function
-    that mutates takes an AttachmentMutating, one that reads an AttachmentGetting, as the
+    that mutates takes a CommitAttachmentMutating, one that reads an AttachmentGetting, as the
     package's commit_attachments do. From a client of a service, the pool's remote module."""
 
     __slots__ = ("_funcs",)
