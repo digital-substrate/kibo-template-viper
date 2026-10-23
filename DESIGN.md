@@ -187,7 +187,7 @@ error). When adding a type kind, wire its `useProxy` first.
 | `optional<T>` | `Optional_<T>` | `is_nil` / `unwrap` / `get` |
 | `vector/set/map/xarray<…>` | `Vector_… / Set_… / Map_… / XArray_…` | collection proxies with the idiom's collection surface |
 | `variant<…>` | `Variant_…` | per-arm `is…` / `get…` / `set…` |
-| `attachment<Key, Doc> a` | `<ns>_<key-concept>_<a>_…` free functions | verbs over `AttachmentGetting` / `AttachmentMutating` |
+| `attachment<Key, Doc> a` | `<ns>_<key-concept>_<a>_…` free functions | verbs over `AttachmentGetting` / `CommitAttachmentMutating` |
 
 ## 6. Naming conventions
 

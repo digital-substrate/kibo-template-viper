@@ -26,6 +26,13 @@ version as either one.
 
 ## [Unreleased]
 
+### Changed
+
+- **`AttachmentMutating` is `CommitAttachmentMutating` (BREAKING)**, in C++, Python and
+  TypeScript, as the runtime names it: a mutating pool function, `set`, `diff` and the field
+  mutations take a `CommitAttachmentMutating`. Parameter names keep `attachment_mutating`. Needs
+  kibo's `interfaceName`.
+
 ### Deprecated
 
 - **This line, kibo 1.** It receives fixes only, for the life of the LTS-1.2 line; new

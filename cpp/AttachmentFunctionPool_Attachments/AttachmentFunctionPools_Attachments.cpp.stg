@@ -15,7 +15,7 @@ main(m) ::= <<
 #include "<m.namespace>_ValueType.hpp"
 
 #include "Viper_AttachmentGettingFunction.hpp"
-#include "Viper_AttachmentMutatingFunction.hpp"
+#include "Viper_CommitAttachmentMutatingFunction.hpp"
 #include "Viper_FunctionPrototype.hpp"
 #include "Viper_Types.hpp"
 #include "Viper_Values.hpp"
@@ -190,7 +190,7 @@ public:
     : AttachmentGettingFunction{std::move(prototype), std::move(documentation)} {}
 };
 
-class F_<a:func_n("set")> final: public Viper::AttachmentMutatingFunction {
+class F_<a:func_n("set")> final: public Viper::CommitAttachmentMutatingFunction {
 public:
     static std::shared_ptr\<F_<a:func_n("set")>\> make() {
         std::vector\<Viper::FunctionPrototype::Parameter> parameters;
@@ -202,7 +202,7 @@ public:
             "set the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
         auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
@@ -213,10 +213,10 @@ public:
     }
 
     F_<a:func_n("set")>(std::shared_ptr\<Viper::FunctionPrototype> prototype, std::string documentation)
-    : AttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
+    : CommitAttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
 };
 
-class F_<a:func_n("diff")> final: public Viper::AttachmentMutatingFunction {
+class F_<a:func_n("diff")> final: public Viper::CommitAttachmentMutatingFunction {
 public:
     static std::shared_ptr\<F_<a:func_n("diff")>\> make() {
         std::vector\<Viper::FunctionPrototype::Parameter> parameters;
@@ -229,7 +229,7 @@ public:
             "diff the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
         auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
@@ -241,7 +241,7 @@ public:
     }
 
     F_<a:func_n("diff")>(std::shared_ptr\<Viper::FunctionPrototype> prototype, std::string documentation)
-    : AttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
+    : CommitAttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
 };
 
 <if(a.documentType.isStructure)><a.documentType.structure.fields:field_function(a)>
@@ -250,7 +250,7 @@ public:
 >>
 
 field_function(sf,a) ::= <<
-class F_<a:func_nf("set",sf)> final: public Viper::AttachmentMutatingFunction {
+class F_<a:func_nf("set",sf)> final: public Viper::CommitAttachmentMutatingFunction {
 public:
     static std::shared_ptr\<F_<a:func_nf("set",sf)>\> make() {
         std::vector\<Viper::FunctionPrototype::Parameter> parameters;
@@ -262,7 +262,7 @@ public:
             "set the property .<sf.name> of the document." );
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
         auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
@@ -274,7 +274,7 @@ public:
     }
 
     F_<a:func_nf("set",sf)>(std::shared_ptr\<Viper::FunctionPrototype> prototype, std::string documentation)
-    : AttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
+    : CommitAttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
 };
 
 <if(sf.field.isSet)><sf:field_function_set(a)>
@@ -284,7 +284,7 @@ public:
 >>
 
 field_function_set(sf,a) ::= <<
-class F_<a:func_nf("union",sf)> final: public Viper::AttachmentMutatingFunction {
+class F_<a:func_nf("union",sf)> final: public Viper::CommitAttachmentMutatingFunction {
 public:
     static std::shared_ptr\<F_<a:func_nf("union",sf)>\> make() {
         std::vector\<Viper::FunctionPrototype::Parameter> parameters;
@@ -296,7 +296,7 @@ public:
             "union in set for property .<sf.name> of the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
         auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
@@ -309,10 +309,10 @@ public:
     }
 
     F_<a:func_nf("union",sf)>(std::shared_ptr\<Viper::FunctionPrototype> prototype, std::string documentation)
-    : AttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
+    : CommitAttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
 };
 
-class F_<a:func_nf("subtract",sf)> final: public Viper::AttachmentMutatingFunction {
+class F_<a:func_nf("subtract",sf)> final: public Viper::CommitAttachmentMutatingFunction {
 public:
     static std::shared_ptr\<F_<a:func_nf("subtract",sf)>\> make() {
         std::vector\<Viper::FunctionPrototype::Parameter> parameters;
@@ -324,7 +324,7 @@ public:
             "subtract in set for the property .<sf.name> of the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
         auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
@@ -336,12 +336,12 @@ public:
     }
 
     F_<a:func_nf("subtract",sf)>(std::shared_ptr\<Viper::FunctionPrototype> prototype, std::string documentation)
-    : AttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
+    : CommitAttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
 };
 >>
 
 field_function_map(sf,a) ::= <<
-class F_<a:func_nf("union",sf)> final: public Viper::AttachmentMutatingFunction {
+class F_<a:func_nf("union",sf)> final: public Viper::CommitAttachmentMutatingFunction {
 public:
     static std::shared_ptr\<F_<a:func_nf("union",sf)>\> make() {
         std::vector\<Viper::FunctionPrototype::Parameter> parameters;
@@ -353,7 +353,7 @@ public:
             "union in map for property .<sf.name> of the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
         auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
@@ -366,10 +366,10 @@ public:
     }
 
     F_<a:func_nf("union",sf)>(std::shared_ptr\<Viper::FunctionPrototype> prototype, std::string documentation)
-    : AttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
+    : CommitAttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
 };
 
-class F_<a:func_nf("subtract",sf)> final: public Viper::AttachmentMutatingFunction {
+class F_<a:func_nf("subtract",sf)> final: public Viper::CommitAttachmentMutatingFunction {
 public:
     static std::shared_ptr\<F_<a:func_nf("subtract",sf)>\> make() {
         std::vector\<Viper::FunctionPrototype::Parameter> parameters;
@@ -381,7 +381,7 @@ public:
             "subtract in map for the property .<sf.name> of the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
         auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
@@ -393,10 +393,10 @@ public:
     }
 
     F_<a:func_nf("subtract",sf)>(std::shared_ptr\<Viper::FunctionPrototype> prototype, std::string documentation)
-    : AttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
+    : CommitAttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
 };
 
-class F_<a:func_nf("update",sf)> final: public Viper::AttachmentMutatingFunction {
+class F_<a:func_nf("update",sf)> final: public Viper::CommitAttachmentMutatingFunction {
 public:
     static std::shared_ptr\<F_<a:func_nf("update",sf)>\> make() {
         std::vector\<Viper::FunctionPrototype::Parameter> parameters;
@@ -408,7 +408,7 @@ public:
             "update in map for property .<sf.name> of the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
         auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
@@ -421,13 +421,13 @@ public:
     }
 
     F_<a:func_nf("update",sf)>(std::shared_ptr\<Viper::FunctionPrototype> prototype, std::string documentation)
-    : AttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
+    : CommitAttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
 };
 
 >>
 
 field_function_xarray(sf,a) ::= <<
-class F_<a:func_nf("insert",sf)> final: public Viper::AttachmentMutatingFunction {
+class F_<a:func_nf("insert",sf)> final: public Viper::CommitAttachmentMutatingFunction {
 public:
     static std::shared_ptr\<F_<a:func_nf("insert",sf)>\> make() {
         std::vector\<Viper::FunctionPrototype::Parameter> parameters;
@@ -441,7 +441,7 @@ public:
             "insert in xarray for property .<sf.name> of the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
         auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
@@ -456,10 +456,10 @@ public:
     }
 
     F_<a:func_nf("insert",sf)>(std::shared_ptr\<Viper::FunctionPrototype> prototype, std::string documentation)
-    : AttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
+    : CommitAttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
 };
 
-class F_<a:func_nf("update",sf)> final: public Viper::AttachmentMutatingFunction {
+class F_<a:func_nf("update",sf)> final: public Viper::CommitAttachmentMutatingFunction {
 public:
     static std::shared_ptr\<F_<a:func_nf("update",sf)>\> make() {
         std::vector\<Viper::FunctionPrototype::Parameter> parameters;
@@ -472,7 +472,7 @@ public:
             "update in xarray for property .<sf.name> of the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
         auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
@@ -486,10 +486,10 @@ public:
     }
 
     F_<a:func_nf("update",sf)>(std::shared_ptr\<Viper::FunctionPrototype> prototype, std::string documentation)
-    : AttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
+    : CommitAttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
 };
 
-class F_<a:func_nf("remove",sf)> final: public Viper::AttachmentMutatingFunction {
+class F_<a:func_nf("remove",sf)> final: public Viper::CommitAttachmentMutatingFunction {
 public:
     static std::shared_ptr\<F_<a:func_nf("remove",sf)>\> make() {
         std::vector\<Viper::FunctionPrototype::Parameter> parameters;
@@ -501,7 +501,7 @@ public:
             "remove in xarray for property .<sf.name> of the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
         auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
@@ -514,7 +514,7 @@ public:
     }
 
     F_<a:func_nf("remove",sf)>(std::shared_ptr\<Viper::FunctionPrototype> prototype, std::string documentation)
-    : AttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
+    : CommitAttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
 };
 >>
 
@@ -526,7 +526,7 @@ document_function(a) ::= <<
 >>
 
 document_function_set(a) ::= <<
-class F_<a:func_n("union")> final: public Viper::AttachmentMutatingFunction {
+class F_<a:func_n("union")> final: public Viper::CommitAttachmentMutatingFunction {
 public:
     static std::shared_ptr\<F_<a:func_n("union")>\> make() {
         std::vector\<Viper::FunctionPrototype::Parameter> parameters;
@@ -538,7 +538,7 @@ public:
             "union in set for the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
         auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
@@ -551,10 +551,10 @@ public:
     }
 
     F_<a:func_n("union")>(std::shared_ptr\<Viper::FunctionPrototype> prototype, std::string documentation)
-    : AttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
+    : CommitAttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
 };
 
-class F_<a:func_n("subtract")> final: public Viper::AttachmentMutatingFunction {
+class F_<a:func_n("subtract")> final: public Viper::CommitAttachmentMutatingFunction {
 public:
     static std::shared_ptr\<F_<a:func_n("subtract")>\> make() {
         std::vector\<Viper::FunctionPrototype::Parameter> parameters;
@@ -566,7 +566,7 @@ public:
             "subtract in set for the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
         auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
@@ -578,13 +578,13 @@ public:
     }
 
     F_<a:func_n("subtract")>(std::shared_ptr\<Viper::FunctionPrototype> prototype, std::string documentation)
-    : AttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
+    : CommitAttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
 };
 
 >>
 
 document_function_map(a) ::= <<
-class F_<a:func_n("union")> final: public Viper::AttachmentMutatingFunction {
+class F_<a:func_n("union")> final: public Viper::CommitAttachmentMutatingFunction {
 public:
     static std::shared_ptr\<F_<a:func_n("union")>\> make() {
         std::vector\<Viper::FunctionPrototype::Parameter> parameters;
@@ -596,7 +596,7 @@ public:
             "union in map for the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
         auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
@@ -609,10 +609,10 @@ public:
     }
 
     F_<a:func_n("union")>(std::shared_ptr\<Viper::FunctionPrototype> prototype, std::string documentation)
-    : AttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
+    : CommitAttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
 };
 
-class F_<a:func_n("subtract")> final: public Viper::AttachmentMutatingFunction {
+class F_<a:func_n("subtract")> final: public Viper::CommitAttachmentMutatingFunction {
 public:
     static std::shared_ptr\<F_<a:func_n("subtract")>\> make() {
         std::vector\<Viper::FunctionPrototype::Parameter> parameters;
@@ -624,7 +624,7 @@ public:
             "subtract in map for the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
         auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
@@ -636,10 +636,10 @@ public:
     }
 
     F_<a:func_n("subtract")>(std::shared_ptr\<Viper::FunctionPrototype> prototype, std::string documentation)
-    : AttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
+    : CommitAttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
 };
 
-class F_<a:func_n("update")> final: public Viper::AttachmentMutatingFunction {
+class F_<a:func_n("update")> final: public Viper::CommitAttachmentMutatingFunction {
 public:
     static std::shared_ptr\<F_<a:func_n("update")>\> make() {
         std::vector\<Viper::FunctionPrototype::Parameter> parameters;
@@ -651,7 +651,7 @@ public:
             "update in map for the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
         auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
@@ -664,12 +664,12 @@ public:
     }
 
     F_<a:func_n("update")>(std::shared_ptr\<Viper::FunctionPrototype> prototype, std::string documentation)
-    : AttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
+    : CommitAttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
 };
 >>
 
 document_function_xarray(a) ::= <<
-class F_<a:func_n("insert")> final: public Viper::AttachmentMutatingFunction {
+class F_<a:func_n("insert")> final: public Viper::CommitAttachmentMutatingFunction {
 public:
     static std::shared_ptr\<F_<a:func_n("insert")>\> make() {
         std::vector\<Viper::FunctionPrototype::Parameter> parameters;
@@ -683,7 +683,7 @@ public:
             "insert in xarray for the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
         auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
@@ -698,10 +698,10 @@ public:
     }
 
     F_<a:func_n("insert")>(std::shared_ptr\<Viper::FunctionPrototype> prototype, std::string documentation)
-    : AttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
+    : CommitAttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
 };
 
-class F_<a:func_n("update")> final: public Viper::AttachmentMutatingFunction {
+class F_<a:func_n("update")> final: public Viper::CommitAttachmentMutatingFunction {
 public:
     static std::shared_ptr\<F_<a:func_n("update")>\> make() {
         std::vector\<Viper::FunctionPrototype::Parameter> parameters;
@@ -714,7 +714,7 @@ public:
             "update in xarray for the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
         auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
@@ -728,10 +728,10 @@ public:
     }
 
     F_<a:func_n("update")>(std::shared_ptr\<Viper::FunctionPrototype> prototype, std::string documentation)
-    : AttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
+    : CommitAttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
 };
 
-class F_<a:func_n("remove")> final: public Viper::AttachmentMutatingFunction {
+class F_<a:func_n("remove")> final: public Viper::CommitAttachmentMutatingFunction {
 public:
     static std::shared_ptr\<F_<a:func_n("remove")>\> make() {
         std::vector\<Viper::FunctionPrototype::Parameter> parameters;
@@ -743,7 +743,7 @@ public:
             "remove in xarray for the document.");
     }
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const override {
         auto const attachment{attachmentMutating->definitions()->checkAttachment(<a:attachment_runtime_id()>)};
         auto const key{Viper::<a.keyType.viperValue>::cast(args.at(0))};
@@ -756,7 +756,7 @@ public:
     }
 
     F_<a:func_n("remove")>(std::shared_ptr\<Viper::FunctionPrototype> prototype, std::string documentation)
-    : AttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
+    : CommitAttachmentMutatingFunction{std::move(prototype), std::move(documentation)} {}
 };
 
 >>

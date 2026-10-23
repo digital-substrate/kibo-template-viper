@@ -41,7 +41,7 @@ class <po.name;format="uf">:
 >>
 
 cfp_function(f, po) ::= <<
-def <f.name;format="lsc">(self, attachment_<f.interfaceType;format="l">: dsviper.Attachment<f.interfaceType><if(f.parameters)>, <f.parameters:parameter();separator=", "><endif>) -> <f.returnPythonType.type>:
+def <f.name;format="lsc">(self, attachment_<f.interfaceType;format="l">: dsviper.<f.interfaceName><if(f.parameters)>, <f.parameters:parameter();separator=", "><endif>) -> <f.returnPythonType.type>:
     <if(f.hasDocumentation)>
     """
     <f.documentation;format="docstring">
