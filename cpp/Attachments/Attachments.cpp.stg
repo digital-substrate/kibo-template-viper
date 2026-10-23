@@ -55,13 +55,13 @@ std::optional\<<a.documentType.typeInNamespace>\> get(std::shared_ptr\<Viper::At
     return ValueDecoder::decode<a.documentType.typeSuffix>(Viper::<a.documentType.viperValue>::cast(optional->unwrap()));
 }
 
-void set(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, <a.documentType.typeInNamespace> const & value) {
+void set(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, <a.documentType.typeInNamespace> const & value) {
     attachmentMutating->set(<a:attachment_type()>,
                         ValueEncoder::encode<a.keyType.typeSuffix>(key),
                         ValueEncoder::encode<a.documentType.typeSuffix>(value));
 }
 
-void diff(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, <a.documentType.typeInNamespace> const & value, bool recursive) {
+void diff(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, <a.documentType.typeInNamespace> const & value, bool recursive) {
     attachmentMutating->diff(<a:attachment_type()>,
                          ValueEncoder::encode<a.keyType.typeSuffix>(key),
                          ValueEncoder::encode<a.documentType.typeSuffix>(value),
@@ -76,7 +76,7 @@ void diff(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating
 >>
 
 field(sf,a) ::= <<
-void set<sf.name;format="uf">(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, <sf.type><sf.passBy> value) {
+void set<sf.name;format="uf">(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, <sf.type><sf.passBy> value) {
     attachmentMutating->update(<a:attachment_type()>,
                            ValueEncoder::encode<a.keyType.typeSuffix>(key),
                            <a.documentType.structure.namespace>::Path::<a.documentType.structure.name>::<sf.name>(),
@@ -90,7 +90,7 @@ void set<sf.name;format="uf">(std::shared_ptr\<Viper::AttachmentMutating> const 
 >>
 
 field_set(sf,a) ::= <<
-void union<sf.name;format="uf">(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, <sf.type> const & value) {
+void union<sf.name;format="uf">(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, <sf.type> const & value) {
     if (!value.empty()) {
         attachmentMutating->unionInSet(<a:attachment_type()>,
                                    ValueEncoder::encode<a.keyType.typeSuffix>(key),
@@ -99,7 +99,7 @@ void union<sf.name;format="uf">(std::shared_ptr\<Viper::AttachmentMutating> cons
     }
 }
 
-void subtract<sf.name;format="uf">(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, <sf.type> const & value) {
+void subtract<sf.name;format="uf">(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, <sf.type> const & value) {
     if (!value.empty()) {
         attachmentMutating->subtractInSet(<a:attachment_type()>,
                                       ValueEncoder::encode<a.keyType.typeSuffix>(key),
@@ -111,7 +111,7 @@ void subtract<sf.name;format="uf">(std::shared_ptr\<Viper::AttachmentMutating> c
 >>
 
 field_map(sf,a) ::= <<
-void union<sf.name;format="uf">(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, <sf.type> const & value) {
+void union<sf.name;format="uf">(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, <sf.type> const & value) {
     if (!value.empty()) {
         attachmentMutating->unionInMap(<a:attachment_type()>,
                                    ValueEncoder::encode<a.keyType.typeSuffix>(key),
@@ -120,7 +120,7 @@ void union<sf.name;format="uf">(std::shared_ptr\<Viper::AttachmentMutating> cons
     }
 }
 
-void subtract<sf.name;format="uf">(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, std::set\<<sf.field.keyType>\> const & value) {
+void subtract<sf.name;format="uf">(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, std::set\<<sf.field.keyType>\> const & value) {
     if (!value.empty()) {
         attachmentMutating->subtractInMap(<a:attachment_type()>,
                                       ValueEncoder::encode<a.keyType.typeSuffix>(key),
@@ -129,7 +129,7 @@ void subtract<sf.name;format="uf">(std::shared_ptr\<Viper::AttachmentMutating> c
     }
 }
 
-void update<sf.name;format="uf">(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, <sf.type> const & value) {
+void update<sf.name;format="uf">(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, <sf.type> const & value) {
     if (!value.empty()) {
         attachmentMutating->updateInMap(<a:attachment_type()>,
                                     ValueEncoder::encode<a.keyType.typeSuffix>(key),
@@ -140,7 +140,7 @@ void update<sf.name;format="uf">(std::shared_ptr\<Viper::AttachmentMutating> con
 >>
 
 field_xarray(sf,a) ::= <<
-void insert<sf.name;format="uf">(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, Viper::UUId const & beforePosition, Viper::UUId const & newPosition, <sf.field.elementType><sf.field.passBy> value) {
+void insert<sf.name;format="uf">(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, Viper::UUId const & beforePosition, Viper::UUId const & newPosition, <sf.field.elementType><sf.field.passBy> value) {
     attachmentMutating->insertInXArray(<a:attachment_type()>,
                                    ValueEncoder::encode<a.keyType.typeSuffix>(key),
                                    <a.documentType.structure.namespace>::Path::<a.documentType.structure.name>::<sf.name>(),
@@ -149,7 +149,7 @@ void insert<sf.name;format="uf">(std::shared_ptr\<Viper::AttachmentMutating> con
                                    ValueEncoder::encode<sf.field.elementTypeSuffix>(value));
 }
 
-void update<sf.name;format="uf">(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, Viper::UUId const & position, <sf.field.elementType><sf.field.passBy> value) {
+void update<sf.name;format="uf">(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, Viper::UUId const & position, <sf.field.elementType><sf.field.passBy> value) {
     attachmentMutating->updateInXArray(<a:attachment_type()>,
                                    ValueEncoder::encode<a.keyType.typeSuffix>(key),
                                    <a.documentType.structure.namespace>::Path::<a.documentType.structure.name>::<sf.name>(),
@@ -157,7 +157,7 @@ void update<sf.name;format="uf">(std::shared_ptr\<Viper::AttachmentMutating> con
                                    ValueEncoder::encode<sf.field.elementTypeSuffix>(value));
 }
 
-void remove<sf.name;format="uf">(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, Viper::UUId const & position) {
+void remove<sf.name;format="uf">(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, Viper::UUId const & position) {
     attachmentMutating->removeInXArray(<a:attachment_type()>,
                                    ValueEncoder::encode<a.keyType.typeSuffix>(key),
                                    <a.documentType.structure.namespace>::Path::<a.documentType.structure.name>::<sf.name>(),
@@ -173,7 +173,7 @@ document(a) ::= <<
 >>
 
 document_set(a) ::= <<
-void union_(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, <a.documentType.typeInNamespace> const & value) {
+void union_(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, <a.documentType.typeInNamespace> const & value) {
     if (!value.empty()) {
         attachmentMutating->unionInSet(<a:attachment_type()>,
                                    ValueEncoder::encode<a.keyType.typeSuffix>(key),
@@ -182,7 +182,7 @@ void union_(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutati
     }
 }
 
-void subtract(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, <a.documentType.typeInNamespace> const & value) {
+void subtract(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, <a.documentType.typeInNamespace> const & value) {
     if (!value.empty()) {
         attachmentMutating->subtractInSet(<a:attachment_type()>,
                                       ValueEncoder::encode<a.keyType.typeSuffix>(key),
@@ -194,7 +194,7 @@ void subtract(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMuta
 >>
 
 document_map(a) ::= <<
-void union_(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, <a.documentType.typeInNamespace> const & value) {
+void union_(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, <a.documentType.typeInNamespace> const & value) {
     if (!value.empty()) {
         attachmentMutating->unionInMap(<a:attachment_type()>,
                                    ValueEncoder::encode<a.keyType.typeSuffix>(key),
@@ -203,7 +203,7 @@ void union_(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutati
     }
 }
 
-void subtract(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, std::set\<<a.documentType.field.keyType>\> const & value) {
+void subtract(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, std::set\<<a.documentType.field.keyType>\> const & value) {
     if (!value.empty()) {
         attachmentMutating->subtractInMap(<a:attachment_type()>,
                                       ValueEncoder::encode<a.keyType.typeSuffix>(key),
@@ -212,7 +212,7 @@ void subtract(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMuta
     }
 }
 
-void update(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, <a.documentType.typeInNamespace> const & value) {
+void update(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, <a.documentType.typeInNamespace> const & value) {
     if (!value.empty()) {
         attachmentMutating->updateInMap(<a:attachment_type()>,
                                     ValueEncoder::encode<a.keyType.typeSuffix>(key),
@@ -223,7 +223,7 @@ void update(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutati
 >>
 
 document_xarray(a) ::= <<
-void insert(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, Viper::UUId const & beforePosition, Viper::UUId const & newPosition, <a.documentType.field.elementType><a.documentType.field.passBy> value) {
+void insert(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, Viper::UUId const & beforePosition, Viper::UUId const & newPosition, <a.documentType.field.elementType><a.documentType.field.passBy> value) {
     attachmentMutating->insertInXArray(<a:attachment_type()>,
                                    ValueEncoder::encode<a.keyType.typeSuffix>(key),
                                    Viper::Path::make(),
@@ -232,7 +232,7 @@ void insert(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutati
                                    ValueEncoder::encode<a.documentType.field.elementTypeSuffix>(value));
 }
 
-void update(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, Viper::UUId const & position, <a.documentType.field.elementType><a.documentType.field.passBy> value) {
+void update(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, Viper::UUId const & position, <a.documentType.field.elementType><a.documentType.field.passBy> value) {
     attachmentMutating->updateInXArray(<a:attachment_type()>,
                                    ValueEncoder::encode<a.keyType.typeSuffix>(key),
                                    Viper::Path::make(),
@@ -240,7 +240,7 @@ void update(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutati
                                    ValueEncoder::encode<a.documentType.field.elementTypeSuffix>(value));
 }
 
-void remove(std::shared_ptr\<Viper::AttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, Viper::UUId const & position) {
+void remove(std::shared_ptr\<Viper::CommitAttachmentMutating> const & attachmentMutating, <a.keyType.typeInNamespace> const & key, Viper::UUId const & position) {
     attachmentMutating->removeInXArray(<a:attachment_type()>,
                                    ValueEncoder::encode<a.keyType.typeSuffix>(key),
                                    Viper::Path::make(),

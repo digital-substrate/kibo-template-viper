@@ -53,11 +53,11 @@ def <a:f()>_get(attachment_getting: dsviper.AttachmentGetting, key: <a.keyType.p
     a = <a:attachment_type()>
     return Optional_<a.documentType.pythonType.proxy>(attachment_getting.get(a, key.vpr_value))
 
-def <a:f()>_set(attachment_mutating: dsviper.AttachmentMutating, key: <a.keyType.pythonType.proxy>, value: <a.documentType.pythonType.type>) -> None:
+def <a:f()>_set(attachment_mutating: dsviper.CommitAttachmentMutating, key: <a.keyType.pythonType.proxy>, value: <a.documentType.pythonType.type>) -> None:
     a = <a:attachment_type()>
     attachment_mutating.set(a, key.vpr_value, <a.documentType.pythonType:unwrap("value")>)
 
-def <a:f()>_diff(attachment_mutating: dsviper.AttachmentMutating, key: <a.keyType.pythonType.proxy>, value: <a.documentType.pythonType.type>, *, recursive: bool = False) -> None:
+def <a:f()>_diff(attachment_mutating: dsviper.CommitAttachmentMutating, key: <a.keyType.pythonType.proxy>, value: <a.documentType.pythonType.type>, *, recursive: bool = False) -> None:
     a = <a:attachment_type()>
     attachment_mutating.diff(a, key.vpr_value, <a.documentType.pythonType:unwrap("value")>, recursive=recursive)
 
@@ -88,7 +88,7 @@ def <a:f()>_enumerate(attachment_getting: dsviper.AttachmentGetting) ->_Enumerat
 path(a,sf) ::= <%<a.namespace>_Path_<a.documentType.structure.name>.<sf.name>%>
 
 field(sf,a) ::= <<
-def <a:f()>_set_<sf.name;format="lsc">(attachment_mutating: dsviper.AttachmentMutating, key: <a.keyType.pythonType.proxy>, value: <sf.pythonType.type>):
+def <a:f()>_set_<sf.name;format="lsc">(attachment_mutating: dsviper.CommitAttachmentMutating, key: <a.keyType.pythonType.proxy>, value: <sf.pythonType.type>):
     a = <a:attachment_type()>
     attachment_mutating.update(a, key.vpr_value, mp.<a:path(sf)>, <sf.pythonType:unwrap("value")>)
 
@@ -99,41 +99,41 @@ def <a:f()>_set_<sf.name;format="lsc">(attachment_mutating: dsviper.AttachmentMu
 >>
 
 field_set(sf,a) ::= <<
-def <a:f()>_union_<sf.name;format="lsc">(attachment_mutating: dsviper.AttachmentMutating, key: <a.keyType.pythonType.proxy>, value: <sf.pythonType.proxy>):
+def <a:f()>_union_<sf.name;format="lsc">(attachment_mutating: dsviper.CommitAttachmentMutating, key: <a.keyType.pythonType.proxy>, value: <sf.pythonType.proxy>):
     a = <a:attachment_type()>
     attachment_mutating.union_in_set(a, key.vpr_value, mp.<a:path(sf)>, value.vpr_value)
 
-def <a:f()>_subtract_<sf.name;format="lsc">(attachment_mutating: dsviper.AttachmentMutating, key: <a.keyType.pythonType.proxy>, value: <sf.pythonType.proxy>):
+def <a:f()>_subtract_<sf.name;format="lsc">(attachment_mutating: dsviper.CommitAttachmentMutating, key: <a.keyType.pythonType.proxy>, value: <sf.pythonType.proxy>):
     a = <a:attachment_type()>
     attachment_mutating.subtract_in_set(a, key.vpr_value, mp.<a:path(sf)>, value.vpr_value)
 
 >>
 
 field_map(sf,a) ::= <<
-def <a:f()>_union_<sf.name;format="lsc">(attachment_mutating: dsviper.AttachmentMutating, key: <a.keyType.pythonType.proxy>, value: <sf.pythonType.proxy>):
+def <a:f()>_union_<sf.name;format="lsc">(attachment_mutating: dsviper.CommitAttachmentMutating, key: <a.keyType.pythonType.proxy>, value: <sf.pythonType.proxy>):
     a = <a:attachment_type()>
     attachment_mutating.union_in_map(a, key.vpr_value, mp.<a:path(sf)>, value.vpr_value)
 
-def <a:f()>_subtract_<sf.name;format="lsc">(attachment_mutating: dsviper.AttachmentMutating, key: <a.keyType.pythonType.proxy>, value: Set_<sf.field.pythonKeyType.proxy>):
+def <a:f()>_subtract_<sf.name;format="lsc">(attachment_mutating: dsviper.CommitAttachmentMutating, key: <a.keyType.pythonType.proxy>, value: Set_<sf.field.pythonKeyType.proxy>):
     a = <a:attachment_type()>
     attachment_mutating.subtract_in_map(a, key.vpr_value, mp.<a:path(sf)>, value.vpr_value)
 
-def <a:f()>_update_<sf.name;format="lsc">(attachment_mutating: dsviper.AttachmentMutating, key: <a.keyType.pythonType.type>, value: <sf.pythonType.type>):
+def <a:f()>_update_<sf.name;format="lsc">(attachment_mutating: dsviper.CommitAttachmentMutating, key: <a.keyType.pythonType.type>, value: <sf.pythonType.type>):
     a = <a:attachment_type()>
     attachment_mutating.update_in_map(a, key.vpr_value, mp.<a:path(sf)>, value.vpr_value)
 
 >>
 
 field_xarray(sf,a) ::= <<
-def <a:f()>_insert_<sf.name;format="lsc">(attachment_mutating: dsviper.AttachmentMutating, key: <a.keyType.pythonType.proxy>, before_position: dsviper.ValueUUId, new_position: dsviper.ValueUUId, value: <sf.field.pythonElementType.type>):
+def <a:f()>_insert_<sf.name;format="lsc">(attachment_mutating: dsviper.CommitAttachmentMutating, key: <a.keyType.pythonType.proxy>, before_position: dsviper.ValueUUId, new_position: dsviper.ValueUUId, value: <sf.field.pythonElementType.type>):
     a = <a:attachment_type()>
     attachment_mutating.insert_in_xarray(a, key.vpr_value, mp.<a:path(sf)>, before_position, new_position, <sf.field.pythonElementType:unwrap("value")>)
 
-def <a:f()>_update_<sf.name;format="lsc">(attachment_mutating: dsviper.AttachmentMutating, key: <a.keyType.pythonType.proxy>, position: dsviper.ValueUUId, value: <sf.field.pythonElementType.type>):
+def <a:f()>_update_<sf.name;format="lsc">(attachment_mutating: dsviper.CommitAttachmentMutating, key: <a.keyType.pythonType.proxy>, position: dsviper.ValueUUId, value: <sf.field.pythonElementType.type>):
     a = <a:attachment_type()>
     attachment_mutating.update_in_xarray(a, key.vpr_value, mp.<a:path(sf)>, position, <sf.field.pythonElementType:unwrap("value")>)
 
-def <a:f()>_remove_<sf.name;format="lsc">(attachment_mutating: dsviper.AttachmentMutating, key: <a.keyType.pythonType.proxy>, position: dsviper.ValueUUId):
+def <a:f()>_remove_<sf.name;format="lsc">(attachment_mutating: dsviper.CommitAttachmentMutating, key: <a.keyType.pythonType.proxy>, position: dsviper.ValueUUId):
     a = <a:attachment_type()>
     attachment_mutating.remove_in_xarray(a, key.vpr_value, mp.<a:path(sf)>, position)
 
@@ -147,41 +147,41 @@ document(a) ::= <<
 >>
 
 document_set(a) ::= <<
-def <a:f()>_union(attachment_mutating: dsviper.AttachmentMutating, key: <a.keyType.pythonType.proxy>, value: <a.documentType.pythonType.proxy>):
+def <a:f()>_union(attachment_mutating: dsviper.CommitAttachmentMutating, key: <a.keyType.pythonType.proxy>, value: <a.documentType.pythonType.proxy>):
     a = <a:attachment_type()>
     attachment_mutating.union_in_set(a, key.vpr_value, mp.Path_Root, value.vpr_value)
 
-def <a:f()>_subtract(attachment_mutating: dsviper.AttachmentMutating, key: <a.keyType.pythonType.proxy>, value: <a.documentType.pythonType.proxy>):
+def <a:f()>_subtract(attachment_mutating: dsviper.CommitAttachmentMutating, key: <a.keyType.pythonType.proxy>, value: <a.documentType.pythonType.proxy>):
     a = <a:attachment_type()>
     attachment_mutating.subtract_in_set(a, key.vpr_value, mp.Path_Root, value.vpr_value)
 
 >>
 
 document_map(a) ::= <<
-def <a:f()>_union(attachment_mutating: dsviper.AttachmentMutating, key: <a.keyType.pythonType.proxy>, value: <a.documentType.pythonType.proxy>):
+def <a:f()>_union(attachment_mutating: dsviper.CommitAttachmentMutating, key: <a.keyType.pythonType.proxy>, value: <a.documentType.pythonType.proxy>):
     a = <a:attachment_type()>
     attachment_mutating.union_in_map(a, key.vpr_value, mp.Path_Root, value.vpr_value)
 
-def <a:f()>_subtract(attachment_mutating: dsviper.AttachmentMutating, key: <a.keyType.pythonType.proxy>, value: Set_<a.documentType.field.pythonKeyType.proxy>):
+def <a:f()>_subtract(attachment_mutating: dsviper.CommitAttachmentMutating, key: <a.keyType.pythonType.proxy>, value: Set_<a.documentType.field.pythonKeyType.proxy>):
     a = <a:attachment_type()>
     attachment_mutating.subtract_in_map(a, key.vpr_value, mp.Path_Root, value.vpr_value)
 
-def <a:f()>_update(attachment_mutating: dsviper.AttachmentMutating, key: <a.keyType.pythonType.proxy>, value: <a.documentType.pythonType.proxy>):
+def <a:f()>_update(attachment_mutating: dsviper.CommitAttachmentMutating, key: <a.keyType.pythonType.proxy>, value: <a.documentType.pythonType.proxy>):
     a = <a:attachment_type()>
     attachment_mutating.update_in_map(a, key.vpr_value, mp.Path_Root, value.vpr_value)
 
 >>
 
 document_xarray(a) ::= <<
-def <a:f()>_insert(attachment_mutating: dsviper.AttachmentMutating, key: <a.keyType.pythonType.proxy>, before_position: dsviper.ValueUUId, new_position: dsviper.ValueUUId, value: <a.documentType.field.pythonElementType.type>):
+def <a:f()>_insert(attachment_mutating: dsviper.CommitAttachmentMutating, key: <a.keyType.pythonType.proxy>, before_position: dsviper.ValueUUId, new_position: dsviper.ValueUUId, value: <a.documentType.field.pythonElementType.type>):
     a = <a:attachment_type()>
     attachment_mutating.insert_in_xarray(a, key.vpr_value, mp.Path_Root, before_position, new_position, <a.documentType.field.pythonElementType:unwrap("value")>)
 
-def <a:f()>_update(attachment_mutating: dsviper.AttachmentMutating, key: <a.keyType.pythonType.proxy>, position: dsviper.ValueUUId, value: <a.documentType.field.pythonElementType.type>):
+def <a:f()>_update(attachment_mutating: dsviper.CommitAttachmentMutating, key: <a.keyType.pythonType.proxy>, position: dsviper.ValueUUId, value: <a.documentType.field.pythonElementType.type>):
     a = <a:attachment_type()>
     attachment_mutating.update_in_xarray(a, key.vpr_value, mp.Path_Root, position, <a.documentType.field.pythonElementType:unwrap("value")>)
 
-def <a:f()>_remove(attachment_mutating: dsviper.AttachmentMutating, key: <a.keyType.pythonType.proxy>, position: dsviper.ValueUUId):
+def <a:f()>_remove(attachment_mutating: dsviper.CommitAttachmentMutating, key: <a.keyType.pythonType.proxy>, position: dsviper.ValueUUId):
     a = <a:attachment_type()>
     attachment_mutating.remove_in_xarray(a, key.vpr_value, mp.Path_Root, position)
 

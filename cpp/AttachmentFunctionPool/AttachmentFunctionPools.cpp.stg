@@ -15,7 +15,7 @@ main(m) ::= <<
 #include "<m.namespace>_ValueType.hpp"
 
 #include "Viper_AttachmentGettingFunction.hpp"
-#include "Viper_AttachmentMutatingFunction.hpp"
+#include "Viper_CommitAttachmentMutatingFunction.hpp"
 #include "Viper_Definitions.hpp"
 #include "Viper_Function.hpp"
 #include "Viper_FunctionPrototype.hpp"
@@ -48,12 +48,12 @@ cfp_function_call_return(f,po) ::= <%ValueEncoder::encode<f.typeSuffix>(<f:cfp_f
 
 cfp_function(f,po) ::= <<
 // MARK: - <po.name>::<f:name();format="uf">
-class F_<f:name()> final: public Viper::Attachment<f.interfaceType>Function {
+class F_<f:name()> final: public Viper::<f.interfaceName>Function {
 
 public:
     <f:function_make()>
 
-    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::Attachment<f.interfaceType>\> const & attachment<f.interfaceType>,
+    std::shared_ptr\<Viper::Value> checkedCall(std::shared_ptr\<Viper::<f.interfaceName>\> const & attachment<f.interfaceType>,
                                               std::vector\<std::shared_ptr\<Viper::Value>\> const & args) const {
         <f:function_cast()>
         <if(f.isVoid)>
@@ -65,7 +65,7 @@ public:
     }
 
     F_<f:name()>(std::shared_ptr\<Viper::FunctionPrototype> prototype, std::string documentation)
-    : Viper::Attachment<f.interfaceType>Function{std::move(prototype), std::move(documentation)} {}
+    : Viper::<f.interfaceName>Function{std::move(prototype), std::move(documentation)} {}
 };
 
 >>

@@ -10,7 +10,7 @@ main(m) ::= <<
 #include "<m.namespace>_ValueDecoder.hpp"
 #include "<m.namespace>_ValueEncoder.hpp"
 
-#include "Viper_AttachmentMutating.hpp"
+#include "Viper_CommitAttachmentMutating.hpp"
 #include "Viper_ServiceRemote.hpp"
 
 namespace <m.namespace>::AttachmentFunctionPoolRemotes {
@@ -28,7 +28,7 @@ function_return(f) ::= <%<if(f.isVoid)>void<else><f.type><endif>%>
 
 fp_parameter_push_back(p) ::= <%parameters.push_back(ValueEncoder::encode<p.typeSuffix>(<p.name>));%>
 fp_function(f, po) ::= <<
-<f:function_return()> <po.name;format="uf">::<f.name;format="lsc">(std::shared_ptr\<Viper::Attachment<f.interfaceType>\> const & attachment<f.interfaceType><f:function_parameters()>) const {
+<f:function_return()> <po.name;format="uf">::<f.name;format="lsc">(std::shared_ptr\<Viper::<f.interfaceName>\> const & attachment<f.interfaceType><f:function_parameters()>) const {
     static std::string funcName("<f.name>");
 
     std::vector\<std::shared_ptr\<Viper::Value\>> parameters;

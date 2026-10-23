@@ -12,7 +12,7 @@ main(m) ::= <<
 #include "<m.namespace>_Data.hpp"
 
 #include "Viper_AttachmentGetting.hpp"
-#include "Viper_AttachmentMutating.hpp"
+#include "Viper_CommitAttachmentMutating.hpp"
 
 namespace <m.namespace>::AttachmentFunctionPoolBridges {
 
@@ -29,7 +29,7 @@ function_parameter(p) ::= <%<p.type><p.passBy> <p.name>%>
 function_parameters(f) ::= <%<f.parameters:function_parameter();separator=", ">%>
 function_return(f) ::= <%<if(f.isVoid)>void<else><f.type><endif>%>
 
-cf_interface(f) ::= <%std::shared_ptr\<Viper::Attachment<f.interfaceType>> const & attachment<f.interfaceType>%>
+cf_interface(f) ::= <%std::shared_ptr\<Viper::<f.interfaceName>> const & attachment<f.interfaceType>%>
 cfp_prototype(f) ::= <%<f:function_return()> <f:name()>(<f:cf_interface()><if(f.parameters)>, <f:function_parameters()><endif>);%>
 
 cfp(po) ::= <<

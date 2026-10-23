@@ -72,12 +72,12 @@ export const <a.identifier;format="lf"> = {
         return new <a:docOptional()>(attachmentGetting.get(attachment, key.vprValue));
     },
 
-    set(attachmentMutating: dsviper.AttachmentMutating, key: <a:keyProxy()>, value: <a.documentType.pythonType:dtype()>): void {
+    set(attachmentMutating: dsviper.CommitAttachmentMutating, key: <a:keyProxy()>, value: <a.documentType.pythonType:dtype()>): void {
         const attachment = <a:attachmentType()>;
         attachmentMutating.set(attachment, key.vprValue, <a.documentType.pythonType:unwrap("value")>);
     },
 
-    diff(attachmentMutating: dsviper.AttachmentMutating, key: <a:keyProxy()>, value: <a.documentType.pythonType:dtype()>, recursive: boolean = false): void {
+    diff(attachmentMutating: dsviper.CommitAttachmentMutating, key: <a:keyProxy()>, value: <a.documentType.pythonType:dtype()>, recursive: boolean = false): void {
         const attachment = <a:attachmentType()>;
         attachmentMutating.diff(attachment, key.vprValue, <a.documentType.pythonType:unwrap("value")>, recursive);
     },
@@ -95,7 +95,7 @@ export const <a.identifier;format="lf"> = {
 >>
 
 field(sf, a) ::= <<
-set<sf.name;format="uf">(attachmentMutating: dsviper.AttachmentMutating, key: <a:keyProxy()>, value: <sf.pythonType:dtype()>): void {
+set<sf.name;format="uf">(attachmentMutating: dsviper.CommitAttachmentMutating, key: <a:keyProxy()>, value: <sf.pythonType:dtype()>): void {
     const attachment = <a:attachmentType()>;
     attachmentMutating.update(attachment, key.vprValue, <a:path(sf)>, <sf.pythonType:unwrap("value")>);
 },
@@ -103,41 +103,41 @@ set<sf.name;format="uf">(attachmentMutating: dsviper.AttachmentMutating, key: <a
 >>
 
 field_set(sf, a) ::= <<
-union<sf.name;format="uf">(attachmentMutating: dsviper.AttachmentMutating, key: <a:keyProxy()>, value: d.<sf.pythonType.proxy>): void {
+union<sf.name;format="uf">(attachmentMutating: dsviper.CommitAttachmentMutating, key: <a:keyProxy()>, value: d.<sf.pythonType.proxy>): void {
     const attachment = <a:attachmentType()>;
     attachmentMutating.unionInSet(attachment, key.vprValue, <a:path(sf)>, value.vprValue);
 },
-subtract<sf.name;format="uf">(attachmentMutating: dsviper.AttachmentMutating, key: <a:keyProxy()>, value: d.<sf.pythonType.proxy>): void {
+subtract<sf.name;format="uf">(attachmentMutating: dsviper.CommitAttachmentMutating, key: <a:keyProxy()>, value: d.<sf.pythonType.proxy>): void {
     const attachment = <a:attachmentType()>;
     attachmentMutating.subtractInSet(attachment, key.vprValue, <a:path(sf)>, value.vprValue);
 },
 >>
 
 field_map(sf, a) ::= <<
-union<sf.name;format="uf">(attachmentMutating: dsviper.AttachmentMutating, key: <a:keyProxy()>, value: d.<sf.pythonType.proxy>): void {
+union<sf.name;format="uf">(attachmentMutating: dsviper.CommitAttachmentMutating, key: <a:keyProxy()>, value: d.<sf.pythonType.proxy>): void {
     const attachment = <a:attachmentType()>;
     attachmentMutating.unionInMap(attachment, key.vprValue, <a:path(sf)>, value.vprValue);
 },
-subtract<sf.name;format="uf">(attachmentMutating: dsviper.AttachmentMutating, key: <a:keyProxy()>, value: d.Set_<sf.field.pythonKeyType.proxy>): void {
+subtract<sf.name;format="uf">(attachmentMutating: dsviper.CommitAttachmentMutating, key: <a:keyProxy()>, value: d.Set_<sf.field.pythonKeyType.proxy>): void {
     const attachment = <a:attachmentType()>;
     attachmentMutating.subtractInMap(attachment, key.vprValue, <a:path(sf)>, value.vprValue);
 },
-update<sf.name;format="uf">(attachmentMutating: dsviper.AttachmentMutating, key: <a:keyProxy()>, value: d.<sf.pythonType.proxy>): void {
+update<sf.name;format="uf">(attachmentMutating: dsviper.CommitAttachmentMutating, key: <a:keyProxy()>, value: d.<sf.pythonType.proxy>): void {
     const attachment = <a:attachmentType()>;
     attachmentMutating.updateInMap(attachment, key.vprValue, <a:path(sf)>, value.vprValue);
 },
 >>
 
 field_xarray(sf, a) ::= <<
-insert<sf.name;format="uf">(attachmentMutating: dsviper.AttachmentMutating, key: <a:keyProxy()>, beforePosition: dsviper.ValueUUId, newPosition: dsviper.ValueUUId, value: <sf.field.pythonElementType:dtype()>): void {
+insert<sf.name;format="uf">(attachmentMutating: dsviper.CommitAttachmentMutating, key: <a:keyProxy()>, beforePosition: dsviper.ValueUUId, newPosition: dsviper.ValueUUId, value: <sf.field.pythonElementType:dtype()>): void {
     const attachment = <a:attachmentType()>;
     attachmentMutating.insertInXarray(attachment, key.vprValue, <a:path(sf)>, beforePosition, newPosition, <sf.field.pythonElementType:unwrap("value")>);
 },
-update<sf.name;format="uf">(attachmentMutating: dsviper.AttachmentMutating, key: <a:keyProxy()>, position: dsviper.ValueUUId, value: <sf.field.pythonElementType:dtype()>): void {
+update<sf.name;format="uf">(attachmentMutating: dsviper.CommitAttachmentMutating, key: <a:keyProxy()>, position: dsviper.ValueUUId, value: <sf.field.pythonElementType:dtype()>): void {
     const attachment = <a:attachmentType()>;
     attachmentMutating.updateInXarray(attachment, key.vprValue, <a:path(sf)>, position, <sf.field.pythonElementType:unwrap("value")>);
 },
-remove<sf.name;format="uf">(attachmentMutating: dsviper.AttachmentMutating, key: <a:keyProxy()>, position: dsviper.ValueUUId): void {
+remove<sf.name;format="uf">(attachmentMutating: dsviper.CommitAttachmentMutating, key: <a:keyProxy()>, position: dsviper.ValueUUId): void {
     const attachment = <a:attachmentType()>;
     attachmentMutating.removeInXarray(attachment, key.vprValue, <a:path(sf)>, position);
 },
@@ -148,41 +148,41 @@ document(a) ::= <<
 >>
 
 document_set(a) ::= <<
-union(attachmentMutating: dsviper.AttachmentMutating, key: <a:keyProxy()>, value: <a:docOptional()>): void {
+union(attachmentMutating: dsviper.CommitAttachmentMutating, key: <a:keyProxy()>, value: <a:docOptional()>): void {
     const attachment = <a:attachmentType()>;
     attachmentMutating.unionInSet(attachment, key.vprValue, mp.Path_Root, value.vprValue);
 },
-subtract(attachmentMutating: dsviper.AttachmentMutating, key: <a:keyProxy()>, value: d.<a.documentType.pythonType.proxy>): void {
+subtract(attachmentMutating: dsviper.CommitAttachmentMutating, key: <a:keyProxy()>, value: d.<a.documentType.pythonType.proxy>): void {
     const attachment = <a:attachmentType()>;
     attachmentMutating.subtractInSet(attachment, key.vprValue, mp.Path_Root, value.vprValue);
 },
 >>
 
 document_map(a) ::= <<
-union(attachmentMutating: dsviper.AttachmentMutating, key: <a:keyProxy()>, value: d.<a.documentType.pythonType.proxy>): void {
+union(attachmentMutating: dsviper.CommitAttachmentMutating, key: <a:keyProxy()>, value: d.<a.documentType.pythonType.proxy>): void {
     const attachment = <a:attachmentType()>;
     attachmentMutating.unionInMap(attachment, key.vprValue, mp.Path_Root, value.vprValue);
 },
-subtract(attachmentMutating: dsviper.AttachmentMutating, key: <a:keyProxy()>, value: d.Set_<a.documentType.field.pythonKeyType.proxy>): void {
+subtract(attachmentMutating: dsviper.CommitAttachmentMutating, key: <a:keyProxy()>, value: d.Set_<a.documentType.field.pythonKeyType.proxy>): void {
     const attachment = <a:attachmentType()>;
     attachmentMutating.subtractInMap(attachment, key.vprValue, mp.Path_Root, value.vprValue);
 },
-update(attachmentMutating: dsviper.AttachmentMutating, key: <a:keyProxy()>, value: d.<a.documentType.pythonType.proxy>): void {
+update(attachmentMutating: dsviper.CommitAttachmentMutating, key: <a:keyProxy()>, value: d.<a.documentType.pythonType.proxy>): void {
     const attachment = <a:attachmentType()>;
     attachmentMutating.updateInMap(attachment, key.vprValue, mp.Path_Root, value.vprValue);
 },
 >>
 
 document_xarray(a) ::= <<
-insert(attachmentMutating: dsviper.AttachmentMutating, key: <a:keyProxy()>, beforePosition: dsviper.ValueUUId, newPosition: dsviper.ValueUUId, value: <a.documentType.field.pythonElementType:dtype()>): void {
+insert(attachmentMutating: dsviper.CommitAttachmentMutating, key: <a:keyProxy()>, beforePosition: dsviper.ValueUUId, newPosition: dsviper.ValueUUId, value: <a.documentType.field.pythonElementType:dtype()>): void {
     const attachment = <a:attachmentType()>;
     attachmentMutating.insertInXarray(attachment, key.vprValue, mp.Path_Root, beforePosition, newPosition, <a.documentType.field.pythonElementType:unwrap("value")>);
 },
-update(attachmentMutating: dsviper.AttachmentMutating, key: <a:keyProxy()>, position: dsviper.ValueUUId, value: <a.documentType.field.pythonElementType:dtype()>): void {
+update(attachmentMutating: dsviper.CommitAttachmentMutating, key: <a:keyProxy()>, position: dsviper.ValueUUId, value: <a.documentType.field.pythonElementType:dtype()>): void {
     const attachment = <a:attachmentType()>;
     attachmentMutating.updateInXarray(attachment, key.vprValue, mp.Path_Root, position, <a.documentType.field.pythonElementType:unwrap("value")>);
 },
-remove(attachmentMutating: dsviper.AttachmentMutating, key: <a:keyProxy()>, position: dsviper.ValueUUId): void {
+remove(attachmentMutating: dsviper.CommitAttachmentMutating, key: <a:keyProxy()>, position: dsviper.ValueUUId): void {
     const attachment = <a:attachmentType()>;
     attachmentMutating.removeInXarray(attachment, key.vprValue, mp.Path_Root, position);
 },
