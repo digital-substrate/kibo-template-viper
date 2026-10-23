@@ -38,7 +38,7 @@ preamble(p, context) ::= <<
 #include "Viper_XArray.hpp"
 <if(context)>
 
-#include "Viper_AttachmentMutating.hpp"
+#include "Viper_CommitAttachmentMutating.hpp"
 <endif>
 
 #include \<cstdint>

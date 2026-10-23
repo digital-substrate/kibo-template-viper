@@ -3,7 +3,7 @@ import "banner.stg"
 attachment_pool(p) ::= <<
 <preamble(p, "AttachmentFunctionPool")>
 #include "Viper_AttachmentGettingFunction.hpp"
-#include "Viper_AttachmentMutatingFunction.hpp"
+#include "Viper_CommitAttachmentMutatingFunction.hpp"
 
 namespace <p.model.namespace>::<p.name;format="lsc"> {
 
@@ -44,12 +44,12 @@ preamble(p, kind) ::= <<
 >>
 
 attachment_function(f, p) ::= <<
-class <f.name;format="uf"> final : public Viper::Attachment<f.interfaceType>Function {
+class <f.name;format="uf"> final : public Viper::<f.interfaceName>Function {
 public:
     <make(f)>
 
     explicit <f.name;format="uf">(std::shared_ptr\<Viper::FunctionPrototype> prototype)
-    : Viper::Attachment<f.interfaceType>Function{std::move(prototype), "<f.documentation;format="string">"} {}
+    : Viper::<f.interfaceName>Function{std::move(prototype), "<f.documentation;format="string">"} {}
 
 protected:
     <attachment_checked_call(f)>
@@ -94,7 +94,7 @@ attachment_checked_call(f) ::= <<
         <attachment_checked_call_args()>
 >>
 
-attachment_checked_call_interface(f) ::= <%std::shared_ptr\<Viper::Attachment<f.interfaceType>> const & attachment<f.interfaceType>,%>
+attachment_checked_call_interface(f) ::= <%std::shared_ptr\<Viper::<f.interfaceName>> const & attachment<f.interfaceType>,%>
 attachment_checked_call_args() ::= <%std::vector\<std::shared_ptr\<Viper::Value>> const & args) const override {%>
 
 function_add(f) ::= <<        created->add(<f.name;format="uf">::make());>>

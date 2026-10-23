@@ -41,7 +41,7 @@ preamble(p, kind, context) ::= <<
 <if(context)>
 
 #include "Viper_AttachmentGetting.hpp"
-#include "Viper_AttachmentMutating.hpp"
+#include "Viper_CommitAttachmentMutating.hpp"
 <endif>
 
 #include \<cstdint>

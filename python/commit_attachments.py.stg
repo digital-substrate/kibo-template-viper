@@ -6,7 +6,7 @@ unit(u) ::= <<
 """The <u.name> attachments in a Commit database: read a state, write by mutations.
 
 A read takes an AttachmentGetting: a CommitState's or a mutable state's attachment_getting().
-A write takes an AttachmentMutating, which a CommitMutableState gives (attachment_mutating()):
+A write takes a CommitAttachmentMutating, which a CommitMutableState gives (attachment_mutating()):
 dsviper.CommitMutableState(dsviper.CommitStateBuilder.initial_state(db)) for the first commit,
 CommitStateBuilder.state(db, commit_id) to carry on from the last one. The database needs the
 model first: db.extend_definitions(definitions()). Nothing is stored until the state is
@@ -72,12 +72,12 @@ one(a, s) ::= <<
             the last load, pass the last loaded state first."""
             return typing.cast("tuple[<keyset(s)>, <keyset(s)>, <keyset(s)>, <keyset(s)>]", self._diff_keys(current, other))
 
-        def set(self, state: dsviper.AttachmentMutating, key: <key(s)>, value: <input(a)>) -> None:
+        def set(self, state: dsviper.CommitAttachmentMutating, key: <key(s)>, value: <input(a)>) -> None:
             """Set the document: one mutation, stored when the state is committed. The document is
             copied in: changing it afterwards does not reach what was written."""
             self._set_in_state(state, key, value)
 
-        def diff(self, state: dsviper.AttachmentMutating, key: <key(s)>, value: <input(a)>, *, recursive: bool = False) -> None:
+        def diff(self, state: dsviper.CommitAttachmentMutating, key: <key(s)>, value: <input(a)>, *, recursive: bool = False) -> None:
             """Write only what differs between value and the stored document. recursive computes
             the difference field by field inside a structure, instead of replacing it whole."""
             self._diff(state, key, value, recursive)
@@ -88,7 +88,7 @@ one(a, s) ::= <<
 
 field(sf, a, s) ::= <<
 
-def set_<sf.name;format="snake">(self, state: dsviper.AttachmentMutating, key: <key(s)>, value: <sf.bindingType.inputQualified>) -> None:
+def set_<sf.name;format="snake">(self, state: dsviper.CommitAttachmentMutating, key: <key(s)>, value: <sf.bindingType.inputQualified>) -> None:
     """Write value in the field <sf.name;format="snake">. A key that holds no document is left as it
     is, without a word: set the document first."""
     self._update(state, key, <field_path(sf, a)>, value)<if(sf.field.isSet)>
@@ -108,42 +108,42 @@ document_ops(a, s) ::= <<
 >>
 
 set_ops(t, s, path, suffix) ::= <<
-def union<suffix>(self, state: dsviper.AttachmentMutating, key: <key(s)>, value: <t.bindingType.inputQualified>) -> None:
+def union<suffix>(self, state: dsviper.CommitAttachmentMutating, key: <key(s)>, value: <t.bindingType.inputQualified>) -> None:
     """Add the elements of value to the set."""
     self._union_in_set(state, key, <path>, value)
 
-def subtract<suffix>(self, state: dsviper.AttachmentMutating, key: <key(s)>, value: <t.bindingType.inputQualified>) -> None:
+def subtract<suffix>(self, state: dsviper.CommitAttachmentMutating, key: <key(s)>, value: <t.bindingType.inputQualified>) -> None:
     """Remove the elements of value from the set."""
     self._subtract_in_set(state, key, <path>, value)
 >>
 
 map_ops(t, s, path, suffix) ::= <<
-def union<suffix>(self, state: dsviper.AttachmentMutating, key: <key(s)>, value: <t.bindingType.inputQualified>) -> None:
+def union<suffix>(self, state: dsviper.CommitAttachmentMutating, key: <key(s)>, value: <t.bindingType.inputQualified>) -> None:
     """Add the entries of value to the map, replacing the map keys already there."""
     self._union_in_map(state, key, <path>, value)
 
-def subtract<suffix>(self, state: dsviper.AttachmentMutating, key: <key(s)>, value: <t.bindingKeySetType.inputQualified>) -> None:
+def subtract<suffix>(self, state: dsviper.CommitAttachmentMutating, key: <key(s)>, value: <t.bindingKeySetType.inputQualified>) -> None:
     """Remove the entries whose map key is in value."""
     self._subtract_in_map(state, key, <path>, value)
 
-def update<suffix>(self, state: dsviper.AttachmentMutating, key: <key(s)>, value: <t.bindingType.inputQualified>) -> None:
+def update<suffix>(self, state: dsviper.CommitAttachmentMutating, key: <key(s)>, value: <t.bindingType.inputQualified>) -> None:
     """Update the entries of the map from those of value. Only map keys already there are
     written; a map key only value carries is ignored: union inserts it."""
     self._update_in_map(state, key, <path>, value)
 >>
 
 xarray_ops(t, s, path, suffix) ::= <<
-def insert<suffix>(self, state: dsviper.AttachmentMutating, key: <key(s)>, before_position: dsviper.ValueUUId, new_position: dsviper.ValueUUId, value: <t.bindingElementType.inputQualified>) -> None:
+def insert<suffix>(self, state: dsviper.CommitAttachmentMutating, key: <key(s)>, before_position: dsviper.ValueUUId, new_position: dsviper.ValueUUId, value: <t.bindingElementType.inputQualified>) -> None:
     """Insert value at new_position, before before_position. A new_position the xarray holds,
     or held before a removal, keeps its place; a before_position it does not hold leaves it
     unchanged."""
     self._insert_in_xarray(state, key, <path>, before_position, new_position, value)
 
-def update<suffix>(self, state: dsviper.AttachmentMutating, key: <key(s)>, position: dsviper.ValueUUId, value: <t.bindingElementType.inputQualified>) -> None:
+def update<suffix>(self, state: dsviper.CommitAttachmentMutating, key: <key(s)>, position: dsviper.ValueUUId, value: <t.bindingElementType.inputQualified>) -> None:
     """Write value at position."""
     self._update_in_xarray(state, key, <path>, position, value)
 
-def remove<suffix>(self, state: dsviper.AttachmentMutating, key: <key(s)>, position: dsviper.ValueUUId) -> None:
+def remove<suffix>(self, state: dsviper.CommitAttachmentMutating, key: <key(s)>, position: dsviper.ValueUUId) -> None:
     """Remove position."""
     self._remove_in_xarray(state, key, <path>, position)
 >>
