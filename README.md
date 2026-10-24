@@ -111,7 +111,7 @@ format and public API are locked across a minor. The `PATCH` is versioned
 
 | Templates    | Runtime                              | Compatible versions |
 |--------------|--------------------------------------|---------------------|
-| `typescript` | `@digitalsubstrate/dsviper` (npm)    | `>=1.2.14 <1.3.0`   |
+| `typescript` | `@digitalsubstrate/dsviper` (npm)    | `>=1.2.16 <1.3.0`   |
 | `python`     | `dsviper` (PyPI wheel)               | `1.2.x`             |
 | `cpp`        | `viper` (C++ runtime)                | `1.2.x`             |
 
@@ -122,11 +122,12 @@ and the floor belongs in the generated output, not in this table. A pin the
 consumer's build reads cannot go stale, and it fails where someone will see it.
 
 `typescript` is the one such case today. Its generated `package.json` pins
-`>=1.2.14 <1.3.0`: the generated `vec`/`mat` proxies call the binding's
+`>=1.2.16 <1.3.0`: the generated `vec`/`mat` proxies call the binding's
 `toArray()`, which the binding settled on from `1.2.8` onward (a fixed-shape
 sequence is an array in JS, not a tuple), and a remote attachment function that
 only reads takes an `AttachmentGetting`, which the binding's `call` accepts from
-`1.2.14`. The `python` and `cpp` outputs carry no pin: Python only annotates the
+`1.2.14`, and a write takes a `CommitAttachmentMutating`, the binding's name for
+it from `1.2.16`. The `python` and `cpp` outputs carry no pin: Python only annotates the
 parameter, and C++ builds against the runtime's source.
 
 The MIT license above governs the **templates as source**. The output

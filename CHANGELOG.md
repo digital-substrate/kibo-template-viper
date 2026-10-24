@@ -32,6 +32,8 @@ version as either one.
   TypeScript, as the runtime names it: a mutating pool function, `set`, `diff` and the field
   mutations take a `CommitAttachmentMutating`. Parameter names keep `attachment_mutating`. Needs
   kibo's `interfaceName`.
+- **The `typescript` floor rises to `@digitalsubstrate/dsviper` `>=1.2.16`**, the first binding
+  naming `CommitAttachmentMutating`. Only the generated `package.json` changes.
 
 ### Deprecated
 
