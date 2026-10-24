@@ -51,6 +51,8 @@ version as either one.
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-10-24
+
 ### Added
 
 - **`Reads`, the reading usage** (requires `Base`): `<unit>::reads` in C++, `<unit>.reads` in

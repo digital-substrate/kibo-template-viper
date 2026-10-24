@@ -189,8 +189,8 @@ same declarations in its header:
 
 A release of this pack is driven by its **targets**: a projection appears because a
 binding gained something to project. The Template Model it consumes moves on kibo's
-own cadence and is a floor, not a co-version — that this pack is at `2.0.0` while it
-consumes Template Model 2 is a **coincidence, not a rule**.
+own cadence and is a floor, not a co-version — that this pack's major version is 2 while
+it consumes Template Model 2 is a **coincidence, not a rule**.
 
 Nothing in the number warns that an upgrade breaks: this pack requires the
 Template Model it declares, and a pack written against an earlier one does not
