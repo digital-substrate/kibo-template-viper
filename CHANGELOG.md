@@ -26,6 +26,8 @@ version as either one.
 
 ## [Unreleased]
 
+## [1.2.6] - 2026-10-24
+
 ### Changed
 
 - **`AttachmentMutating` is `CommitAttachmentMutating` (BREAKING)**, in C++, Python and
