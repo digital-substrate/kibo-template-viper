@@ -1,10 +1,6 @@
-import "banner.stg"
-
 // What the embedded and the remote classes of a pool share.
 
 preamble(p) ::= <<
-<banner(p.model)>
-
 <if(p.hasDocumentation)>"""<p.documentation;format="docstring">"""<endif>
 
 from __future__ import annotations

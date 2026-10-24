@@ -1,6 +1,9 @@
+import "../banner.stg"
 import "../pool_common.stg"
 
 pool(p) ::= <<
+<banner(p.model)>
+
 <preamble(p)>
 
 class Pool:

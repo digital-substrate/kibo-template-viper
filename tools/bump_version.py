@@ -53,6 +53,7 @@ CALLS = re.compile(r"<\w*banner\(")
 EXEMPT = {
     "typescript/package.json.stg": "npm parses package.json as strict JSON",
     "python/py.typed.stg": "an empty PEP 561 marker",
+    "python/pool_common.stg": "definitions the pool templates import; it renders nothing itself",
 }
 
 
