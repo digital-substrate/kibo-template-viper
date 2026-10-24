@@ -112,13 +112,12 @@ format and public API are locked across a minor. The `PATCH` is versioned
 | Templates    | Runtime                              | Compatible versions |
 |--------------|--------------------------------------|---------------------|
 | `typescript` | `@digitalsubstrate/dsviper` (npm)    | `>=1.2.16 <1.3.0`   |
-| `python`     | `dsviper` (PyPI wheel)               | `1.2.x`             |
-| `cpp`        | `viper` (C++ runtime)                | `1.2.x`             |
+| `python`     | `dsviper` (PyPI wheel)               | `>=1.2.31 <1.3`     |
+| `cpp`        | `viper` (C++ runtime)                | `>=1.2.30 <1.3`     |
 
-These templates project the runtime's basic surface, so any `1.2.x` of the
-matching binding will do and there is no patch to track. When a template does
-come to need something a particular patch introduced, that becomes a floor —
-and the floor belongs in the generated output, not in this table. A pin the
+These templates project the runtime's basic surface. When a template comes to
+need something a particular patch introduced, that becomes a floor, and where
+the generated output has a manifest, the floor belongs there: a pin the
 consumer's build reads cannot go stale, and it fails where someone will see it.
 
 `typescript` is the one such case today. Its generated `package.json` pins
@@ -127,8 +126,13 @@ consumer's build reads cannot go stale, and it fails where someone will see it.
 sequence is an array in JS, not a tuple), and a remote attachment function that
 only reads takes an `AttachmentGetting`, which the binding's `call` accepts from
 `1.2.14`, and a write takes a `CommitAttachmentMutating`, the binding's name for
-it from `1.2.16`. The `python` and `cpp` outputs carry no pin: Python only annotates the
-parameter, and C++ builds against the runtime's source.
+it from `1.2.16`.
+
+The `python` and `cpp` outputs have no manifest to carry a pin, so their floor
+is this table's. A write takes a `CommitAttachmentMutating`, which `dsviper`
+names from `1.2.31` and the C++ runtime from `1.2.30`. Against an older wheel,
+a generated Python module fails to import, as its annotations are evaluated
+when it loads; against an older checkout, the generated C++ does not compile.
 
 The MIT license above governs the **templates as source**. The output
 of `kibo` produced from these templates is a derivative work of MIT
