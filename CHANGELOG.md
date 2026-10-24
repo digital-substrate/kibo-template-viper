@@ -77,8 +77,8 @@ version as either one.
     `keys`, `has`, `get`, `enumerate`, `set`, `del` (`delete` in Python) over a database.
   - `CommitAttachments` (requires `Base` and `Paths`): `<unit>::commit_attachments`,
     `<unit>.commit_attachments`, `<unit>/commit_attachments`; `keys`, `has`, `get`,
-    `enumerate`, `diff_keys` over a state, `set`, `diff` and the field mutations over an
-    `AttachmentMutating`.
+    `enumerate`, `diff_keys` over a state, `set`, `diff` and the field mutations over a
+    `CommitAttachmentMutating`.
 
   The first parameter is named for what it takes, `database` or `state`. The runtime's
   `AttachmentProxy` becomes `AttachmentBase`, which holds the attachment's runtime id and
