@@ -183,9 +183,9 @@ same declarations in its header:
 | | |
 |---|---|
 | **consumes** | Template Model 2, exposed by kibo |
-| **cpp target** | the `viper` C++ runtime 1.2 (floor `>=1.2.29`), with its static layer |
-| **python target** | `dsviper` 1.2 (floor `>=1.2.29`) |
-| **typescript target** | `@digitalsubstrate/dsviper` 1.2 (floor `>=1.2.14`) |
+| **cpp target** | the `viper` C++ runtime 1.2 (floor `>=1.2.30`), with its static layer |
+| **python target** | `dsviper` 1.2 (floor `>=1.2.31`) |
+| **typescript target** | `@digitalsubstrate/dsviper` 1.2 (floor `>=1.2.16`) |
 
 A release of this pack is driven by its **targets**: a projection appears because a
 binding gained something to project. The Template Model it consumes moves on kibo's
@@ -204,9 +204,9 @@ targets:
 
 | Templates    | Runtime                              | Compatible versions |
 |--------------|--------------------------------------|---------------------|
-| `typescript` | `@digitalsubstrate/dsviper` (npm)    | `>=1.2.14 <1.3.0`   |
-| `python`     | `dsviper` (PyPI wheel)               | `>=1.2.29 <1.3`     |
-| `cpp`        | `viper` (C++ runtime)                | `>=1.2.29 <1.3`, with the static layer |
+| `typescript` | `@digitalsubstrate/dsviper` (npm)    | `>=1.2.16 <1.3.0`   |
+| `python`     | `dsviper` (PyPI wheel)               | `>=1.2.31 <1.3`     |
+| `cpp`        | `viper` (C++ runtime)                | `>=1.2.30 <1.3`, with the static layer |
 
 Every generated file names its runtime and that range in its header, so a
 consumer holding generated code can answer the question without this table.
@@ -219,14 +219,17 @@ consumer's build reads it:
 - **`python`**: the runtime tests `isinstance(value, dsviper.Value)` and reads with
   `Value.decode(..., encoded=False)`, which the wheel offers from `1.2.27`; a remote
   attachment function that only reads takes an `AttachmentGetting`, which the wheel
-  accepts from `1.2.29`. The generated `pyproject.toml` declares it.
-- **`typescript`**: the generated `package.json` declares `>=1.2.14 <1.3.0`, the binding
-  whose remote attachment call accepts an `AttachmentGetting` and which decodes a written
-  xarray from the list of its elements.
+  accepts from `1.2.29`; a write takes a `CommitAttachmentMutating`, the name the wheel
+  gives it from `1.2.31`. The generated `pyproject.toml` declares it.
+- **`typescript`**: the generated `package.json` declares `>=1.2.16 <1.3.0`, the binding
+  whose remote attachment call accepts an `AttachmentGetting`, which decodes a written
+  xarray from the list of its elements, and which names a write's interface
+  `CommitAttachmentMutating`.
 - **`cpp`**: the generated code crosses to a `Value`, and hashes, through the runtime's
   static layer — `Viper_StaticType`, `Viper_StaticWriter`, `Viper_StaticReader`,
-  `Viper_StaticHash` — on viper's `LTS-1.2` branch, and calls a remote attachment function
-  through a `ServiceRemote::call` that takes an `AttachmentGetting`. A C++ project builds
+  `Viper_StaticHash` — on viper's `LTS-1.2` branch, calls a remote attachment function
+  through a `ServiceRemote::call` that takes an `AttachmentGetting`, and writes through a
+  `Viper::CommitAttachmentMutating`, the runtime's name for it from `1.2.30`. A C++ project builds
   the runtime from source, so it needs a checkout that carries both.
 
 The MIT license above governs the **templates as source**. The output

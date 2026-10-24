@@ -1,7 +1,7 @@
 # python — the package a model generates, over dsviper
 
 The `python` templates render one package per model, over the
-[`dsviper`](https://pypi.org/project/dsviper/) wheel (`>=1.2.29, <1.3`). This page says what a
+[`dsviper`](https://pypi.org/project/dsviper/) wheel (`>=1.2.31, <1.3`). This page says what a
 developer finds in it. The examples use the laboratory's model (`devkit-codegen-test`, the
 `features` site): a namespace `Demo`, a structure `StructureS`, a concept `ConceptA`.
 
