@@ -2,7 +2,7 @@
 
 The `typescript` templates render one ES module package per model, over the
 [`@digitalsubstrate/dsviper`](https://www.npmjs.com/package/@digitalsubstrate/dsviper) Node
-binding (`>=1.2.14 <1.3.0`). This page says what a developer finds in it. The examples use
+binding (`>=1.2.16 <1.3.0`). This page says what a developer finds in it. The examples use
 the laboratory's model (`devkit-codegen-test`, the `features` site): a namespace `Demo`, a
 structure `StructureS`, a concept `ConceptA`.
 

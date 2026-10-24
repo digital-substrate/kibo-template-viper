@@ -65,6 +65,9 @@ version as either one.
   TypeScript, as the runtime names it: a mutating pool function, `set`, `diff` and the field
   mutations take a `CommitAttachmentMutating`. Parameter names keep `attachment_mutating`. Needs
   kibo's `interfaceName`.
+- **The floors rise to the first runtime naming `CommitAttachmentMutating`**: the `viper` C++
+  runtime `>=1.2.30`, `dsviper` `>=1.2.31`, `@digitalsubstrate/dsviper` `>=1.2.16`; and kibo
+  `>=2.1.0`, for `interfaceName`. Only the generated headers and manifests change.
 - **Attachments are generated per usage.** Viper has two databases that share nothing, a
   `Database` read and written whole and a Commit database read through a state and written by
   mutations; each gets its own feature and its own module, with only its own operations.
