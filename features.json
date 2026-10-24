@@ -112,7 +112,7 @@
   },
   "python": {
     "Base": {
-      "doc": "The package: its entry point, the types each namespace declares, and the container bindings the model mentions. The attachments are a usage: DatabaseAttachments or CommitAttachments.",
+      "doc": "The package: its entry point, the types each namespace declares, and the container bindings the model mentions. The attachments are a usage: DatabaseAttachments or CommitAttachments, and Reads to read either.",
       "templates": [
         "__init__.py.stg",
         "data.py.stg",
@@ -228,7 +228,7 @@
       "requires": []
     },
     "DatabaseAttachments": {
-      "doc": "The CRUD usage: per unit, the attachments of a Viper::Database -- keys, has, get, set, del -- read, written and deleted whole, a write inside a transaction. Nothing of Commit. Imported by its path, <unit>/database_attachments.",
+      "doc": "The CRUD usage: per unit, the attachments of a dsviper.Database -- keys, has, get, set, del -- read, written and deleted whole, a write inside a transaction. Nothing of Commit. Imported by its path, <unit>/database_attachments.",
       "templates": [
         "database_attachments.ts.stg"
       ],
