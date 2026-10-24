@@ -8,7 +8,8 @@ Each DSM namespace is a module holding its structures, enumerations and keys:
 <m.nameSpaces:{u|`<m.namespace>.<u.name;format="snake">`};separator=", ">. Its attachments are
 a submodule per usage, imported by its path: `\<unit>.database_attachments` over a
 dsviper.Database (the DatabaseAttachments feature), `\<unit>.commit_attachments` over a Commit
-state (the CommitAttachments feature).
+state (the CommitAttachments feature), `\<unit>.reads` over an AttachmentGetting from either,
+reading only (the Reads feature).
 `containers` holds one class per container shape the model uses, in a structure, an
 attachment or a pool; another shape is built with the runtime, from Viper values:
 `dsviper.Value.create(dsviper.TypeSet(<if(m.concepts)><first(m.concepts):{c|<m.namespace>.<c.namespace;format="snake">.<c.name>Key}><else>Cls<endif>.type()), [k.unwrap_value() for k in keys])`.
