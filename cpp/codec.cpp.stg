@@ -117,12 +117,12 @@ model(m) ::= <<
 namespace <m.namespace>::codec {
 
 std::shared_ptr\<Viper::Definitions const> const & definitions() {
-    static std::shared_ptr\<Viper::Definitions const> instance;
-    if (!instance) {
+    // Decoded once, on the first call, whichever thread makes it: a local static's initialization runs once.
+    static std::shared_ptr\<Viper::Definitions const> const instance{[] {
         Viper::Blob blob(sizeof(::<m.namespace>_resources_definitions));
         std::memcpy(blob.storage.data(), ::<m.namespace>_resources_definitions, blob.size());
-        instance = Viper::DefinitionsDecoder::decode(blob, Viper::StreamTokenBinaryCodec::Instance());
-    }
+        return Viper::DefinitionsDecoder::decode(blob, Viper::StreamTokenBinaryCodec::Instance());
+    }()};
     return instance;
 }
 

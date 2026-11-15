@@ -51,6 +51,16 @@ version as either one.
 
 ## [Unreleased]
 
+## [2.1.1] - 2026-11-15
+
+### Fixed
+
+- **C++: `<unit>::codec::definitions()` is thread-safe.** The definitions were decoded on the
+  first call into a static tested for emptiness, without a lock: two threads making the first
+  call at once could both decode and assign, and a reader see a pointer being replaced (a crash
+  in `Definitions::contains`). They are now a local static initialized by the decoding, which
+  C++11 guarantees runs once. Only `codec.cpp` changes.
+
 ## [2.1.0] - 2026-10-24
 
 ### Added
